@@ -2,7 +2,7 @@
 
 把 `registry/` 的条目渲染成静态站点，由 GitHub Actions 构建、GitHub Pages 托管。
 
-地址：https://xazaj.github.io/sdlc-playbook
+地址：https://aibrev.com
 
 ## 为什么是 Astro
 
@@ -28,7 +28,7 @@
 ```bash
 cd site
 npm install
-npm run dev      # http://localhost:4321/sdlc-playbook
+npm run dev      # http://localhost:4321
 npm run build    # 产物在 site/dist
 ```
 
