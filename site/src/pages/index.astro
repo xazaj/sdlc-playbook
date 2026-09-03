@@ -54,8 +54,8 @@ const kinds = countByKind(entries);
         const n = entriesOf(entries, c.data.id).length;
         return (
           <a class="moment" href={`${base}/${c.data.id}`} data-empty={n === 0 ? 'true' : undefined}>
-            <span class="name">{c.data.title}<span class="why">{c.data.tagline}</span></span>
-            <span class="n">{n === 0 ? '尚无' : `${n} 条`}</span>
+            <span class="name">{c.data.title}</span><span class="n">{n === 0 ? '尚无条目' : `${n} 条`}</span>
+            <span class="why"> — {c.data.tagline}</span>
           </a>
         );
       })}

@@ -250,13 +250,13 @@ table.ledger td.meta { font-size: 13px; line-height: 18px; color: var(--text-3);
 
 /* ---------- moments (orientation, not the focus) ---------- */
 
-.moments { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s2) var(--s8); }
-.moment { display: grid; grid-template-columns: minmax(0, 1fr) 4.5rem; gap: var(--s4); align-items: baseline; padding: var(--s1) 0; }
+.moments { display: flex; flex-direction: column; gap: var(--s2); }
+.moment { display: block; max-width: var(--measure); }
 .moment:hover { text-decoration: none; }
 .moment:hover .name { text-decoration: underline; text-underline-offset: 3px; }
 .moment .name { font-size: 14px; line-height: 20px; font-weight: var(--w-medium); }
-.moment .why { display: block; color: var(--text-3); font-size: 13px; line-height: 18px; font-weight: var(--w-regular); }
-.moment .n { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; color: var(--text-3); text-align: right; }
+.moment .n { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; color: var(--text-3); margin-left: var(--s2); }
+.moment .why { color: var(--text-3); font-size: 13px; line-height: 20px; }
 .moment[data-empty] .name { color: var(--text-3); font-weight: var(--w-regular); }
 
 
@@ -275,8 +275,8 @@ table.compare tbody td { border-bottom: 1px solid var(--border); }
 table.compare tbody td:last-child { font-weight: var(--w-medium); }
 
 ol.steps { list-style: none; padding: 0; counter-reset: step; }
-ol.steps li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: var(--s3); padding-block: var(--s3); border-top: 1px solid var(--border); }
-ol.steps li:first-child { border-top: 1px solid var(--border-strong); }
+ol.steps { display: flex; flex-direction: column; gap: var(--s3); }
+ol.steps li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: var(--s3); }
 ol.steps li::before { counter-increment: step; content: counter(step); font-family: var(--mono); font-size: 13px; color: var(--text-3); }
 
 /* ---------- entry page ---------- */
@@ -308,9 +308,8 @@ ol.steps li::before { counter-increment: step; content: counter(step); font-fami
 .prose pre, .block pre {
   margin: 0; padding: 0 0 0 var(--s4);
   background: none; border: 0; border-left: 2px solid var(--border-strong);
-  overflow-x: auto;
   font-family: var(--mono); font-size: 13px; line-height: 20px; color: var(--text-2);
-  white-space: pre;
+  white-space: pre-wrap; overflow-wrap: anywhere;
 }
 .prose pre code, .block pre code { background: none; border: 0; padding: 0; font-size: inherit; }
 
@@ -358,7 +357,6 @@ dialog.search input {
 
 @media (max-width: 1120px) {
   :root { --edge: var(--s6); }
-  .moments { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (max-width: 900px) {
@@ -372,7 +370,6 @@ dialog.search input {
 .start-10 { grid-column: 10 / span 3; }
   .opening { padding-block: var(--s10) var(--s8); }
   .opening .facts { align-self: start; }
-  .moments { grid-template-columns: minmax(0, 1fr); }
   .t-page { font-size: 32px; line-height: 40px; }
   .t-display { font-size: 36px; line-height: 44px; }
   .masthead .inner { flex-wrap: wrap; }
