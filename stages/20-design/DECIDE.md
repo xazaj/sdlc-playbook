@@ -62,8 +62,12 @@
 
 ## 落地资产
 
-尚无配套的 catalog 条目。待建（按优先级）：
+判定结果对应的执行资产，登记在 `registry/`：
 
-- `template` / `design-md-dtcg` —— DESIGN.md 模板，DTCG 三层 token 骨架
-- `knowledge` / `design-systems` —— 主流组件库的选型对比与适用边界
-- `skill` / `visual-review` —— 可交给 agent 的那部分设计检查项
+| 判定 | 用什么 | 登记卡 |
+|---|---|---|
+| 需要完整设计系统 | gstack 的 `design-consultation` | `registry/gstack-design-consultation.md` |
+| AI 直接生成视觉 | `frontend-design` 一类实现技能 | 待登记 |
+| 需要 DESIGN.md / token 骨架 | 尚无现成资产，候选自建 | —— |
+
+本库不重复造这些资产，只负责判断何时该用哪个。安装方式与版本管理见各自登记卡。

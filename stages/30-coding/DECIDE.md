@@ -62,10 +62,12 @@
 
 ## 落地资产
 
-尚无配套的 catalog 条目。这是 M0 的已知状态 —— 本阶段先验证决策矩阵本身是否有用，资产随后补。
+判定结果对应的执行资产，登记在 `registry/`：
 
-待建（按优先级）：
+| 判定 | 用什么 | 登记卡 |
+|---|---|---|
+| 走 TDD | superpowers 的 `test-driven-development` | `registry/superpowers-tdd.md` |
+| 走 SDD | superpowers 的 `writing-plans` + `brainstorming` | 待登记 |
+| 走 spike | 尚无现成资产，按 DECIDE.md 本节的纪律手工执行 | —— |
 
-- `skill` / `tdd-cycle` —— TDD 的具体执行循环
-- `skill` / `spike-and-discard` —— 探针的边界与丢弃纪律
-- `rule` / `test-required-for-refactor` —— 拼进项目 AGENTS.md 的常驻约束
+本库不重复造这些资产，只负责判断何时该用哪个。安装方式与版本管理见各自登记卡。
