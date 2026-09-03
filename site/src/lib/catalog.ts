@@ -47,8 +47,26 @@ export async function allCategories(): Promise<Category[]> {
   return cats.sort((a, b) => a.data.order - b.data.order);
 }
 
+/** Sections every entry must carry. Frontmatter is checked by the schema;
+ *  this is the body half of the same contract. A card missing its install
+ *  prompt would otherwise render a page with nothing to copy. */
+const REQUIRED_SECTIONS = ['## 何时用', '## 安装 prompt', '## 版本'] as const;
+
+function assertBodyContract(entry: Entry): void {
+  const body = entry.body ?? '';
+  const missing = REQUIRED_SECTIONS.filter((h) => !body.includes(`\n${h}`) && !body.startsWith(h));
+  if (!/^\s*`{3,}/m.test(body)) missing.push('围栏块（安装 prompt 本体）' as never);
+  if (missing.length > 0) {
+    throw new Error(
+      `registry/${entry.data.name}.md 不符合条目正文契约，缺少：${missing.join('、')}。` +
+        ' 见 CONTRIBUTING.md 的「新增条目」一节。',
+    );
+  }
+}
+
 export async function allEntries(): Promise<Entry[]> {
   const entries = await getCollection('entries');
+  for (const entry of entries) assertBodyContract(entry);
   return entries.sort((a, b) => b.data.evaluated_at.getTime() - a.data.evaluated_at.getTime());
 }
 
