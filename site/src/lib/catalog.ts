@@ -74,10 +74,6 @@ export function entriesOf(entries: Entry[], category: string): Entry[] {
   return entries.filter((e) => e.data.category === category);
 }
 
-export function relatedTo(entries: Entry[], category: string): Entry[] {
-  return entries.filter((e) => e.data.category !== category && e.data.also_in.includes(category as never));
-}
-
 export function countByKind(entries: Entry[]): { kind: string; count: number }[] {
   const seen = new Map<string, number>();
   for (const e of entries) seen.set(e.data.kind, (seen.get(e.data.kind) ?? 0) + 1);

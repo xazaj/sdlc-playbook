@@ -52,6 +52,9 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
+/* A class with an explicit display would otherwise beat the UA [hidden] rule. */
+[hidden] { display: none !important; }
+
 html { -webkit-text-size-adjust: 100%; }
 
 body {
@@ -232,6 +235,7 @@ table.ledger thead th {
 table.ledger tbody td { border-bottom: 1px solid var(--border); }
 table.ledger tbody tr:hover td { background: var(--bg-2); }
 table.ledger tbody tr[hidden] { display: none; }
+table.ledger tr.no-match td { color: var(--text-3); }
 table.ledger .name { font-size: 15px; line-height: 22px; font-weight: var(--w-medium); }
 table.ledger .name a { text-decoration: none; }
 table.ledger .name a:hover { text-decoration: underline; text-underline-offset: 3px; }

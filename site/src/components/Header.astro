@@ -20,7 +20,7 @@ const updated = entries.length ? formatDate(entries[0]!.data.evaluated_at) : '�
     </div>
     <nav class="primary" aria-label="分类">
       {categories.map((c) => (
-        <a href={`${base}/${c.data.id}`} aria-current={current === c.data.id ? 'page' : undefined}>{c.data.title}</a>
+        <a href={`${base}/#${c.data.id}`} data-tab-link={c.data.id}>{c.data.title}</a>
       ))}
       <button class="search-trigger" type="button" id="search-open" aria-haspopup="dialog">
         搜索<kbd>⌘K</kbd>

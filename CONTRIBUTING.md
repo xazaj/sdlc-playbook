@@ -49,40 +49,11 @@ docs/      设计文档、实现计划与验证日志
 
 ### 骨架
 
-````markdown
----
-name: <唯一标识，与文件名一致，用作 URL>
-title: <条目页与列表上的标题>
-summary: <一句话说明它是什么，进列表，四十字以内>
-category: bootstrap | design | build | verify
-kind: skill | design-md | component-library | doc | mcp
-origin: marketplace | external | local
-provider: <插件 id 或来源，自建可省>
-asset: <上游资产名，自建可省>
-upstream: <上游 URL，自建可省>
-license: <外部文件整份进入用户项目时必填>
-pairs_with: [<实测搭配过的条目 name>]
-agents: [<已验证过的 agent>]
-release_source: plugin | github-release | github-commit | npm | vendor | local
-evaluated_version: "<本卡评估所基于的版本；design-md 填短 SHA>"
-evaluated_at: "YYYY-MM-DD"
-updated_at: "YYYY-MM-DD"
----
+模板是 `registry/_TEMPLATE.md`，复制成 `registry/<name>.md` 后按注释填写。**不要把骨架抄进本文档**——两份会漂移。
 
-## 何时用
-（什么判定结果会走到这里，以及什么情况下不应使用。适用与不适用都要写）
+`name`、`title`、`summary`、`category`、`kind`、`origin`、`evaluated_version`、`evaluated_at` 必填，缺任何一个构建失败。正文缺「何时用」「安装 prompt」「版本」三节之一、或缺围栏块，构建同样失败。
 
-## 这一版怎么样（<evaluated_version>）
-（针对该版本的评估：有没有坑、装进项目时要压住什么。随版本更新而重写）
-
-## 安装 prompt
-（一个围栏块，读者整块复制贴进目标项目的 agent 会话；后附一句确认方式）
-
-## 版本
-（上游由谁管理、到哪里查询；评估历史列表）
-````
-
-`name`、`title`、`summary`、`category`、`kind`、`origin`、`evaluated_version`、`evaluated_at` 是必填，缺任何一个构建会失败。正文缺「何时用」「安装 prompt」「版本」三节之一，或缺围栏块，构建同样会失败。
+清单页四个 tab 的内容在 `site/src/content/categories/<id>.md`，模板是同目录的 `_TEMPLATE.md`。正常情况不需要新增，四个时刻是固定的。
 
 ### 按形态的差异
 
@@ -107,11 +78,11 @@ updated_at: "YYYY-MM-DD"
 ````text
 请为本仓库新增一个条目，资产是 [资产名称与上游地址]。要求：
 
-1. 先读 CONTRIBUTING.md 的「新增条目」一节与 site/src/content.config.ts
-   的 schema，以它们为准，不要凭记忆填字段。
+1. 先读 registry/_TEMPLATE.md 与 site/src/content.config.ts 的 schema，
+   以它们为准，不要凭记忆填字段。
 
-2. 在 registry/<name>.md 新建文件，frontmatter 按骨架填全必填字段，
-   kind 按「按形态的差异」表选择并补齐该形态的额外必填项。
+2. 把模板复制成 registry/<name>.md，删掉注释，填全必填字段，
+   kind 按模板注释里的差异说明选择并补齐该形态的额外必填项。
    evaluated_version 填你实际查证过的版本；查不到就停下来问我，不要猜。
    evaluated_at 填今天。
 

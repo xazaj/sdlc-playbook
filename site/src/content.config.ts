@@ -13,14 +13,13 @@ const kindId = z.enum(KIND_IDS);
 // reads them where they already live: this repository is a catalog first and a
 // website second. A future content move only changes `base` here.
 const entries = defineCollection({
-  loader: glob({ base: '../registry', pattern: '**/*.md' }),
+  loader: glob({ base: '../registry', pattern: ['**/*.md', '!**/_*.md'] }),
   schema: z.object({
     name: z.string(),
     title: z.string(),
     summary: z.string(),
     category: categoryId,
     kind: kindId,
-    also_in: z.array(categoryId).default([]),
     origin: z.enum(['local', 'marketplace', 'external']),
     provider: z.string().optional(),
     asset: z.string().optional(),
@@ -40,7 +39,7 @@ const entries = defineCollection({
 // category page renders. Keeping it structured rather than free markdown is
 // what lets every category page share a single layout.
 const categories = defineCollection({
-  loader: glob({ base: './src/content/categories', pattern: '*.md' }),
+  loader: glob({ base: './src/content/categories', pattern: ['*.md', '!_*.md'] }),
   schema: z.object({
     id: categoryId,
     code: z.string(),

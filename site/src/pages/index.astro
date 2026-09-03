@@ -3,14 +3,13 @@ import Base from '../layouts/Base.astro';
 import Ledger from '../components/Ledger.astro';
 import { allCategories, allEntries, countByKind, entriesOf, KIND_LABEL } from '../lib/catalog';
 
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const categories = await allCategories();
 const entries = await allEntries();
 const kinds = countByKind(entries);
 ---
 <Base
   title="SDLC Playbook"
-  description="按开发时刻分类的 agent 资产目录：每个条目给出适用边界、评估版本与可直接粘贴的安装 prompt。"
+  description="按开发时刻分类的 agent 资产清单：每个条目给出适用边界、评估版本与可直接粘贴的安装 prompt。"
 >
   <section class="shell opening">
     <div class="measure-wide">
@@ -21,69 +20,101 @@ const kinds = countByKind(entries);
 
   <section class="shell section">
     <div class="filters">
-      <div class="filter-set">
-        <button class="filter" type="button" data-facet="category" data-value="" aria-pressed="true">全部<span class="count">{entries.length}</span></button>
-        {categories.filter((c) => entriesOf(entries, c.data.id).length > 0).map((c) => (
-          <button class="filter" type="button" data-facet="category" data-value={c.data.id} aria-pressed="false">
+      <div class="filter-set" role="tablist" aria-label="按时刻筛选">
+        <button class="filter" type="button" role="tab" data-tab="" aria-pressed="true">全部<span class="count">{entries.length}</span></button>
+        {categories.map((c) => (
+          <button class="filter" type="button" role="tab" data-tab={c.data.id} aria-pressed="false">
             {c.data.title}<span class="count">{entriesOf(entries, c.data.id).length}</span>
           </button>
         ))}
       </div>
-      <div class="filter-set">
+      <div class="filter-set" aria-label="按形态筛选">
         {kinds.map(({ kind, count }) => (
-          <button class="filter" type="button" data-facet="kind" data-value={kind} aria-pressed="false">
+          <button class="filter" type="button" data-kind={kind} aria-pressed="false">
             {KIND_LABEL[kind] ?? kind}<span class="count">{count}</span>
           </button>
         ))}
       </div>
     </div>
+
     <Ledger
       entries={entries}
       caption="按评估日期排序，最近评估的在前。评估版本指本库评估所基于的版本，不是上游当前版本；状态按评估日期计算，超过 90 天标 †，超过 180 天标 ‡。"
     />
   </section>
 
-  <section class="shell section chapter">
-    <div class="section-head">
-      <h2 class="t-sub">四个时刻</h2>
-      <p class="t-meta">判断依据写在各分类页的开头。</p>
-    </div>
-    <div class="moments">
-      {categories.map((c) => {
-        const n = entriesOf(entries, c.data.id).length;
-        return (
-          <a class="moment" href={`${base}/${c.data.id}`} data-empty={n === 0 ? 'true' : undefined}>
-            <span class="name">{c.data.title}</span><span class="n">{n === 0 ? '尚无条目' : `${n} 条`}</span>
-            <span class="why"> — {c.data.tagline}</span>
-          </a>
-        );
-      })}
-    </div>
-  </section>
+  {categories.filter((c) => c.data.decision).map((c) => {
+    const d = c.data.decision!;
+    return (
+      <section class="shell section chapter grid12" data-panel={c.data.id} hidden>
+        <div class="span-6 flow">
+          <h2 class="t-sub">{d.headline}</h2>
+          <p class="secondary measure">{d.intro}</p>
+          <ol class="steps">
+            {d.steps.map((s) => <li><span>{s.text}</span></li>)}
+          </ol>
+          {d.note && <p class="t-compact tertiary measure">{d.note}</p>}
+        </div>
+        <div class="span-5 start-8 flow">
+          <table class="compare">
+            <caption class="t-meta" style="text-align: left; padding-bottom: 12px;">出现下列信号时改变默认选择</caption>
+            <thead><tr><th scope="col">信号</th><th scope="col">改走</th></tr></thead>
+            <tbody>
+              {d.signals.map((s) => <tr><td class="secondary">{s.when}</td><td>{s.then}</td></tr>)}
+            </tbody>
+          </table>
+          {d.pitfalls && <p class="t-compact tertiary">{d.pitfalls}</p>}
+          {d.sourceHref && <p class="t-compact"><a href={d.sourceHref}>{d.sourceLabel} ↗</a></p>}
+        </div>
+      </section>
+    );
+  })}
 
   <script>
-    const active = { category: '', kind: '' };
-    const rows = Array.from(document.querySelectorAll<HTMLTableRowElement>('table.ledger tbody tr'));
+    const state = { tab: '', kind: '' };
+    const rows = Array.from(document.querySelectorAll<HTMLTableRowElement>('table.ledger tbody tr:not(.no-match)'));
+    const noMatch = document.querySelector<HTMLTableRowElement>('table.ledger tr.no-match');
+    const panels = Array.from(document.querySelectorAll<HTMLElement>('[data-panel]'));
+    const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-tab]'));
+    const kindButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-kind]'));
 
     function apply() {
       for (const row of rows) {
-        const okCat = !active.category || row.dataset.category === active.category;
-        const okKind = !active.kind || row.dataset.kind === active.kind;
-        row.hidden = !(okCat && okKind);
+        const okTab = !state.tab || row.dataset.category === state.tab;
+        const okKind = !state.kind || row.dataset.kind === state.kind;
+        row.hidden = !(okTab && okKind);
+      }
+      if (noMatch) noMatch.hidden = rows.some((r) => !r.hidden);
+      for (const panel of panels) panel.hidden = panel.dataset.panel !== state.tab;
+      for (const tab of tabs) tab.setAttribute('aria-pressed', String((tab.dataset.tab ?? '') === state.tab));
+      for (const button of kindButtons) button.setAttribute('aria-pressed', String(button.dataset.kind === state.kind));
+      for (const link of document.querySelectorAll<HTMLAnchorElement>('[data-tab-link]')) {
+        if (link.dataset.tabLink === state.tab) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
       }
     }
 
-    for (const button of document.querySelectorAll<HTMLButtonElement>('.filter')) {
-      button.addEventListener('click', () => {
-        const facet = button.dataset.facet as 'category' | 'kind';
-        const value = button.dataset.value ?? '';
-        // A second click on an active facet clears it; nothing here is decorative.
-        active[facet] = active[facet] === value ? '' : value;
-        for (const peer of document.querySelectorAll<HTMLButtonElement>(`.filter[data-facet="${facet}"]`)) {
-          peer.setAttribute('aria-pressed', String((peer.dataset.value ?? '') === active[facet]));
-        }
+    for (const tab of tabs) {
+      tab.addEventListener('click', () => {
+        state.tab = tab.dataset.tab ?? '';
+        history.replaceState(null, '', state.tab ? `#${state.tab}` : location.pathname);
         apply();
       });
     }
+    // A second click on an active kind clears it; nothing here is decorative.
+    for (const button of kindButtons) {
+      button.addEventListener('click', () => {
+        state.kind = state.kind === button.dataset.kind ? '' : (button.dataset.kind ?? '');
+        apply();
+      });
+    }
+
+    function fromHash() {
+      const id = location.hash.replace('#', '');
+      state.tab = tabs.some((t) => t.dataset.tab === id) ? id : '';
+      apply();
+    }
+    window.addEventListener('hashchange', fromHash);
+    fromHash();
   </script>
 </Base>
