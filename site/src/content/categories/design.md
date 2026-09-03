@@ -43,5 +43,9 @@ sections:
     title: 方法与执行技能
     code: SKILLS
     note: 前两段决定用什么，这一段决定由谁来做。
+  - kind: doc
+    title: 生成规则
+    code: RULES
+    note: 写进 AGENTS.md 的约束，不安装任何依赖，决定 agent 每次生成界面时的下限。
 moreSources: 第三方汇集的 design 文件集合不作为条目收录，集合中只有评估过的单份文件才进入上表。
 ---

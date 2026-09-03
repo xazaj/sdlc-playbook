@@ -34,6 +34,13 @@ const declared = c.sections.filter((s) => mine.some((e) => e.data.kind === s.kin
 const grouped: { title: string; code: string; note: string; items: Entry[] }[] = declared.length
   ? declared.map((s) => ({ ...s, items: mine.filter((e) => e.data.kind === s.kind) }))
   : [];
+// Anything whose kind no section claims still has to appear: a new kind must
+// never make an entry vanish from its own category page.
+const claimed = new Set(declared.map((s) => s.kind));
+const leftover = mine.filter((e) => !claimed.has(e.data.kind));
+if (grouped.length > 0 && leftover.length > 0) {
+  grouped.push({ title: '其他', code: 'OTHER', note: '尚未归入上面任何一段的条目。', items: leftover });
+}
 const origins = [...new Set(mine.map((e) => (e.data.origin === 'local' ? '自建' : '外部')))];
 ---
 <Base title={c.title} description={c.tagline} accent={c.accent} current={c.id}>
