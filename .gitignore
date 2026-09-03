@@ -20,6 +20,10 @@ node_modules/
 *.tsbuildinfo
 .vitest/
 coverage/
+# Astro 生成的内容集合类型，随构建重建
+.astro/
+# 本地截图工具的输出
+.playwright-mcp/
 
 # ============================================================
 # 密钥与本地环境

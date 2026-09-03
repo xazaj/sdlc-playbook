@@ -1,0 +1,154 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../layouts/Base.astro';
+import EntryCard from '../components/EntryCard.astro';
+import {
+  allCategories,
+  allEntries,
+  entriesOf,
+  relatedTo,
+  KIND_LABEL,
+  type Entry,
+} from '../lib/catalog';
+
+export const getStaticPaths = (async () => {
+  const categories = await allCategories();
+  return categories.map((category) => ({
+    params: { category: category.data.id },
+    props: { category },
+  }));
+}) satisfies GetStaticPaths;
+
+const { category } = Astro.props;
+const c = category.data;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const categories = await allCategories();
+const all = await allEntries();
+const mine = entriesOf(all, c.id);
+const related = relatedTo(all, c.id);
+const byCategory = new Map(categories.map((x) => [x.data.id, x]));
+
+const kindsPresent = [...new Set(mine.map((e) => e.data.kind))];
+const declared = c.sections.filter((s) => mine.some((e) => e.data.kind === s.kind));
+const grouped: { title: string; code: string; note: string; items: Entry[] }[] = declared.length
+  ? declared.map((s) => ({ ...s, items: mine.filter((e) => e.data.kind === s.kind) }))
+  : [];
+const origins = [...new Set(mine.map((e) => (e.data.origin === 'local' ? '自建' : '外部')))];
+---
+<Base title={c.title} description={c.tagline} accent={c.accent} current={c.id}>
+  <section class="cat-hero">
+    <span class="code-label">{String(c.order).padStart(2, '0')} / {c.code} · {mine.length} 个条目</span>
+    <h1>{c.title}</h1>
+    <p>{c.tagline}</p>
+  </section>
+
+  {c.decision ? (
+    <section class="decide grid12">
+      <div class="decide-left">
+        <span class="eyebrow">怎么选</span>
+        <h2>{c.decision.headline}</h2>
+        <p>{c.decision.intro}</p>
+        <div class="decide-steps">
+          {c.decision.steps.map((s) => (
+            <div><span class="k">{s.label}</span><span class="v">{s.text}</span></div>
+          ))}
+        </div>
+        {c.decision.note && <p class="decide-note">{c.decision.note}</p>}
+      </div>
+      <div class="decide-right">
+        <span class="eyebrow">改变默认的信号</span>
+        <div class="signals">
+          {c.decision.signals.map((s) => (
+            <div><span style="color: var(--ink-soft)">{s.when}</span><span class="then serif">{s.then}</span></div>
+          ))}
+        </div>
+        {c.decision.pitfalls && <div class="decide-source">{c.decision.pitfalls}</div>}
+        {c.decision.sourceHref && (
+          <a class="decide-source external" href={c.decision.sourceHref}>{c.decision.sourceLabel}
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"></path><path d="M9 7h8v8"></path></svg>
+          </a>
+        )}
+      </div>
+    </section>
+  ) : (
+    <section class="decide">
+      <div class="empty-state">
+        本分类的「怎么选」尚未编写。判断依据一旦写定即出现在此处；在此之前，下方条目按评估日期排列，请自行判断适用性。
+      </div>
+    </section>
+  )}
+
+  <section class="wrap" style="padding-top: 48px; padding-bottom: 96px; display: flex; flex-direction: column; gap: 28px;">
+    <div class="filters">
+      <div class="filter-set">
+        <div class="filter-group">
+          <span>类型</span>
+          <span class="pill is-on">全部</span>
+          {kindsPresent.map((k) => <span class="pill">{KIND_LABEL[k] ?? k}</span>)}
+        </div>
+        <div class="filter-group">
+          <span>来源</span>
+          {origins.map((o) => <span class="pill">{o}</span>)}
+        </div>
+        <div class="filter-group">
+          <span>新鲜度</span>
+          <span class="pill">隐藏需复核</span>
+        </div>
+      </div>
+      <span style="font-size: 13px; color: var(--ink-mute)">按评估日期排序</span>
+    </div>
+
+    {mine.length === 0 && (
+      <div class="empty-state">
+        本分类尚无已评估的条目。条目只有在实际用过并写下评估之后才会出现在这里，不做占位。
+      </div>
+    )}
+
+    {grouped.length > 0 ? (
+      grouped.map((g) => (
+        <>
+          <div class="entry-section">
+            <h2>{g.title}</h2>
+            <span class="code-label">{g.code} · {g.items.length} 个条目</span>
+            <span class="note">{g.note}</span>
+          </div>
+          <div class="entry-grid">
+            {g.items.map((e) => <EntryCard entry={e} />)}
+          </div>
+        </>
+      ))
+    ) : (
+      mine.length > 0 && (
+        <div class="entry-grid">
+          {mine.map((e) => <EntryCard entry={e} />)}
+        </div>
+      )
+    )}
+
+    {related.length > 0 && (
+      <div class="dashed">
+        <span class="eyebrow">相关 · 主条目在其他分类</span>
+        <p>一个条目只归属一个分类，避免同一份内容在两处各自漂移。与本页相邻的条目列在这里：</p>
+        <div class="related-list">
+          {related.map((e) => (
+            <div>
+              <a href={`${base}/entries/${e.data.name}`}>{e.data.title}</a>
+              <span style={`font-size: 13px; color: ${byCategory.get(e.data.category)?.data.accent}`}>
+                {byCategory.get(e.data.category)?.data.title}
+              </span>
+              <span style="font-size: 13px; color: var(--ink-mute)">{e.data.summary}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {c.moreSources && (
+      <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 32px; border-top: 1px solid var(--rule)">
+        <span class="eyebrow">更多来源</span>
+        <p style="margin: 0; font-size: 14px; color: var(--ink-soft); max-width: 60em">{c.moreSources}</p>
+      </div>
+    )}
+  </section>
+</Base>

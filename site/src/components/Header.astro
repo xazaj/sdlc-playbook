@@ -1,0 +1,75 @@
+---
+import { allCategories } from '../lib/catalog';
+
+interface Props { current?: string }
+const { current } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const categories = await allCategories();
+---
+<header class="site-header">
+  <div class="brand">
+    <a class="brand-name" href={`${base}/`}>SDLC Playbook</a>
+    <span class="brand-tag">面向 vibe coder 的资产目录</span>
+  </div>
+  <nav class="site-nav">
+    {categories.map((c) => (
+      <a
+        href={`${base}/${c.data.id}`}
+        class:list={[{ 'is-current': current === c.data.id }]}
+        style={current === c.data.id ? `color: ${c.data.accent}` : undefined}
+      >{c.data.title}</a>
+    ))}
+    <label class="search-box" for="site-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+      <input id="site-search" type="search" placeholder="搜索条目" autocomplete="off" />
+    </label>
+    <a class="external" href="https://github.com/xazaj/sdlc-playbook">GitHub
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"></path><path d="M9 7h8v8"></path></svg>
+    </a>
+  </nav>
+</header>
+<dialog id="search-panel" style="border:1px solid var(--rule);border-radius:6px;padding:0;width:min(560px,92vw);background:var(--surface);color:var(--ink)">
+  <div style="padding:16px 20px;border-bottom:1px solid var(--rule);font-size:13px;color:var(--ink-mute)">搜索结果</div>
+  <div id="search-results" style="max-height:60vh;overflow:auto;padding:8px 0"></div>
+</dialog>
+<script define:vars={{ endpoint: `${base}/search.json`, base }}>
+  const input = document.getElementById('site-search');
+  const panel = document.getElementById('search-panel');
+  const out = document.getElementById('search-results');
+  let index = null;
+
+  async function load() {
+    if (index) return index;
+    const res = await fetch(endpoint);
+    index = await res.json();
+    return index;
+  }
+
+  function render(hits, query) {
+    out.innerHTML = '';
+    if (!hits.length) {
+      out.innerHTML = `<div style="padding:16px 20px;color:var(--ink-mute);font-size:14px">没有匹配「${query}」的条目。</div>`;
+      return;
+    }
+    for (const hit of hits) {
+      const a = document.createElement('a');
+      a.href = hit.url;
+      a.style.cssText = 'display:block;padding:12px 20px;border-bottom:1px solid var(--rule)';
+      a.innerHTML = `<div style="font-family:var(--serif);font-size:17px;font-weight:500">${hit.title}</div>`
+        + `<div style="font-size:13px;color:var(--ink-mute)">${hit.category} · ${hit.kind} · ${hit.summary}</div>`;
+      out.appendChild(a);
+    }
+  }
+
+  input?.addEventListener('input', async () => {
+    const query = input.value.trim().toLowerCase();
+    if (!query) { panel.close(); return; }
+    const data = await load();
+    const hits = data.filter((item) => item.haystack.includes(query)).slice(0, 12);
+    render(hits, input.value.trim());
+    if (!panel.open) panel.showModal();
+    input.focus();
+  });
+
+  panel?.addEventListener('click', (event) => { if (event.target === panel) panel.close(); });
+</script>
