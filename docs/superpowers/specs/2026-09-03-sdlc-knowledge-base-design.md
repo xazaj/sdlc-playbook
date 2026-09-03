@@ -335,16 +335,26 @@ TypeScript 实现，通过 `npx` 分发。命令名 `sdlc`，npm 包名 `sdlc-kb
 
 ## 14. 路线图
 
+### 排序原则：内容先于工具
+
+本项目最大的未知不是"工具怎么写"，而是"DECIDE.md 写成什么样才真的有用"。因此路线图按**内容优先**排序，先用真实内容验证格式，再按记录在案的痛点写工具。
+
+这条原则是对早期规划的修正。早期版本把 schema、构建器、CLI、CI 组成的工程底座放在第一个里程碑，其后果是：在 catalog 只有一个条目时就建起了全套生产线，而 schema 的作用恰恰是**把格式凝固下来** —— 用它去强制一个尚未验证的格式，顺序是反的。等第五个 DECIDE.md 才发现结构不对，schema 与其测试都要跟着返工。
+
+**工具由痛点召唤，不由规划提前产出。** 每个工具类里程碑必须能指向前序里程碑记录的具体痛点。
+
+### 里程碑
+
 | 里程碑 | 交付内容 | 完成判据 |
 |---|---|---|
-| **M0 地基** | `schemas/` 八类产物 + stage manifest Schema、1 个样例 skill 条目、`tools/build` 基础构建、CI 接入 | `sdlc build` 能从 catalog 产出合法 dist，`sdlc check` 能拦住一个故意写错的条目 |
-| **M1 消费闭环** | 路由技能生成、`sdlc install`、claude-code 适配器、`.sdlc-lock.json` | 能在一个真实项目里装上样例条目并升级它 |
-| **M2 决策入口** | 7 个阶段的 DECIDE.md 与 MANIFEST.yaml 骨架、`decisions/` 规范、`30-coding` 的 SDD vs TDD 完整选型矩阵、`dist/by-stage/` 视图 | 在真实项目里提问"该走 SDD 还是 TDD"能被路由技能正确触发并给出可执行建议；双向引用校验在 CI 中生效 |
-| **M3 多 agent** | codex、pi 适配器 | 同一条目在三家 agent 上均能正确安装并被识别 |
-| **M4 原料流水线** | `sdlc distill`、notes 规范、过期检查 | 从一篇真实文章走完 inbox → note → catalog 全流程 |
-| **M5 发布** | marketplace.json 生成、npm 发布、eval 回归、README 与使用文档 | 他人可通过 `npx sdlc-kb install` 完成安装 |
+| **M0 格式验证** | `stages/30-coding/DECIDE.md` 完整选型矩阵（SDD / TDD / 直接实现）、配套路由技能 `sdlc-coding-process`、symlink 挂载到本机 agent | 在真实项目里提出编码流程问题时路由技能被正确触发，且给出的建议真的影响了决策 |
+| **M1 格式定型** | 第二、三个阶段的 DECIDE.md、首批 2–3 个 catalog 条目、`docs/验证日志.md` 痛点清单 | 多个路由技能之间触发区分准确；条目字段与 DECIDE.md 结构在三个真实场景中未再变动 |
+| **M2 最小工具** | 按 M1 痛点清单裁剪后的工具集：schema 与校验优先，构建与 CI 视需要 | 每一项工具都能指向 M1 记录的一条具体痛点 |
+| **M3 安装与多 agent** | `sdlc install`、`.sdlc-lock.json`、claude-code / codex / pi 三个适配器 | 同一条目在三家 agent 上均能正确安装并被识别 |
+| **M4 原料流水线** | `sdlc distill`、`library/notes` 规范、过期检查 | 从一篇真实文章走完 inbox → note → catalog 全流程 |
+| **M5 发布** | `.claude-plugin/marketplace.json` 生成、npm 发布、eval 回归、使用文档 | 他人可通过一条命令完成安装 |
 
-M0 与 M1 是硬前置，必须串行。M2 之后可并行推进。
+M0 与 M1 不写任何代码。M2 之前的一切都是 markdown 与软链。
 
 ## 15. 风险与缓解
 
@@ -357,6 +367,7 @@ M0 与 M1 是硬前置，必须串行。M2 之后可并行推进。
 | 跨 agent 适配随上游变化失效 | 安装报错 | 适配器隔离 + 每个适配器配集成测试 |
 | 知识过期 | 给出错误建议 | `stale_after` 机制 + CI 过期报告 |
 | stages 索引与 catalog 资产漂移 | 决策入口指向不存在或过时的资产 | 双向引用校验在 CI 中强制，任一侧漏改即报错 |
+| 过早工程化 | 为未验证的格式建生产线，格式一变工具全返工 | 内容优先的里程碑排序；每个工具必须指向已记录的痛点 |
 | 外部内容许可证不清 | 法律风险 | 无许可证内容只作要点笔记，不整段搬运 |
 
 ## 16. 参考资料

@@ -1,3 +1,12 @@
+> **⚠ 本计划已暂缓，不要执行。**
+>
+> 它原本是 M0 里程碑，内容是 schema、加载器、校验器、构建器、CLI 与 CI 组成的工程底座。
+> 暂缓原因：在 catalog 只有一个条目时建设施，且 schema 会把一个尚未验证的格式凝固下来，顺序反了。
+> 路线图已改为内容优先（见 spec 第 14 节），本计划的技术设计移至 **M2 最小工具**，届时按 M1 记录的痛点清单裁剪后再启用。
+> 保留原文的价值在于：schema 字段设计、ESM/CJS 互操作处理、CLI 分模块的理由都已验证过，M2 可直接复用。
+
+---
+
 # M0 地基 实现计划
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
