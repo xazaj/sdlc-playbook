@@ -20,7 +20,7 @@ ln -s /path/to/repo ~/.sdlc
 ~/.sdlc/install.sh
 ```
 
-`install.sh` 幂等，新增或改名技能后重跑即可。**技能需要开新会话才生效。**
+`install.sh` 幂等，新增或改名技能后重跑即可。技能会被当前会话直接发现，不必重开。
 
 ## 路径约定
 

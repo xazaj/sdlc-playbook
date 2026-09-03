@@ -31,4 +31,4 @@ for skill_dir in "$SDLC_HOME"/catalog/skills/*/*/; do
 done
 
 echo "Installed $count skill(s) into $SKILLS_DIR"
-echo "Open a new session for them to take effect."
+echo "Newly linked skills are picked up without restarting the session."
