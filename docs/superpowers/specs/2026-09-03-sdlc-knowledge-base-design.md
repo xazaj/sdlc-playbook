@@ -1,0 +1,329 @@
+# SDLC —— 面向 Coding Agent 的顾问式知识库 设计文档
+
+- 日期：2026-09-03
+- 状态：待评审
+- 作者：zhuaijun（与 Claude 共同设计）
+
+## 1. 背景与定位
+
+本项目要建成一个**面向多种 coding agent 的顾问式知识库**，服务 Claude Code、Codex CLI、pi 等遵循 Agent Skills 开放标准的工具。
+
+它不是又一个"技能大杂烩仓库"。核心区别在于：社区现有的大库（1200+ 技能的通用库、2810 个 skill 的聚合站）解决的是"库里有什么"，本项目解决的是**"在某个具体时刻，我该用什么"**。
+
+典型使用场景：
+
+- 初始化一个新项目时，进来看该往这个项目装哪些规范、技能、模板；
+- 做设计时，进来看该用哪个设计系统、走什么设计流程；
+- 编码时，进来看该走 SDD 还是 TDD 还是别的流程；
+- 平时读到有价值的 vibe coding 文章，丢进来沉淀，逐步提炼成可复用资产。
+
+**一句话定位：一个 agent 带着"此刻该怎么做"的问题进来，被路由到答案，并能把对应资产直接装进目标项目的知识库。**
+
+## 2. 目标与非目标
+
+### 目标
+
+1. 提供按 SDLC 时刻组织的**决策入口**，让 agent 能自主找到并给出选型建议。
+2. 提供可安装、可执行的**标准化资产**（技能、规则、知识、模板、subagent、命令、hooks、MCP 清单）。
+3. 支持**跨 agent**：Claude Code、Codex CLI、pi 三家平等，不做二等公民。
+4. 提供**持续沉淀机制**：外部文章 → 蒸馏笔记 → 正式资产，全程可溯源、可过期。
+5. 作为**公开 marketplace** 发布，按可安装制品的标准做版本、校验与供应链声明。
+
+### 非目标
+
+- 不做向量检索 / RAG。知识以可导航结构组织，靠 description 路由与显式路径读取。
+- 不做在线服务或托管后端。全部能力以本地 CLI 与静态仓库形式交付。
+- 不替代 agent 本身的能力。本库只提供上下文与资产，不实现 agent 运行时。
+- 首版不做 Web 文档站与图形界面。
+
+## 3. 设计依据（2026 年领域现状）
+
+以下事实构成本设计的约束，均来自 2026 年 9 月的调研：
+
+1. **Agent Skills 已是跨厂商开放标准**。Anthropic 于 2025-12-18 开放规范；到 2026 年 3 月，OpenAI、Microsoft、JetBrains、Cursor、Gemini CLI、Block Goose 等 25 家以上产品已实现兼容。规范核心为：一个目录 + `SKILL.md`（YAML frontmatter + 正文）+ 三层渐进披露（advertise 约 100 token → load 建议低于 5000 token → 按需读 reference 文件）。
+2. **四层职责已定型**：`AGENTS.md` 承载常驻规则（30+ agent 可读，兼容性最广）；`SKILL.md` 承载单个可重复任务；MCP 承载实时数据与受控动作；Plugin 承载分发。混用会导致 context 浪费与触发冲突。
+3. **知识组织正从检索转向导航**。相关研究（《Don't Retrieve, Navigate: Distilling Enterprise Knowledge into Navigable Agent Skills》）表明，把知识蒸馏成可导航的技能树，效果与成本均优于向量检索。
+4. **目录约定是分裂的**：`~/.claude/skills`（Claude Code）、`~/.agents/skills`（通用）、`~/.pi/agent/skills`（pi）。symlink 是社区常用做法但存在已知缺陷：pi issue #3405 中，`~/.pi/agent/skills` 软链到 `~/.agents/skills` 会导致技能重复注册，且 config 与运行时状态不一致。
+5. **description 决定触发质量**。它同时驱动自动激活与检索，需按"搜索查询"来写，包含真实触发短语。
+6. **供应链治理成为焦点**。GitHub 于 2026-04-16 上线 `gh skill`，技能被当作可安装制品管理；出现 SkillTester、ClawsBench 等评测基准与一批攻击面研究。版本钉扎与来源审查已是硬需求。
+7. **设计系统有了 agent 专用格式**：`DESIGN.md`（YAML frontmatter 存 token，正文写意图与理由），配合 DTCG 三层 token 模型（primitive / semantic / component）。
+
+## 4. 核心架构：三层模型
+
+```
+原料层 (library)  →  资产层 (catalog)  →  入口层 (stages)
+   你丢进来的           提炼成标准化           决策矩阵，
+   文章与碎片           可安装产物            回答"此刻用什么"
+```
+
+三层的分工与硬边界：
+
+| 层 | 内容 | 是否进 agent context | 变更频率 |
+|---|---|---|---|
+| `library/` | 外部文章原文、摘录、蒸馏笔记 | **从不** | 高，随手丢 |
+| `catalog/` | 八类标准化可安装产物 | 按需（skills/rules 会进） | 中，需评审 |
+| `stages/` | 按 SDLC 时刻组织的决策矩阵 | 按需（路由技能触发后读） | 低，结构稳定 |
+
+**最关键的纪律：`library/` 的内容永远不直接进 agent context，也不被 `stages/` 直接引用。** 只有经过提炼、进入 `catalog/` 的产物才可被消费。缺少这道闸门，知识库会在数月内退化成剪藏堆，触发准确率断崖下跌。
+
+## 5. 目录结构
+
+```
+SDLC/
+├── AGENTS.md                      # 本仓库自身给 agent 的规则
+├── CLAUDE.md                      # 软链至 AGENTS.md
+├── README.md
+│
+├── stages/                        # 入口层：决策矩阵
+│   ├── 00-bootstrap/DECIDE.md     # 新项目初始化：装什么
+│   ├── 10-requirements/DECIDE.md  # 需求工程流程选型
+│   ├── 20-design/DECIDE.md        # 设计系统与设计流程选型
+│   ├── 30-coding/DECIDE.md        # 开发流程选型（SDD/TDD/其他）
+│   ├── 40-testing/DECIDE.md
+│   ├── 50-release/DECIDE.md
+│   └── 60-operate/DECIDE.md
+│
+├── catalog/                       # 资产层：唯一真源，手写只在这里
+│   ├── skills/<domain>/<name>/
+│   │   ├── SKILL.md
+│   │   ├── references/            # 按需读取的深层内容
+│   │   ├── scripts/
+│   │   └── assets/
+│   ├── rules/<name>.md            # AGENTS.md 片段
+│   ├── knowledge/<topic>/
+│   │   ├── INDEX.md               # 导航入口
+│   │   └── *.md                   # 知识分片
+│   ├── templates/<name>/
+│   ├── agents/<name>.md           # subagent 定义
+│   ├── commands/<name>.md         # slash command
+│   ├── hooks/<name>.json          # hooks 配置片段
+│   └── mcp/<name>.json            # MCP server 清单
+│
+├── library/                       # 原料层
+│   ├── inbox/                     # 未处理的原文与 URL
+│   └── notes/<slug>.md            # 已蒸馏的要点卡片
+│
+├── profiles/<stack>.yaml          # 技术栈组合包，只引用 catalog 条目
+│
+├── schemas/                       # 八类产物 + profile + note 的 JSON Schema
+├── tools/
+│   ├── build/                     # catalog → dist 构建
+│   ├── adapters/                  # claude-code.ts / codex.ts / pi.ts
+│   └── cli/                       # sdlc 命令实现
+├── evals/                         # 触发准确率回归用例
+├── .claude-plugin/marketplace.json # 构建产物，由 CI 同步提交，禁止手改
+├── dist/                          # 构建产物，不手写，不入 main 分支
+└── docs/
+```
+
+**结构性约束**：`catalog/`、`stages/`、`library/`、`profiles/` 之外的内容原则上均为生成物或工具代码。`dist/` 完全由构建生成，手改会被覆盖。
+
+**构建产物的落地方式**：Claude Code 的 marketplace 机制要求仓库根存在 `.claude-plugin/marketplace.json`，因此该文件是唯一需要提交进 main 分支的生成物 —— 由 CI 在构建后自动同步提交，并在每次 CI 中校验它与 `catalog/` 一致，不一致即报错。其余 `dist/` 内容不进 main 分支，由 CI 发布到独立的 `release` 分支与 npm 包，避免生成物污染主干评审。
+
+## 6. 八类产物规范
+
+所有产物均以 YAML frontmatter 声明元数据，由 `schemas/` 下对应 JSON Schema 强制校验。
+
+### 6.1 公共字段
+
+| 字段 | 必填 | 说明 |
+|---|---|---|
+| `name` | 是 | 全库唯一的 kebab-case 标识 |
+| `description` | 是 | 触发描述，按搜索查询写，含真实触发短语 |
+| `version` | 是 | 该条目独立的语义化版本 |
+| `type` | 是 | skill / rule / knowledge / template / agent / command / hook / mcp |
+| `stages` | 否 | 关联的 SDLC 阶段，用于入口层反向索引 |
+| `stacks` | 否 | 适用技术栈标签 |
+| `source` | 外部来源时必填 | 原始出处 URL |
+| `license` | 外部来源时必填 | 原始许可证 |
+| `derived_from` | 否 | 若由 library note 提炼而来，记录 note slug |
+| `updated_at` | 是 | 最后实质性更新日期 |
+
+### 6.2 各类型要点
+
+- **skills**：遵循 Agent Skills 开放标准。`SKILL.md` 正文控制在 5000 token 以内，超出部分必须下沉到 `references/`。
+- **rules**：AGENTS.md 片段。正文即将被拼进目标项目 AGENTS.md 的内容，需可独立成段、无上下文依赖。额外字段 `section` 指定拼装位置。
+- **knowledge**：必须有 `INDEX.md` 作为导航入口，列出分片及其适用场景。分片本身不带触发描述，只能被显式路径引用。
+- **templates**：不进 context，仅被复制。需声明 `target_path` 相对目标项目的落地路径。
+- **agents / commands / hooks / mcp**：分别对应 Claude Code 的 subagent、slash command、hooks 与 MCP 配置。适配器负责转换到各 agent 的对应形式；无对应能力的 agent 在安装时跳过并明确告知。
+
+## 7. 入口层规范：DECIDE.md
+
+每个 `stages/<阶段>/DECIDE.md` 必须包含四个部分：
+
+1. **本时刻要回答的问题**：以问句列出，例如"这个新项目该装哪些规范？""开发流程走 SDD 还是 TDD？"
+2. **选型矩阵**：表格形式，列出选项、适用条件、取舍代价、明确的反模式（什么情况下不要选它）。
+3. **推荐路径**：在缺乏更多信息时的默认建议，以及触发改变默认的关键信号。
+4. **落地资产**：指向 `catalog/` 中的具体条目与安装命令。
+
+每个 DECIDE.md 对应一个**路由技能**，由构建脚本自动生成到 `dist/`；另加一个不绑定阶段的兜底技能 `sdlc-search`，共 8 个：
+
+| 路由技能 | 触发场景 |
+|---|---|
+| `sdlc-bootstrap` | 新建项目、初始化仓库、"该配点什么" |
+| `sdlc-requirements` | 需求分析、PRD、URS 处理流程选型 |
+| `sdlc-design` | 设计系统选择、设计流程、视觉规范 |
+| `sdlc-coding-process` | 开发流程选型、SDD/TDD 决策 |
+| `sdlc-testing` | 测试策略选型 |
+| `sdlc-release` | 发布流程与门禁选型 |
+| `sdlc-operate` | 运维、监控、事故响应流程选型 |
+| `sdlc-search` | 跨阶段模糊查询兜底 |
+
+路由技能本体必须极小（目标 1000 token 以内），只承担"知道去哪儿读"的职责；真正内容由 DECIDE.md 作为第二层按需加载。这是渐进披露的直接应用。
+
+## 8. 原料层：文章蒸馏流水线
+
+```
+inbox/ 丢原文或 URL
+   ↓  distill 技能
+notes/<slug>.md  （要点、适用条件、来源、日期、可信度）
+   ↓  人工判断：被反复引用 或 实战验证有效
+catalog/ 中的 rule / skill / knowledge （frontmatter 记 derived_from）
+```
+
+`library/notes/<slug>.md` 的必备 frontmatter：
+
+| 字段 | 说明 |
+|---|---|
+| `source` | 原文 URL |
+| `captured_at` | 收录日期 |
+| `stale_after` | 过期日期，默认收录后 12 个月 |
+| `confidence` | high / medium / low，标注证据强度 |
+| `promoted_to` | 若已提炼为 catalog 条目，记录其 name |
+
+CI 检查过期 note 并在报告中列出。AI 工程领域的实践半年即可能失效，没有过期机制的知识库是负资产。
+
+**升级为 catalog 条目不是自动的**，必须经人工判断。判断标准：该 note 的结论在至少一个真实项目中被验证过，或被两个以上独立来源印证。
+
+## 9. 构建与分发
+
+### 9.1 构建流程
+
+```
+catalog/ + stages/ + profiles/
+   ↓ tools/build
+校验 (schema / description 冲突 / token 预算 / 链接有效性)
+   ↓
+dist/
+├── .claude-plugin/marketplace.json   # Claude Code plugin marketplace
+├── skills/                            # 标准 SKILL.md 集合（通用）
+├── routes/                            # 由 DECIDE.md 生成的路由技能
+├── manifest.json                      # 全量条目清单，含版本与校验和
+└── index.json                         # 供 sdlc-search 使用的轻量索引
+```
+
+### 9.2 工具链
+
+TypeScript 实现，通过 `npx` 分发。命令名 `sdlc`，npm 包名 `sdlc-kb`（发布前需验证 npm 名称可用性，若被占用则改用 scoped 包名）。选择依据：`npx` 是当前跨 agent 场景下安装摩擦最低的形式，非 Node 用户亦可零安装运行。
+
+### 9.3 核心命令
+
+| 命令 | 作用 |
+|---|---|
+| `sdlc build` | 构建 `dist/` |
+| `sdlc check` | 运行全部质量闸门 |
+| `sdlc install <profile\|entry>` | 安装资产到当前项目 |
+| `sdlc list [--stage <s>] [--stack <s>]` | 列出可用资产 |
+| `sdlc upgrade` | 依据 `.sdlc-lock.json` 升级已装资产 |
+| `sdlc distill <url\|file>` | 把原文收进 inbox 并生成 note 草稿 |
+
+## 10. 两种消费模式
+
+### 10.1 查询模式（不安装任何资产）
+
+用户在任意项目中提出"这个新项目该配点什么""设计流程用哪个"，路由技能被 description 触发，读取本机 `~/.sdlc` 下的 DECIDE.md 给出建议。
+
+- 库本体默认克隆到 `~/.sdlc`。
+- 未安装本体时降级为读取 GitHub raw 内容，功能不变但有网络依赖。
+- 查询模式不写入目标项目任何文件。
+
+### 10.2 安装模式
+
+`sdlc install` 按产物类型分派落地：
+
+| 产物类型 | 落地方式 |
+|---|---|
+| rules | 拼接进目标项目 `AGENTS.md` 的指定 section |
+| skills | 复制到 `.claude/skills/` 与 `.agents/skills/` |
+| agents | 复制到 `.claude/agents/` |
+| commands | 复制到 `.claude/commands/` |
+| hooks | 合并进 `.claude/settings.json` |
+| mcp | 合并进 MCP 配置文件 |
+| templates | 按 `target_path` 复制到项目内 |
+| knowledge | 复制到 `.sdlc/knowledge/`，由 skill 显式引用 |
+
+**一律使用复制而非 symlink。** 依据是 pi issue #3405 记录的软链导致技能重复注册与状态不一致问题；复制虽有冗余，但行为可预测，且由 `.sdlc-lock.json` 保证可升级。
+
+### 10.3 `.sdlc-lock.json`
+
+安装后写入目标项目根目录，记录每个已装条目的 name、version、来源校验和、落地路径、安装时间。它是升级、审计、版本钉扎的唯一依据。没有它，跨项目复用退化为一次性拷贝。
+
+## 11. 跨 agent 适配
+
+`tools/adapters/` 下每个 agent 一个适配器，实现统一接口：解析目标 agent 的配置位置、转换产物形式、执行落地、回报不支持的产物类型。
+
+| 能力 | Claude Code | Codex CLI | pi |
+|---|---|---|---|
+| skills | `.claude/skills/` | `.agents/skills/` | `.pi/skills/` |
+| rules | `CLAUDE.md` / `AGENTS.md` | `AGENTS.md` | `AGENTS.md` |
+| agents | 原生支持 | 降级为 skill | 降级为 skill |
+| commands | 原生支持 | 降级为 skill | 降级为 skill |
+| hooks | 原生支持 | 跳过并告知 | 跳过并告知 |
+| mcp | 原生支持 | 原生支持 | 原生支持 |
+
+新增一个 agent 只需新增一个适配器文件，不触碰 catalog 与构建核心。
+
+## 12. 质量闸门
+
+`sdlc check` 与 CI 执行以下检查，任一失败则构建不产出 `dist/`：
+
+1. **Schema 校验**：全部 frontmatter 必须通过对应 JSON Schema。
+2. **description 冲突检测**：提取每个条目 description 中的触发短语，检测多个条目争抢同一短语的情况并报错。这是社区大库最普遍的病症，直接导致误触发。
+3. **token 预算**：`SKILL.md` 正文超过 5000 token 报错，强制内容下沉到 `references/`；路由技能超过 1000 token 报错。
+4. **链接有效性**：catalog 内部交叉引用、stages 指向 catalog 的引用必须可解析；外部链接做可达性抽查。
+5. **触发 eval 回归**：`evals/` 下每个技能配置"应触发"与"不应触发"的 prompt 用例，CI 计算触发准确率，低于阈值报错。
+6. **过期检查**：列出超过 `stale_after` 的 notes 与超过 12 个月未更新的 catalog 条目。
+7. **供应链声明**：带 `source` 的条目必须同时有 `license`；`manifest.json` 输出全量条目的版本与校验和。
+
+## 13. 版本与治理
+
+- 每个 catalog 条目有独立 `version`，遵循语义化版本。破坏性变更（改名、删除、frontmatter 不兼容）必须升主版本。
+- 仓库整体有独立版本，用于 npm 包与 marketplace 发布。
+- 条目重命名通过 `.claude-plugin/marketplace.json` 的 renames 映射保证已有安装可自动迁移。
+- `CHANGELOG.md` 按条目粒度记录变更。
+- 外部来源的内容必须保留原始出处与许可证；无法确认许可证的内容只能进 `library/notes/` 作为要点笔记，不得整段搬运进 catalog。
+
+## 14. 路线图
+
+| 里程碑 | 交付内容 | 完成判据 |
+|---|---|---|
+| **M0 地基** | `schemas/` 八类 Schema、1 个样例 skill 条目、`tools/build` 基础构建、CI 接入 | `sdlc build` 能从 catalog 产出合法 dist，`sdlc check` 能拦住一个故意写错的条目 |
+| **M1 消费闭环** | 路由技能生成、`sdlc install`、claude-code 适配器、`.sdlc-lock.json` | 能在一个真实项目里装上样例条目并升级它 |
+| **M2 决策入口** | 7 个 DECIDE.md 骨架 + `30-coding` 的 SDD vs TDD 完整选型矩阵 | 在真实项目里提问"该走 SDD 还是 TDD"能被路由技能正确触发并给出可执行建议 |
+| **M3 多 agent** | codex、pi 适配器 | 同一条目在三家 agent 上均能正确安装并被识别 |
+| **M4 原料流水线** | `sdlc distill`、notes 规范、过期检查 | 从一篇真实文章走完 inbox → note → catalog 全流程 |
+| **M5 发布** | marketplace.json 生成、npm 发布、eval 回归、README 与使用文档 | 他人可通过 `npx sdlc-kb install` 完成安装 |
+
+M0 与 M1 是硬前置，必须串行。M2 之后可并行推进。
+
+## 15. 风险与缓解
+
+| 风险 | 影响 | 缓解 |
+|---|---|---|
+| 骨架建成但内容长期为空 | 公开库失去意义 | M2 强制要求至少一个完整选型矩阵作为首发样例，而非只有骨架 |
+| library 污染 catalog | 触发准确率下降，context 浪费 | 硬边界 + 人工升级判断 + CI 检查 `derived_from` 溯源 |
+| description 触发冲突 | 误触发，用户体验崩坏 | CI 冲突检测 + eval 回归 |
+| 与社区大库同质化 | 无人使用 | 差异化在"决策入口"而非资产数量；stages 层是护城河 |
+| 跨 agent 适配随上游变化失效 | 安装报错 | 适配器隔离 + 每个适配器配集成测试 |
+| 知识过期 | 给出错误建议 | `stale_after` 机制 + CI 过期报告 |
+| 外部内容许可证不清 | 法律风险 | 无许可证内容只作要点笔记，不整段搬运 |
+
+## 16. 参考资料
+
+- Agent Skills 开放标准与渐进披露架构（Anthropic，2025-12-18 公开）
+- 《Don't Retrieve, Navigate: Distilling Enterprise Knowledge into Navigable Agent Skills for QA and RAG》，arXiv 2604.14572
+- 《Towards Secure Agent Skills: Architecture, Threat Taxonomy, and Security Analysis》，arXiv 2604.02837
+- 《SkillTester: Benchmarking Utility and Security of Agent Skills》，arXiv 2603.28815
+- pi issue #3405：`~/.pi/agent/skills` 软链导致技能重复注册
+- Claude Code Plugin Marketplace 文档：https://code.claude.com/docs/en/plugin-marketplaces
+- AGENTS.md 规范指南（2026）：https://www.morphllm.com/agents-md-guide
