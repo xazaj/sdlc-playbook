@@ -217,14 +217,9 @@ nav.primary a[aria-current] { color: var(--text); font-weight: var(--w-medium); 
 
 .table-wrap { width: 100%; overflow-x: auto; }
 table.ledger { width: 100%; border-collapse: collapse; table-layout: fixed; }
-table.ledger col.c-name { width: 42%; }
-table.ledger:not(:has(col.c-kind)) col.c-name { width: 48%; }
-table.ledger col.c-cat { width: 10%; }
-table.ledger col.c-kind { width: 7%; }
-table.ledger col.c-origin { width: 17%; }
-table.ledger col.c-ver { width: 9%; }
-table.ledger col.c-date { width: 10%; }
-table.ledger col.c-state { width: 8%; }
+table.ledger col.c-name { width: 60%; }
+table.ledger col.c-kind { width: 12%; }
+table.ledger col.c-eval { width: 28%; }
 p.ledger-note { color: var(--text-3); font-size: 13px; line-height: 18px; margin-top: var(--s3); max-width: var(--measure); }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 table.ledger th, table.ledger td { text-align: left; vertical-align: baseline; padding: var(--s2) var(--s4) var(--s2) 0; }
@@ -243,7 +238,11 @@ table.ledger .name a:hover { text-decoration: underline; text-underline-offset: 
 table.ledger .desc { display: block; color: var(--text-3); font-size: 13px; line-height: 18px; }
 table.ledger .num, table.ledger th.num { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 13px; color: var(--text-2); text-align: right; }
 table.ledger th.num { font-family: var(--sans); }
-table.ledger td.meta { font-size: 13px; line-height: 18px; color: var(--text-3); overflow-wrap: anywhere; }
+table.ledger td.meta { font-size: 13px; line-height: 18px; color: var(--text-3); }
+table.ledger td.eval { text-align: right; }
+table.ledger td.eval .num { display: block; font-family: var(--mono); font-size: 13px; line-height: 18px; color: var(--text-2); }
+table.ledger td.eval .when { display: flex; justify-content: flex-end; align-items: baseline; gap: var(--s2); margin-top: 2px; }
+table.ledger td.eval .when .num { display: inline; color: var(--text-3); }
 
 .state { display: inline-flex; align-items: baseline; gap: var(--s2); font-size: 14px; line-height: 20px; font-weight: var(--w-medium); white-space: nowrap; }
 .state .glyph { font-family: var(--mono); font-weight: var(--w-regular); }

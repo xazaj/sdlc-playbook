@@ -1,54 +1,41 @@
 ---
 import State from './State.astro';
-import { KIND_LABEL, ORIGIN_LABEL, formatDate, type Category, type Entry } from '../lib/catalog';
+import { KIND_LABEL, formatDate, type Entry } from '../lib/catalog';
 
 interface Props {
   entries: Entry[];
-  categories: Category[];
   caption: string;
-  showCategory?: boolean;
-  showKind?: boolean;
 }
-const { entries, categories, caption, showCategory = true, showKind = true } = Astro.props;
+const { entries, caption } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const titleOf = new Map(categories.map((c) => [c.data.id, c.data.title]));
 ---
 <div class="table-wrap">
   <table class="ledger">
     <caption class="visually-hidden">{caption}</caption>
     <colgroup>
       <col class="c-name" />
-      {showCategory && <col class="c-cat" />}
-      {showKind && <col class="c-kind" />}
-      <col class="c-origin" />
-      <col class="c-ver" />
-      <col class="c-date" />
-      <col class="c-state" />
+      <col class="c-kind" />
+      <col class="c-eval" />
     </colgroup>
     <thead>
       <tr>
         <th scope="col">条目</th>
-        {showCategory && <th scope="col">分类</th>}
-        {showKind && <th scope="col">形态</th>}
-        <th scope="col">来源</th>
-        <th scope="col" class="num">评估版本</th>
-        <th scope="col" class="num">评估日期</th>
-        <th scope="col">状态</th>
+        <th scope="col">形态</th>
+        <th scope="col" class="num">评估</th>
       </tr>
     </thead>
     <tbody>
       {entries.map((e) => (
-        <tr data-kind={e.data.kind} data-category={e.data.category} data-origin={e.data.origin === 'local' ? 'local' : 'external'}>
+        <tr data-kind={e.data.kind} data-category={e.data.category}>
           <td class="name">
             <a href={`${base}/entries/${e.data.name}`}>{e.data.title}</a>
             <span class="desc">{e.data.summary}</span>
           </td>
-          {showCategory && <td class="meta">{titleOf.get(e.data.category)}</td>}
-          {showKind && <td class="meta">{KIND_LABEL[e.data.kind] ?? e.data.kind}</td>}
-          <td class="meta">{[ORIGIN_LABEL[e.data.origin], e.data.provider].filter(Boolean).join(' · ')}</td>
-          <td class="num">{e.data.evaluated_version}</td>
-          <td class="num">{formatDate(e.data.evaluated_at)}</td>
-          <td><State date={e.data.evaluated_at} /></td>
+          <td class="meta">{KIND_LABEL[e.data.kind] ?? e.data.kind}</td>
+          <td class="eval">
+            <span class="num">{e.data.evaluated_version}</span>
+            <span class="when"><span class="num">{formatDate(e.data.evaluated_at)}</span><State date={e.data.evaluated_at} /></span>
+          </td>
         </tr>
       ))}
     </tbody>

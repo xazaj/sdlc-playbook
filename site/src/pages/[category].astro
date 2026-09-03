@@ -43,7 +43,7 @@ const titleOf = new Map(categories.map((x) => [x.data.id, x.data.title]));
         </div>
       </div>
     )}
-    <Ledger entries={mine} categories={categories} showCategory={false} caption={`${c.title}下已评估的全部条目。`} />
+    <Ledger entries={mine} caption={`${c.title}下已评估的全部条目。`} />
   </section>
   {c.decision ? (
     <section class="shell section chapter grid12">

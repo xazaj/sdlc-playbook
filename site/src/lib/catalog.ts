@@ -11,22 +11,6 @@ export const KIND_LABEL: Record<string, string> = {
   mcp: 'MCP',
 };
 
-export const KIND_CODE: Record<string, string> = {
-  skill: 'SKILL',
-  'design-md': 'DESIGN-MD',
-  'component-library': 'COMPONENT LIBRARY',
-  doc: 'DOC',
-  mcp: 'MCP',
-};
-
-export const KIND_NOTE: Record<string, string> = {
-  skill: '以 SKILL.md 分发，安装后由 agent 在符合条件时自动触发。',
-  'design-md': '整份写入项目根目录的视觉约束文件，版本以 commit 计。',
-  'component-library': '进入项目的组件源码或依赖，附带主题变量的覆盖方式。',
-  doc: '一段写入项目 AGENTS.md 的规则或清单，不安装任何依赖。',
-  mcp: '通过 MCP 协议接入的外部服务。',
-};
-
 export const ORIGIN_LABEL: Record<string, string> = {
   local: '自建',
   marketplace: '外部',
