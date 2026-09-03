@@ -105,7 +105,7 @@ pnpm add -D typescript tsx vitest @types/node
 
 ```json
 {
-  "name": "sdlc-kb",
+  "name": "sdlc-playbook",
   "version": "0.1.0",
   "private": true,
   "type": "module",

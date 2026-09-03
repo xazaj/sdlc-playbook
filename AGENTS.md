@@ -1,6 +1,6 @@
-# SDLC 知识库 —— 仓库规则
+# SDLC Playbook —— 仓库规则
 
-本仓库是面向 coding agent 的顾问式知识库。设计文档在 `docs/superpowers/specs/`。
+本仓库是 SDLC Playbook：给 coding agent 的开发全链路决策手册。设计文档在 `docs/superpowers/specs/`。
 
 ## 目录职责
 

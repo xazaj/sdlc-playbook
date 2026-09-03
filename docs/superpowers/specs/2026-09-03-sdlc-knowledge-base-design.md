@@ -1,4 +1,6 @@
-# SDLC —— 面向 Coding Agent 的顾问式知识库 设计文档
+# SDLC Playbook 设计文档
+
+> 给 coding agent 的开发全链路决策手册
 
 - 日期：2026-09-03
 - 状态：待评审
@@ -253,7 +255,7 @@ dist/
 
 ### 9.2 工具链
 
-TypeScript 实现，通过 `npx` 分发。命令名 `sdlc`，npm 包名 `sdlc-kb`（发布前需验证 npm 名称可用性，若被占用则改用 scoped 包名）。选择依据：`npx` 是当前跨 agent 场景下安装摩擦最低的形式，非 Node 用户亦可零安装运行。
+TypeScript 实现，通过 `npx` 分发。npm 包名 `sdlc-playbook`（2026-09-03 已验证 npm 与 GitHub 均可用），可执行命令名 `sdlc`（比包名短，便于日常输入）。选择依据：`npx` 是当前跨 agent 场景下安装摩擦最低的形式，非 Node 用户亦可零安装运行。
 
 ### 9.3 核心命令
 
