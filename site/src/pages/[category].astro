@@ -28,10 +28,27 @@ const titleOf = new Map(categories.map((x) => [x.data.id, x.data.title]));
     </div>
   </section>
 
+
+  <section class="shell section">
+    {mine.length > 1 && (
+      <div class="filters">
+        <div class="filter-set">
+          <span class="t-meta">形态</span>
+          <button class="filter" type="button" data-value="" aria-pressed="true">全部<span class="count">{mine.length}</span></button>
+          {kinds.map(({ kind, count }) => (
+            <button class="filter" type="button" data-value={kind} aria-pressed="false">
+              {KIND_LABEL[kind] ?? kind}<span class="count">{count}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    )}
+    <Ledger entries={mine} categories={categories} showCategory={false} caption={`${c.title}下已评估的全部条目。`} />
+  </section>
   {c.decision ? (
-    <section class="shell section grid12">
+    <section class="shell section chapter grid12">
       <div class="span-6 flow">
-        <h2 class="t-section">{c.decision.headline}</h2>
+        <h2 class="t-sub">{c.decision.headline}</h2>
         <p class="secondary measure">{c.decision.intro}</p>
         <ol class="steps">
           {c.decision.steps.map((s) => (
@@ -57,36 +74,15 @@ const titleOf = new Map(categories.map((x) => [x.data.id, x.data.title]));
       </div>
     </section>
   ) : (
-    <section class="shell section">
-      <p class="t-lede measure">本分类的判断依据尚未写定。在此之前，下方条目按评估日期排列，适用性请自行判断。</p>
+    <section class="shell section chapter">
+      <p class="secondary measure">本分类的判断依据尚未写定。在此之前，下方条目按评估日期排列，适用性请自行判断。</p>
     </section>
   )}
 
-  <section class="shell section">
-    <div class="section-head">
-      <h2 class="t-section">条目</h2>
-      <p class="t-compact">评估版本指本库评估所基于的版本，不是上游当前版本。</p>
-    </div>
-    {mine.length > 1 && (
-      <div class="filters">
-        <div class="filter-set">
-          <span class="t-meta">形态</span>
-          <button class="filter" type="button" data-value="" aria-pressed="true">全部<span class="count">{mine.length}</span></button>
-          {kinds.map(({ kind, count }) => (
-            <button class="filter" type="button" data-value={kind} aria-pressed="false">
-              {KIND_LABEL[kind] ?? kind}<span class="count">{count}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-    )}
-    <Ledger entries={mine} categories={categories} showCategory={false} caption={`${c.title}下已评估的全部条目。`} />
-  </section>
-
   {related.length > 0 && (
-    <section class="shell section">
+    <section class="shell section chapter">
       <div class="section-head">
-        <h2 class="t-section">相关条目</h2>
+        <h2 class="t-sub">相关条目</h2>
         <p class="t-compact">一个条目只归属一个分类，避免同一份内容在两处各自漂移。下列条目与本分类相邻，主条目在别处。</p>
       </div>
       <div class="table-wrap">

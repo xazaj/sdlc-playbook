@@ -42,8 +42,8 @@
   --w-semibold: 600;
 
   --measure: 68ch;
-  --content: 1440px;
-  --edge: var(--s10);
+  --content: 1200px;
+  --edge: var(--s8);
   --control: 36px;
 }
 
@@ -113,18 +113,20 @@ ul, ol { padding-left: 1.2em; }
 .span-6 { grid-column: span 6; }
 .span-7 { grid-column: span 7; }
 .span-8 { grid-column: span 8; }
+.span-3 { grid-column: span 3; }
 .span-12 { grid-column: 1 / -1; }
 /* Column starts stay overridable at breakpoints, so they are classes,
    never inline styles. */
 .start-8 { grid-column: 8 / span 5; }
 .start-9 { grid-column: 9 / span 4; }
+.start-10 { grid-column: 10 / span 3; }
 
 .rule { border: 0; border-top: 1px solid var(--border); }
 .rule-strong { border: 0; border-top: 1px solid var(--border-strong); }
 
 /* ---------- masthead ---------- */
 
-.masthead { border-bottom: 1px solid var(--border); }
+.masthead { border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 5; }
 .masthead .inner {
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--s6); min-height: 56px; padding-block: var(--s3);
@@ -153,7 +155,7 @@ nav.primary a[aria-current] { color: var(--text); font-weight: var(--w-medium); 
 
 /* ---------- opening ---------- */
 
-.opening { padding-block: var(--s16) var(--s12); }
+.opening { padding-block: var(--s10) var(--s6); }
 .opening h1 { max-width: 26ch; text-wrap: balance; }
 .opening .t-lede { max-width: var(--measure); margin-top: var(--s4); }
 .measure-wide { max-width: 78ch; }
@@ -163,6 +165,15 @@ nav.primary a[aria-current] { color: var(--text); font-weight: var(--w-medium); 
 }
 .byline .num { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--text-2); }
 .byline .state { font-size: 13px; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s4); margin-top: var(--s4); }
+.action {
+  height: var(--control); padding-inline: var(--s4);
+  border: 1px solid var(--text); border-radius: var(--radius-sm);
+  background: var(--text); color: var(--bg);
+  font: inherit; font-size: 14px; font-weight: var(--w-medium); cursor: pointer;
+}
+.action:hover { background: oklch(0.32 0 0); border-color: oklch(0.32 0 0); }
+.action[data-copied="true"] { background: var(--bg); color: var(--text); }
 .facts { display: flex; flex-direction: column; gap: var(--s2); }
 .opening .facts { align-self: end; }
 .fact { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s4); padding-block: var(--s2); border-top: 1px solid var(--border); }
@@ -173,9 +184,10 @@ nav.primary a[aria-current] { color: var(--text); font-weight: var(--w-medium); 
 
 /* ---------- section rhythm ---------- */
 
-.section { padding-block: var(--s12); border-top: 1px solid var(--border-section); }
-.section.dense { padding-block: var(--s16) var(--s12); }
-.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s6); flex-wrap: wrap; margin-bottom: var(--s5); }
+.section { padding-block: 0 var(--s8); }
+/* A rule is earned only at a true chapter break. */
+.section.chapter { margin-top: var(--s6); padding-top: var(--s8); border-top: 1px solid var(--border); }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s6); flex-wrap: wrap; margin-bottom: var(--s3); }
 .section-head p { color: var(--text-2); max-width: var(--measure); }
 .flow > * + * { margin-top: var(--s4); }
 .flow > h2 + *, .flow > h3 + * { margin-top: var(--s2); }
@@ -207,9 +219,9 @@ table.ledger col.c-origin { width: 17%; }
 table.ledger col.c-ver { width: 9%; }
 table.ledger col.c-date { width: 10%; }
 table.ledger col.c-state { width: 8%; }
-p.ledger-note { color: var(--text-3); font-size: 13px; line-height: 18px; margin-bottom: var(--s3); max-width: var(--measure); }
+p.ledger-note { color: var(--text-3); font-size: 13px; line-height: 18px; margin-top: var(--s3); max-width: var(--measure); }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-table.ledger th, table.ledger td { text-align: left; vertical-align: baseline; padding: var(--s3) var(--s4) var(--s3) 0; }
+table.ledger th, table.ledger td { text-align: left; vertical-align: baseline; padding: var(--s2) var(--s4) var(--s2) 0; }
 table.ledger th:last-child, table.ledger td:last-child { padding-right: 0; }
 table.ledger thead th {
   font-size: 13px; line-height: 18px; font-weight: var(--w-medium);
@@ -219,10 +231,10 @@ table.ledger thead th {
 table.ledger tbody td { border-bottom: 1px solid var(--border); }
 table.ledger tbody tr:hover td { background: var(--bg-2); }
 table.ledger tbody tr[hidden] { display: none; }
-table.ledger .name { font-size: 16px; font-weight: var(--w-medium); }
+table.ledger .name { font-size: 15px; line-height: 22px; font-weight: var(--w-medium); }
 table.ledger .name a { text-decoration: none; }
 table.ledger .name a:hover { text-decoration: underline; text-underline-offset: 3px; }
-table.ledger .desc { display: block; color: var(--text-2); font-size: 14px; line-height: 20px; margin-top: 2px; }
+table.ledger .desc { display: block; color: var(--text-3); font-size: 13px; line-height: 18px; }
 table.ledger .num, table.ledger th.num { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 13px; color: var(--text-2); text-align: right; }
 table.ledger th.num { font-family: var(--sans); }
 table.ledger td.meta { font-size: 13px; line-height: 18px; color: var(--text-3); overflow-wrap: anywhere; }
@@ -236,21 +248,17 @@ table.ledger td.meta { font-size: 13px; line-height: 18px; color: var(--text-3);
 
 .empty { padding-block: var(--s6); color: var(--text-3); }
 
-/* ---------- moments ---------- */
+/* ---------- moments (orientation, not the focus) ---------- */
 
-.moments { display: flex; flex-direction: column; border-top: 1px solid var(--border-section); }
-.moment {
-  display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr) 7rem;
-  gap: var(--s6); align-items: baseline;
-  padding: var(--s4) 0; border-bottom: 1px solid var(--border);
-}
+.moments { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s2) var(--s8); }
+.moment { display: grid; grid-template-columns: minmax(0, 1fr) 4.5rem; gap: var(--s4); align-items: baseline; padding: var(--s1) 0; }
 .moment:hover { text-decoration: none; }
-.moment:hover h3 { text-decoration: underline; text-underline-offset: 3px; }
-.moment h3 { font-size: 20px; line-height: 26px; font-weight: var(--w-medium); letter-spacing: -0.015em; }
-.moment p { color: var(--text-2); max-width: var(--measure); }
-.moment .n { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; color: var(--text-2); text-align: right; }
-.moment[data-empty] h3, .moment[data-empty] p, .moment[data-empty] .n { color: var(--text-3); }
-.moment[data-empty] p { font-size: 14px; line-height: 20px; }
+.moment:hover .name { text-decoration: underline; text-underline-offset: 3px; }
+.moment .name { font-size: 14px; line-height: 20px; font-weight: var(--w-medium); }
+.moment .why { display: block; color: var(--text-3); font-size: 13px; line-height: 18px; font-weight: var(--w-regular); }
+.moment .n { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; color: var(--text-3); text-align: right; }
+.moment[data-empty] .name { color: var(--text-3); font-weight: var(--w-regular); }
+
 
 .scenarios { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--s6) var(--s6); }
 .scenario { grid-column: span 3; display: flex; flex-direction: column; gap: var(--s2); padding-top: var(--s4); border-top: 1px solid var(--border-strong); }
@@ -280,6 +288,8 @@ ol.steps li::before { counter-increment: step; content: counter(step); font-fami
 .toc a[aria-current] { color: var(--text); border-left-color: var(--text); font-weight: var(--w-medium); }
 
 .prose { max-width: var(--measure); }
+/* Evidence may use the whole column; only prose is capped at the measure. */
+.prose > .block, .prose > .table-wrap { max-width: none; width: 100%; }
 .prose > * + * { margin-top: var(--s4); }
 .prose h1 { display: none; }
 .prose h2 { font-size: 24px; line-height: 32px; font-weight: var(--w-heading); letter-spacing: -0.02em; margin-top: var(--s12); }
@@ -348,21 +358,21 @@ dialog.search input {
 
 @media (max-width: 1120px) {
   :root { --edge: var(--s6); }
-  .moment { grid-template-columns: minmax(0, 12rem) minmax(0, 1fr) 6rem; }
+  .moments { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (max-width: 900px) {
   .grid12 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-  .span-4, .span-5, .span-6, .span-7, .span-8, .span-12,
-  .start-8, .start-9 { grid-column: 1 / -1; }
+  .span-3, .span-4, .span-5, .span-6, .span-7, .span-8, .span-12,
+  .start-8, .start-9, .start-10 { grid-column: 1 / -1; }
 /* Column starts stay overridable at breakpoints, so they are classes,
    never inline styles. */
 .start-8 { grid-column: 8 / span 5; }
 .start-9 { grid-column: 9 / span 4; }
+.start-10 { grid-column: 10 / span 3; }
   .opening { padding-block: var(--s10) var(--s8); }
   .opening .facts { align-self: start; }
-  .moment { grid-template-columns: minmax(0, 1fr) 5rem; row-gap: var(--s1); }
-  .moment p { grid-column: 1 / -1; }
+  .moments { grid-template-columns: minmax(0, 1fr); }
   .t-page { font-size: 32px; line-height: 40px; }
   .t-display { font-size: 36px; line-height: 44px; }
   .masthead .inner { flex-wrap: wrap; }

@@ -3,7 +3,7 @@ import type { GetStaticPaths } from 'astro';
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import State from '../../components/State.astro';
-import { allCategories, allEntries, formatDate, KIND_LABEL, ORIGIN_LABEL } from '../../lib/catalog';
+import { allCategories, allEntries, extractPrompt, formatDate, KIND_LABEL, ORIGIN_LABEL } from '../../lib/catalog';
 
 export const getStaticPaths = (async () => {
   const entries = await allEntries();
@@ -17,6 +17,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const categories = await allCategories();
 const category = categories.find((c) => c.data.id === d.category)!;
 const { Content } = await render(entry);
+const prompt = extractPrompt(entry.body);
 
 const facts = ([
   ['形态', KIND_LABEL[d.kind] ?? d.kind],
@@ -43,14 +44,20 @@ const facts = ([
         {facts.map(([, v]) => (<><span aria-hidden="true">·</span><span>{v}</span></>))}
         {d.upstream && (<><span aria-hidden="true">·</span><a href={d.upstream}>{new URL(d.upstream).host.replace(/^www\./, '')} ↗</a></>)}
       </p>
+      {prompt && (
+        <div class="actions">
+          <button class="action" type="button" id="copy-primary" data-prompt={prompt}>复制安装 prompt</button>
+          <a class="t-compact" href="#install">看它做了什么</a>
+        </div>
+      )}
     </div>
   </section>
 
   <section class="shell section grid12">
-    <article class="span-7 prose">
+    <article class="span-8 prose">
       <Content />
     </article>
-    <aside class="span-4 start-9 rail">
+    <aside class="span-3 start-10 rail">
       <nav class="toc" id="toc" aria-label="本页小节"></nav>
     </aside>
   </section>
@@ -59,12 +66,26 @@ const facts = ([
     // The right rail carries the page's structure so it stays useful past the fold.
     const toc = document.getElementById('toc');
     const headings = Array.from(document.querySelectorAll<HTMLHeadingElement>('.prose h2'));
+    // The install section is where the primary action points.
+    const install = headings.find((h) => (h.textContent ?? '').includes('安装 prompt'));
+    if (install) install.id = 'install';
     headings.forEach((h, i) => {
       h.id = h.id || `s-${i + 1}`;
       const a = document.createElement('a');
       a.href = `#${h.id}`;
       a.textContent = h.textContent ?? '';
       toc?.append(a);
+    });
+
+    const primary = document.getElementById('copy-primary') as HTMLButtonElement | null;
+    primary?.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(primary.dataset.prompt ?? '');
+      primary.textContent = '已复制';
+      primary.dataset.copied = 'true';
+      setTimeout(() => {
+        primary.textContent = '复制安装 prompt';
+        delete primary.dataset.copied;
+      }, 1600);
     });
 
     const seen = new IntersectionObserver((records) => {

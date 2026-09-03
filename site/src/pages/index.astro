@@ -1,13 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
 import Ledger from '../components/Ledger.astro';
-import { allCategories, allEntries, entriesOf, freshness, KIND_LABEL, countByKind } from '../lib/catalog';
+import { allCategories, allEntries, countByKind, entriesOf, KIND_LABEL } from '../lib/catalog';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const categories = await allCategories();
 const entries = await allEntries();
 const kinds = countByKind(entries);
-const needsReview = entries.filter((e) => freshness(e.data.evaluated_at).state !== 'fresh').length;
 ---
 <Base
   title="SDLC Playbook"
@@ -16,35 +15,13 @@ const needsReview = entries.filter((e) => freshness(e.data.evaluated_at).state !
   <section class="shell opening">
     <div class="measure-wide">
       <h1 class="t-page">手上这件事，现在该装哪个资产？</h1>
-      <p class="t-lede">条目按项目推进的四个时刻分类。每条给出适用与不适用的边界、评估所基于的版本，以及一段可直接粘贴进 agent 会话的安装 prompt。自建与外部资产采用同一格式，评估日期明示。</p>
+      <p class="t-lede">每条给出适用边界、评估所基于的版本，以及一段可直接粘贴进 agent 会话的安装 prompt。</p>
     </div>
   </section>
 
   <section class="shell section">
-    <div class="section-head">
-      <h2 class="t-section">四个时刻</h2>
-    </div>
-    <div class="moments">
-      {categories.map((c) => {
-        const n = entriesOf(entries, c.data.id).length;
-        return (
-          <a class="moment" href={`${base}/${c.data.id}`} data-empty={n === 0 ? 'true' : undefined}>
-            <h3>{c.data.title}</h3>
-            <p>{c.data.tagline}</p>
-            <span class="n">{n === 0 ? '尚无条目' : `${n} 个条目`}</span>
-          </a>
-        );
-      })}
-    </div>
-  </section>
-
-  <section class="shell section">
-    <div class="section-head">
-      <h2 class="t-section">全部条目</h2>
-    </div>
     <div class="filters">
       <div class="filter-set">
-        <span class="t-meta">分类</span>
         <button class="filter" type="button" data-facet="category" data-value="" aria-pressed="true">全部<span class="count">{entries.length}</span></button>
         {categories.filter((c) => entriesOf(entries, c.data.id).length > 0).map((c) => (
           <button class="filter" type="button" data-facet="category" data-value={c.data.id} aria-pressed="false">
@@ -53,8 +30,6 @@ const needsReview = entries.filter((e) => freshness(e.data.evaluated_at).state !
         ))}
       </div>
       <div class="filter-set">
-        <span class="t-meta">形态</span>
-        <button class="filter" type="button" data-facet="kind" data-value="" aria-pressed="true">全部</button>
         {kinds.map(({ kind, count }) => (
           <button class="filter" type="button" data-facet="kind" data-value={kind} aria-pressed="false">
             {KIND_LABEL[kind] ?? kind}<span class="count">{count}</span>
@@ -62,7 +37,29 @@ const needsReview = entries.filter((e) => freshness(e.data.evaluated_at).state !
         ))}
       </div>
     </div>
-    <Ledger entries={entries} categories={categories} caption="按评估日期排序，最近评估的在前。评估版本指本库评估所基于的版本，不是上游当前版本；状态按评估日期计算，超过 90 天标 †，超过 180 天标 ‡。" />
+    <Ledger
+      entries={entries}
+      categories={categories}
+      caption="按评估日期排序，最近评估的在前。评估版本指本库评估所基于的版本，不是上游当前版本；状态按评估日期计算，超过 90 天标 †，超过 180 天标 ‡。"
+    />
+  </section>
+
+  <section class="shell section chapter">
+    <div class="section-head">
+      <h2 class="t-sub">四个时刻</h2>
+      <p class="t-meta">判断依据写在各分类页的开头。</p>
+    </div>
+    <div class="moments">
+      {categories.map((c) => {
+        const n = entriesOf(entries, c.data.id).length;
+        return (
+          <a class="moment" href={`${base}/${c.data.id}`} data-empty={n === 0 ? 'true' : undefined}>
+            <span class="name">{c.data.title}<span class="why">{c.data.tagline}</span></span>
+            <span class="n">{n === 0 ? '尚无' : `${n} 条`}</span>
+          </a>
+        );
+      })}
+    </div>
   </section>
 
   <script>
@@ -80,9 +77,11 @@ const needsReview = entries.filter((e) => freshness(e.data.evaluated_at).state !
     for (const button of document.querySelectorAll<HTMLButtonElement>('.filter')) {
       button.addEventListener('click', () => {
         const facet = button.dataset.facet as 'category' | 'kind';
-        active[facet] = button.dataset.value ?? '';
+        const value = button.dataset.value ?? '';
+        // A second click on an active facet clears it; nothing here is decorative.
+        active[facet] = active[facet] === value ? '' : value;
         for (const peer of document.querySelectorAll<HTMLButtonElement>(`.filter[data-facet="${facet}"]`)) {
-          peer.setAttribute('aria-pressed', String(peer === button));
+          peer.setAttribute('aria-pressed', String((peer.dataset.value ?? '') === active[facet]));
         }
         apply();
       });
