@@ -3,7 +3,7 @@ import { glob } from 'astro/loaders';
 
 // Scenario categories. An entry belongs to exactly one; `also_in` only surfaces
 // a cross-reference row on another category page and never counts as an entry.
-export const CATEGORY_IDS = ['bootstrap', 'design', 'build', 'verify'] as const;
+export const CATEGORY_IDS = ['bootstrap', 'define', 'design', 'build', 'verify'] as const;
 export const KIND_IDS = ['skill', 'design-md', 'component-library', 'doc', 'mcp'] as const;
 
 const categoryId = z.enum(CATEGORY_IDS);

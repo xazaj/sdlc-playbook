@@ -6,6 +6,8 @@ import { allCategories, allEntries, countByKind, entriesOf, KIND_LABEL } from '.
 const categories = await allCategories();
 const entries = await allEntries();
 const kinds = countByKind(entries);
+const CN_NUM = ['一', '二', '三', '四', '五', '六'];
+const momentsLabel = `${CN_NUM[categories.length - 1] ?? categories.length}个时刻`;
 ---
 <Base
   title="SDLC Playbook"
@@ -76,7 +78,7 @@ const kinds = countByKind(entries);
   })}
 
   <section class="shell section chapter">
-    <h2 class="t-meta legend-label">四个时刻</h2>
+    <h2 class="t-meta legend-label">{momentsLabel}</h2>
     <div class="legend">
       {categories.map((c) => (
         <button class="legend-row" type="button" data-tab={c.data.id} aria-pressed="false">

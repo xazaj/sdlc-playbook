@@ -3,7 +3,7 @@ id: design
 code: DESIGN
 title: 界面与设计
 tagline: 决定界面长什么样、用什么零件的时刻。DESIGN.md 给方向，组件库出零件，技能负责把两者落到具体界面上。三段各选所需，通常不必全取。
-order: 2
+order: 3
 accent: "#c2603b"
 decision:
   headline: 先定长相，再定零件，最后确认能搭配。

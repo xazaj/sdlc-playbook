@@ -6,7 +6,7 @@
 
 ## 为什么是 Astro
 
-条目的 frontmatter 是这套站点唯一的数据契约。Astro 的内容集合用 Zod 声明该契约（见 `src/content.config.ts`），字段写错、`category` 取值不在四类之内、日期格式不合法都会让构建失败，而不是静默生成一个空页面。这一条是选它而非 Jekyll 的主要理由。
+条目的 frontmatter 是这套站点唯一的数据契约。Astro 的内容集合用 Zod 声明该契约（见 `src/content.config.ts`），字段写错、`category` 取值不在 `CATEGORY_IDS` 枚举之内、日期格式不合法都会让构建失败，而不是静默生成一个空页面。这一条是选它而非 Jekyll 的主要理由。
 
 其余理由：输出零 JavaScript（只有复制按钮与搜索是客户端脚本）；模板是组件而非 Liquid 片段，agent 修改时的定位成本更低；不依赖 Ruby 工具链。
 
@@ -15,7 +15,7 @@
 | 路径 | 职责 |
 |---|---|
 | `src/content.config.ts` | 条目与分类的 frontmatter 契约 |
-| `src/content/categories/` | 四个分类的元数据与「怎么选」面板 |
+| `src/content/categories/` | 各分类的元数据与「怎么选」面板 |
 | `src/lib/catalog.ts` | 新鲜度计算、分类与形态的中文标签 |
 | `src/layouts/`、`src/components/` | 版式与可复用组件 |
 | `src/pages/` | 首页、分类页、条目页、类型索引页、搜索索引 |

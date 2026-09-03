@@ -68,7 +68,7 @@ agent 自主执行时的权衡与人工编码不同，这是 2026 年最重要�
 | 判定 | 使用资产 | 登记卡 |
 |---|---|---|
 | TDD | superpowers 的 `test-driven-development` | `registry/superpowers-tdd.md` |
-| SDD | superpowers 的 `writing-plans` 与 `brainstorming` | 待登记 |
+| SDD | superpowers 的 `brainstorming` 与 `writing-plans`；规格写到多细、按什么句式、谁来审，见 `stages/15-define/DECIDE.md` | `registry/superpowers-brainstorming.md`、`registry/superpowers-writing-plans.md` |
 | spike | 尚无现成资产，按选型矩阵中 spike 一行的纪律手工执行 | 无 |
 | 变更前预检（反复失败、归属不明、跨层或高风险改动） | su-architecture-first | `registry/su-architecture-first.md` |
 

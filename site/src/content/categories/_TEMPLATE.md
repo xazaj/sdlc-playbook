@@ -1,5 +1,5 @@
 ---
-# 清单页的一个 tab。四个时刻各一个文件，正常情况不需要新增。
+# 清单页的一个 tab。每个时刻一个文件；新增时刻需同步更新 content.config.ts 的 CATEGORY_IDS 与各文件 order。
 # 本文件不会被构建（以 _ 开头的文件已排除），复制成 <id>.md 使用。
 id: bootstrap
 code: BOOTSTRAP

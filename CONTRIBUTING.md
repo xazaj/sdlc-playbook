@@ -53,7 +53,7 @@ docs/      设计文档、实现计划与验证日志
 
 `name`、`title`、`summary`、`category`、`kind`、`origin`、`evaluated_version`、`evaluated_at` 必填，缺任何一个构建失败。正文缺「何时用」「安装 prompt」「版本」三节之一、或缺围栏块，构建同样失败。
 
-清单页四个 tab 的内容在 `site/src/content/categories/<id>.md`，模板是同目录的 `_TEMPLATE.md`。正常情况不需要新增，四个时刻是固定的。
+清单页每个 tab 的内容在 `site/src/content/categories/<id>.md`，模板是同目录的 `_TEMPLATE.md`。新增时刻时：在 `site/src/content.config.ts` 的 `CATEGORY_IDS` 按顺序插入 id，新建对应分类文件，顺延其后各文件的 `order`，然后运行 `cd site && npm run build` 校验。
 
 ### 按形态的差异
 

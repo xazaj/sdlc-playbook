@@ -3,7 +3,7 @@ id: build
 code: BUILD
 title: 编码工作流
 tagline: 功能开始动手写的时刻。一次改动应采用 TDD、SDD、直接实现，还是先做探针。装入项目的不仅是技能，还包括写入 AGENTS.md 的适用边界。
-order: 3
+order: 4
 accent: "#1e8c8a"
 decision:
   headline: 首要问题：错误多久会被发现？
