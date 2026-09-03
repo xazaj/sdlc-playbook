@@ -1,10 +1,12 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-// Served at the root of the custom domain bound to this repository.
-// Changing the domain means changing `site` here and the Pages setting together.
+// Served under the repository path of an account-wide Pages custom domain:
+// https://aibrev.com/sdlc-playbook. The domain is set in the account's Pages
+// settings, not on this repository, so no CNAME file ships with the build.
 export default defineConfig({
   site: 'https://aibrev.com',
+  base: '/sdlc-playbook',
   trailingSlash: 'ignore',
   build: { format: 'directory' },
   markdown: {
