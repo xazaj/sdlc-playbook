@@ -45,11 +45,11 @@ docs/      设计文档、实现计划与验证日志
 
 ## 新增条目
 
-一个资产一个 markdown，放在 `registry/<name>.md`，构建时生成 `/entries/<name>/` 一个页面。所有形态共用同一个骨架，差异只在 frontmatter 的几个字段和安装 prompt 做的事上。**不要为每种形态各建一套模板**，那样改一条通用规则要改五处。
+一个资产一个 markdown，放在 `registry/<name>.md`，构建时生成 `/entries/<name>/` 一个页面。所有形态共用同一个模板，差异只在 frontmatter 的几个字段和安装 prompt 做的事上。**不要为每种形态各建一套模板**，那样改一条通用规则要改五处。
 
-### 骨架
+### 模板
 
-模板是 `registry/_TEMPLATE.md`，复制成 `registry/<name>.md` 后按注释填写。**不要把骨架抄进本文档**——两份会漂移。
+模板是 `registry/_TEMPLATE.md`，复制成 `registry/<name>.md` 后按注释填写。**不要把模板内容抄进本文档**——两份会各自改动，很快对不上。
 
 `name`、`title`、`summary`、`category`、`kind`、`origin`、`evaluated_version`、`evaluated_at` 必填，缺任何一个构建失败。正文缺「何时用」「安装 prompt」「版本」三节之一、或缺围栏块，构建同样失败。
 
