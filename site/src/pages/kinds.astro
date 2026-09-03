@@ -1,66 +1,27 @@
 ---
 import Base from '../layouts/Base.astro';
-import Freshness from '../components/Freshness.astro';
-import {
-  allCategories,
-  allEntries,
-  countByKind,
-  formatDate,
-  KIND_CODE,
-  KIND_LABEL,
-  KIND_NOTE,
-  ORIGIN_LABEL,
-} from '../lib/catalog';
+import Ledger from '../components/Ledger.astro';
+import { allCategories, allEntries, countByKind, KIND_LABEL, KIND_NOTE } from '../lib/catalog';
 
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const categories = await allCategories();
 const entries = await allEntries();
-const byCategory = new Map(categories.map((c) => [c.data.id, c]));
-const groups = countByKind(entries).map(({ kind }) => ({
-  kind,
-  items: entries.filter((e) => e.data.kind === kind),
-}));
+const groups = countByKind(entries).map(({ kind }) => ({ kind, items: entries.filter((e) => e.data.kind === kind) }));
 ---
-<Base title="按类型浏览" description="全部条目按交付形态平铺：技能、DESIGN.md、组件库与文档。">
-  <section class="wrap grid12" style="padding: 64px var(--gutter) 40px; align-items: start; border-bottom: 1px solid var(--rule);">
-    <div style="grid-column: span 7; display: flex; flex-direction: column; gap: 14px;">
-      <div class="crumb"><a href={`${base}/`}>首页</a><span>/</span><span class="mono">kinds</span></div>
-      <h1 class="serif" style="margin: 0; font-size: 44px; line-height: 1.25; font-weight: 600;">按类型浏览</h1>
-      <p style="margin: 0; font-size: 18px; color: var(--ink-soft)">
-        全部 {entries.length} 个条目按交付形态平铺。这是索引，不是选型页：本页不判断该用哪个，只回答有哪些。需要判断时回到四个分类，那里的「怎么选」给出依据。
-      </p>
-    </div>
-    <div style="grid-column: 9 / span 4;" class="side-note">
-      <h4>形态与分类的关系</h4>
-      <p style="margin: 0">
-        形态决定怎么装，分类决定何时用。同一形态会散落在不同分类，因为它们服务于项目推进的不同时刻。
-      </p>
+<Base title="按形态浏览" description="全部条目按交付形态分组：技能、DESIGN.md、组件库与文档。">
+  <section class="shell grid12 opening">
+    <div class="span-7">
+      <h1 class="t-page">按形态浏览</h1>
+      <p class="t-lede">形态决定怎么装，分类决定何时用。同一形态会散落在不同分类，因为它们服务于项目推进的不同时刻。本页只回答有哪些，判断依据在各分类页。</p>
     </div>
   </section>
 
-  <section class="wrap" style="padding: 48px var(--gutter) 80px; display: flex; flex-direction: column; gap: 44px;">
-    {groups.map((g) => (
-      <div style="display: flex; flex-direction: column; gap: 14px;">
-        <div class="entry-section">
-          <h2>{KIND_LABEL[g.kind] ?? g.kind}</h2>
-          <span class="code-label" style="color: var(--ink-faint)">{KIND_CODE[g.kind] ?? g.kind} · {g.items.length} 个条目</span>
-          <span class="note">{KIND_NOTE[g.kind]}</span>
-        </div>
-        <div class="kind-table">
-          {g.items.map((e) => (
-            <div class="kind-row">
-              <a href={`${base}/entries/${e.data.name}`}>{e.data.title}</a>
-              <span class="cat" style={`color: ${byCategory.get(e.data.category)?.data.accent}`}>
-                {byCategory.get(e.data.category)?.data.title}
-              </span>
-              <span class="origin">{[ORIGIN_LABEL[e.data.origin], e.data.provider, e.data.license].filter(Boolean).join(' · ')}</span>
-              <span class="ver">{e.data.evaluated_version}</span>
-              <span class="date">{formatDate(e.data.evaluated_at)}</span>
-              <Freshness date={e.data.evaluated_at} />
-            </div>
-          ))}
-        </div>
+  {groups.map((g) => (
+    <section class="shell section">
+      <div class="section-head">
+        <h2 class="t-section">{KIND_LABEL[g.kind] ?? g.kind}</h2>
+        <p class="t-compact">{KIND_NOTE[g.kind]}</p>
       </div>
-    ))}
-  </section>
+      <Ledger entries={g.items} categories={categories} showKind={false} caption={`形态为${KIND_LABEL[g.kind] ?? g.kind}的全部条目。`} />
+    </section>
+  ))}
 </Base>

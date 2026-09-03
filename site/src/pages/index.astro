@@ -1,127 +1,91 @@
 ---
 import Base from '../layouts/Base.astro';
-import Freshness from '../components/Freshness.astro';
-import {
-  allCategories,
-  allEntries,
-  countByKind,
-  entriesOf,
-  formatDate,
-  freshness,
-  KIND_LABEL,
-} from '../lib/catalog';
+import Ledger from '../components/Ledger.astro';
+import { allCategories, allEntries, entriesOf, freshness, KIND_LABEL, countByKind } from '../lib/catalog';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const categories = await allCategories();
 const entries = await allEntries();
-
-const byCategory = new Map(categories.map((c) => [c.data.id, c]));
-const kindCounts = countByKind(entries);
-const recent = entries.slice(0, 6);
-const needsReview = entries
-  .filter((e) => freshness(e.data.evaluated_at).state === 'stale')
-  .sort((a, b) => a.data.evaluated_at.getTime() - b.data.evaluated_at.getTime());
-
-const steps = [
-  ['翻阅', '按当前所处的时刻进入分类，先读「怎么选」。', 'var(--accent-design)'],
-  ['复制', '条目页提供完整的安装 prompt，一键复制。', 'var(--accent-build)'],
-  ['粘贴', '贴入项目的 agent 会话，由 agent 完成安装。', 'var(--accent-bootstrap)'],
-];
+const kinds = countByKind(entries);
+const needsReview = entries.filter((e) => freshness(e.data.evaluated_at).state !== 'fresh').length;
 ---
 <Base
   title="SDLC Playbook"
-  description="面向 vibe coder 的资产目录：按开发时刻分类，每个条目附可复制的安装 prompt 与评估日期。"
+  description="按开发时刻分类的 agent 资产目录：每个条目给出适用边界、评估版本与可直接粘贴的安装 prompt。"
 >
-  <section class="hero grid12">
-    <div class="hero-left">
-      <h1 class="serif">不必翻阅仓库。<br />选定工具，复制 prompt。</h1>
-      <p>
-        四个分类对应项目推进的四个时刻。每个条目回答三个问题：它是什么，当前版本是否值得采用，复制哪段
-        prompt 即可将其装入项目。自建资产与外部资产采用同一格式，评估日期明示。
-      </p>
-    </div>
-    <div class="steps">
-      {steps.map(([title, text, color], i) => (
-        <div class="step">
-          <div class="step-no serif" style={`color: ${color}`}>{String(i + 1).padStart(2, '0')}</div>
-          <div>
-            <div class="step-title">{title}</div>
-            <div class="step-text">{text}</div>
-          </div>
-        </div>
-      ))}
+  <section class="shell opening">
+    <div class="measure-wide">
+      <h1 class="t-page">手上这件事，现在该装哪个资产？</h1>
+      <p class="t-lede">条目按项目推进的四个时刻分类。每条给出适用与不适用的边界、评估所基于的版本，以及一段可直接粘贴进 agent 会话的安装 prompt。自建与外部资产采用同一格式，评估日期明示。</p>
     </div>
   </section>
 
-  <section class="wrap" style="padding-bottom: 32px; display: flex; flex-direction: column; gap: 24px;">
+  <section class="shell section">
     <div class="section-head">
-      <span class="eyebrow">四个分类 · 按你正在做的事划分</span>
-      <span style="font-size: 13px; color: var(--ink-mute)">共 {entries.length} 个条目</span>
+      <h2 class="t-section">四个时刻</h2>
     </div>
-    <div class="cat-grid">
-      {categories.map((c, i) => (
-        <a class="cat-card" href={`${base}/${c.data.id}`} style={`--accent: ${c.data.accent}`}>
-          <span class="code-label">{String(i + 1).padStart(2, '0')} / {c.data.code}</span>
-          <h2>{c.data.title}</h2>
-          <p>{c.data.tagline}</p>
-          <footer>
-            <span>{entriesOf(entries, c.data.id).length} 个条目</span>
-            <span class="go">进入</span>
-          </footer>
-        </a>
-      ))}
+    <div class="moments">
+      {categories.map((c) => {
+        const n = entriesOf(entries, c.data.id).length;
+        return (
+          <a class="moment" href={`${base}/${c.data.id}`} data-empty={n === 0 ? 'true' : undefined}>
+            <h3>{c.data.title}</h3>
+            <p>{c.data.tagline}</p>
+            <span class="n">{n === 0 ? '尚无条目' : `${n} 个条目`}</span>
+          </a>
+        );
+      })}
     </div>
   </section>
 
-  <section class="wrap" style="padding-bottom: 72px;">
-    <a class="kinds-strip" href={`${base}/kinds`}>
-      <span style="display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;">
-        <span class="label">按类型浏览</span>
-        <span style="font-size: 13px; color: var(--ink-mute)">已经知道要找什么形态的资产时，从这里进入。</span>
-      </span>
-      <span style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-        {kindCounts.map(({ kind, count }) => (
-          <span class="chip">{KIND_LABEL[kind] ?? kind} {count}</span>
+  <section class="shell section">
+    <div class="section-head">
+      <h2 class="t-section">全部条目</h2>
+    </div>
+    <div class="filters">
+      <div class="filter-set">
+        <span class="t-meta">分类</span>
+        <button class="filter" type="button" data-facet="category" data-value="" aria-pressed="true">全部<span class="count">{entries.length}</span></button>
+        {categories.filter((c) => entriesOf(entries, c.data.id).length > 0).map((c) => (
+          <button class="filter" type="button" data-facet="category" data-value={c.data.id} aria-pressed="false">
+            {c.data.title}<span class="count">{entriesOf(entries, c.data.id).length}</span>
+          </button>
         ))}
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-mute)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg>
-      </span>
-    </a>
+      </div>
+      <div class="filter-set">
+        <span class="t-meta">形态</span>
+        <button class="filter" type="button" data-facet="kind" data-value="" aria-pressed="true">全部</button>
+        {kinds.map(({ kind, count }) => (
+          <button class="filter" type="button" data-facet="kind" data-value={kind} aria-pressed="false">
+            {KIND_LABEL[kind] ?? kind}<span class="count">{count}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+    <Ledger entries={entries} categories={categories} caption="按评估日期排序，最近评估的在前。评估版本指本库评估所基于的版本，不是上游当前版本；状态按评估日期计算，超过 90 天标 †，超过 180 天标 ‡。" />
   </section>
 
-  <section class="wrap grid12" style="padding-bottom: 96px;">
-    <div style="grid-column: span 8; display: flex; flex-direction: column; gap: 16px;">
-      <span class="eyebrow">最近更新</span>
-      <div class="recent">
-        {recent.map((e) => (
-          <div class="recent-row">
-            <a class="serif" href={`${base}/entries/${e.data.name}`}>{e.data.title}</a>
-            <span class="cat" style={`color: ${byCategory.get(e.data.category)?.data.accent}`}>
-              {byCategory.get(e.data.category)?.data.title}
-            </span>
-            <span class="ver">{e.data.evaluated_version}</span>
-            <span class="date">{formatDate(e.data.evaluated_at)}</span>
-            <Freshness date={e.data.evaluated_at} />
-          </div>
-        ))}
-      </div>
-    </div>
-    <div style="grid-column: span 4; display: flex; flex-direction: column; gap: 16px;">
-      <span class="eyebrow">需复核</span>
-      <div class="review-panel">
-        <p>评估日期距今超过 180 天的条目。上游未发布新版本，不代表评估仍然成立，参考时请注意。</p>
-        {needsReview.length === 0 ? (
-          <p style="color: var(--ink-mute)">当前没有条目超期。</p>
-        ) : (
-          <div class="review-list">
-            {needsReview.map((e) => (
-              <div>
-                <a class="serif" href={`${base}/entries/${e.data.name}`}>{e.data.title}</a>
-                <Freshness date={e.data.evaluated_at} showDays />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  </section>
+  <script>
+    const active = { category: '', kind: '' };
+    const rows = Array.from(document.querySelectorAll<HTMLTableRowElement>('table.ledger tbody tr'));
+
+    function apply() {
+      for (const row of rows) {
+        const okCat = !active.category || row.dataset.category === active.category;
+        const okKind = !active.kind || row.dataset.kind === active.kind;
+        row.hidden = !(okCat && okKind);
+      }
+    }
+
+    for (const button of document.querySelectorAll<HTMLButtonElement>('.filter')) {
+      button.addEventListener('click', () => {
+        const facet = button.dataset.facet as 'category' | 'kind';
+        active[facet] = button.dataset.value ?? '';
+        for (const peer of document.querySelectorAll<HTMLButtonElement>(`.filter[data-facet="${facet}"]`)) {
+          peer.setAttribute('aria-pressed', String(peer === button));
+        }
+        apply();
+      });
+    }
+  </script>
 </Base>

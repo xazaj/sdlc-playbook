@@ -1,22 +1,12 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import Base from '../layouts/Base.astro';
-import EntryCard from '../components/EntryCard.astro';
-import {
-  allCategories,
-  allEntries,
-  entriesOf,
-  relatedTo,
-  KIND_LABEL,
-  type Entry,
-} from '../lib/catalog';
+import Ledger from '../components/Ledger.astro';
+import { allCategories, allEntries, countByKind, entriesOf, relatedTo, KIND_LABEL } from '../lib/catalog';
 
 export const getStaticPaths = (async () => {
   const categories = await allCategories();
-  return categories.map((category) => ({
-    params: { category: category.data.id },
-    props: { category },
-  }));
+  return categories.map((category) => ({ params: { category: category.data.id }, props: { category } }));
 }) satisfies GetStaticPaths;
 
 const { category } = Astro.props;
@@ -27,135 +17,112 @@ const categories = await allCategories();
 const all = await allEntries();
 const mine = entriesOf(all, c.id);
 const related = relatedTo(all, c.id);
-const byCategory = new Map(categories.map((x) => [x.data.id, x]));
-
-const kindsPresent = [...new Set(mine.map((e) => e.data.kind))];
-const declared = c.sections.filter((s) => mine.some((e) => e.data.kind === s.kind));
-const grouped: { title: string; code: string; note: string; items: Entry[] }[] = declared.length
-  ? declared.map((s) => ({ ...s, items: mine.filter((e) => e.data.kind === s.kind) }))
-  : [];
-// Anything whose kind no section claims still has to appear: a new kind must
-// never make an entry vanish from its own category page.
-const claimed = new Set(declared.map((s) => s.kind));
-const leftover = mine.filter((e) => !claimed.has(e.data.kind));
-if (grouped.length > 0 && leftover.length > 0) {
-  grouped.push({ title: '其他', code: 'OTHER', note: '尚未归入上面任何一段的条目。', items: leftover });
-}
-const origins = [...new Set(mine.map((e) => (e.data.origin === 'local' ? '自建' : '外部')))];
+const kinds = countByKind(mine);
+const titleOf = new Map(categories.map((x) => [x.data.id, x.data.title]));
 ---
-<Base title={c.title} description={c.tagline} accent={c.accent} current={c.id}>
-  <section class="cat-hero">
-    <span class="code-label">{String(c.order).padStart(2, '0')} / {c.code} · {mine.length} 个条目</span>
-    <h1>{c.title}</h1>
-    <p>{c.tagline}</p>
+<Base title={c.title} description={c.tagline} current={c.id}>
+  <section class="shell opening">
+    <div class="measure-wide">
+      <h1 class="t-page">{c.title}</h1>
+      <p class="t-lede">{c.tagline}</p>
+    </div>
   </section>
 
   {c.decision ? (
-    <section class="decide grid12">
-      <div class="decide-left">
-        <span class="eyebrow">怎么选</span>
-        <h2>{c.decision.headline}</h2>
-        <p>{c.decision.intro}</p>
-        <div class="decide-steps">
+    <section class="shell section grid12">
+      <div class="span-6 flow">
+        <h2 class="t-section">{c.decision.headline}</h2>
+        <p class="secondary measure">{c.decision.intro}</p>
+        <ol class="steps">
           {c.decision.steps.map((s) => (
-            <div><span class="k">{s.label}</span><span class="v">{s.text}</span></div>
+            <li><span>{s.text}</span></li>
           ))}
-        </div>
-        {c.decision.note && <p class="decide-note">{c.decision.note}</p>}
+        </ol>
+        {c.decision.note && <p class="t-compact tertiary measure">{c.decision.note}</p>}
       </div>
-      <div class="decide-right">
-        <span class="eyebrow">改变默认的信号</span>
-        <div class="signals">
-          {c.decision.signals.map((s) => (
-            <div><span style="color: var(--ink-soft)">{s.when}</span><span class="then serif">{s.then}</span></div>
-          ))}
-        </div>
-        {c.decision.pitfalls && <div class="decide-source">{c.decision.pitfalls}</div>}
+      <div class="span-5 start-8 flow">
+        <table class="compare">
+          <caption class="t-meta" style="text-align: left; padding-bottom: 12px;">出现下列信号时改变默认选择</caption>
+          <thead><tr><th scope="col">信号</th><th scope="col">改走</th></tr></thead>
+          <tbody>
+            {c.decision.signals.map((s) => (
+              <tr><td class="secondary">{s.when}</td><td>{s.then}</td></tr>
+            ))}
+          </tbody>
+        </table>
+        {c.decision.pitfalls && <p class="t-compact tertiary">{c.decision.pitfalls}</p>}
         {c.decision.sourceHref && (
-          <a class="decide-source external" href={c.decision.sourceHref}>{c.decision.sourceLabel}
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"></path><path d="M9 7h8v8"></path></svg>
-          </a>
+          <p class="t-compact"><a href={c.decision.sourceHref}>{c.decision.sourceLabel} ↗</a></p>
         )}
       </div>
     </section>
   ) : (
-    <section class="decide">
-      <div class="empty-state">
-        本分类的「怎么选」尚未编写。判断依据一旦写定即出现在此处；在此之前，下方条目按评估日期排列，请自行判断适用性。
-      </div>
+    <section class="shell section">
+      <p class="t-lede measure">本分类的判断依据尚未写定。在此之前，下方条目按评估日期排列，适用性请自行判断。</p>
     </section>
   )}
 
-  <section class="wrap" style="padding-top: 48px; padding-bottom: 96px; display: flex; flex-direction: column; gap: 28px;">
-    <div class="filters">
-      <div class="filter-set">
-        <div class="filter-group">
-          <span>类型</span>
-          <span class="pill is-on">全部</span>
-          {kindsPresent.map((k) => <span class="pill">{KIND_LABEL[k] ?? k}</span>)}
-        </div>
-        <div class="filter-group">
-          <span>来源</span>
-          {origins.map((o) => <span class="pill">{o}</span>)}
-        </div>
-        <div class="filter-group">
-          <span>新鲜度</span>
-          <span class="pill">隐藏需复核</span>
-        </div>
-      </div>
-      <span style="font-size: 13px; color: var(--ink-mute)">按评估日期排序</span>
+  <section class="shell section">
+    <div class="section-head">
+      <h2 class="t-section">条目</h2>
+      <p class="t-compact">评估版本指本库评估所基于的版本，不是上游当前版本。</p>
     </div>
-
-    {mine.length === 0 && (
-      <div class="empty-state">
-        本分类尚无已评估的条目。条目只有在实际用过并写下评估之后才会出现在这里，不做占位。
-      </div>
-    )}
-
-    {grouped.length > 0 ? (
-      grouped.map((g) => (
-        <>
-          <div class="entry-section">
-            <h2>{g.title}</h2>
-            <span class="code-label">{g.code} · {g.items.length} 个条目</span>
-            <span class="note">{g.note}</span>
-          </div>
-          <div class="entry-grid">
-            {g.items.map((e) => <EntryCard entry={e} />)}
-          </div>
-        </>
-      ))
-    ) : (
-      mine.length > 0 && (
-        <div class="entry-grid">
-          {mine.map((e) => <EntryCard entry={e} />)}
-        </div>
-      )
-    )}
-
-    {related.length > 0 && (
-      <div class="dashed">
-        <span class="eyebrow">相关 · 主条目在其他分类</span>
-        <p>一个条目只归属一个分类，避免同一份内容在两处各自漂移。与本页相邻的条目列在这里：</p>
-        <div class="related-list">
-          {related.map((e) => (
-            <div>
-              <a href={`${base}/entries/${e.data.name}`}>{e.data.title}</a>
-              <span style={`font-size: 13px; color: ${byCategory.get(e.data.category)?.data.accent}`}>
-                {byCategory.get(e.data.category)?.data.title}
-              </span>
-              <span style="font-size: 13px; color: var(--ink-mute)">{e.data.summary}</span>
-            </div>
+    {mine.length > 1 && (
+      <div class="filters">
+        <div class="filter-set">
+          <span class="t-meta">形态</span>
+          <button class="filter" type="button" data-value="" aria-pressed="true">全部<span class="count">{mine.length}</span></button>
+          {kinds.map(({ kind, count }) => (
+            <button class="filter" type="button" data-value={kind} aria-pressed="false">
+              {KIND_LABEL[kind] ?? kind}<span class="count">{count}</span>
+            </button>
           ))}
         </div>
       </div>
     )}
-
-    {c.moreSources && (
-      <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 32px; border-top: 1px solid var(--rule)">
-        <span class="eyebrow">更多来源</span>
-        <p style="margin: 0; font-size: 14px; color: var(--ink-soft); max-width: 60em">{c.moreSources}</p>
-      </div>
-    )}
+    <Ledger entries={mine} categories={categories} showCategory={false} caption={`${c.title}下已评估的全部条目。`} />
   </section>
+
+  {related.length > 0 && (
+    <section class="shell section">
+      <div class="section-head">
+        <h2 class="t-section">相关条目</h2>
+        <p class="t-compact">一个条目只归属一个分类，避免同一份内容在两处各自漂移。下列条目与本分类相邻，主条目在别处。</p>
+      </div>
+      <div class="table-wrap">
+        <table class="ledger">
+          <thead><tr><th scope="col">条目</th><th scope="col">主分类</th><th scope="col">为何不在本分类</th></tr></thead>
+          <tbody>
+            {related.map((e) => (
+              <tr>
+                <td class="name"><a href={`${base}/entries/${e.data.name}`}>{e.data.title}</a></td>
+                <td class="meta">{titleOf.get(e.data.category)}</td>
+                <td class="meta" style="white-space: normal;">{e.data.summary}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  )}
+
+  {c.moreSources && (
+    <section class="shell section">
+      <h2 class="t-sub">更多来源</h2>
+      <p class="secondary measure" style="margin-top: 8px;">{c.moreSources}</p>
+    </section>
+  )}
+
+  <script>
+    const rows = Array.from(document.querySelectorAll<HTMLTableRowElement>('table.ledger tbody tr[data-kind]'));
+    for (const button of document.querySelectorAll<HTMLButtonElement>('.filter')) {
+      button.addEventListener('click', () => {
+        const value = button.dataset.value ?? '';
+        for (const peer of document.querySelectorAll<HTMLButtonElement>('.filter')) {
+          peer.setAttribute('aria-pressed', String(peer === button));
+        }
+        for (const row of rows) row.hidden = Boolean(value) && row.dataset.kind !== value;
+      });
+    }
+  </script>
 </Base>

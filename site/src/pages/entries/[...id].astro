@@ -2,15 +2,8 @@
 import type { GetStaticPaths } from 'astro';
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import Freshness from '../../components/Freshness.astro';
-import {
-  allCategories,
-  allEntries,
-  extractPrompt,
-  formatDate,
-  KIND_LABEL,
-  ORIGIN_LABEL,
-} from '../../lib/catalog';
+import State from '../../components/State.astro';
+import { allCategories, allEntries, formatDate, KIND_LABEL, ORIGIN_LABEL } from '../../lib/catalog';
 
 export const getStaticPaths = (async () => {
   const entries = await allEntries();
@@ -24,118 +17,89 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const categories = await allCategories();
 const category = categories.find((c) => c.data.id === d.category)!;
 const { Content } = await render(entry);
-const prompt = extractPrompt(entry.body);
 
-const tags = [
-  { text: `评估版本 ${d.evaluated_version}`, mono: true },
-  { text: `评估日期 ${formatDate(d.evaluated_at)}` },
-];
-const facts = [
+const facts = ([
   ['形态', KIND_LABEL[d.kind] ?? d.kind],
   ['来源', [ORIGIN_LABEL[d.origin], d.provider].filter(Boolean).join(' · ')],
-  ['许可', d.license],
+  ['许可', d.license ?? ''],
   ['搭配', d.pairs_with.join(' / ')],
   ['已验证 agent', d.agents.join(' / ')],
-  ['安装位置', d.install_path],
-  ['版本由谁管理', d.release_source],
-].filter(([, v]) => Boolean(v)) as [string, string][];
+  ['安装位置', d.install_path ?? ''],
+  ['版本由谁管理', d.release_source ?? ''],
+] as [string, string][]).filter(([, v]) => Boolean(v));
 ---
-<Base title={d.title} description={d.summary} accent={category.data.accent} current={d.category}>
-  <section class="entry-hero">
-    <div class="crumb">
-      <a href={`${base}/${d.category}`} class="here">{category.data.title}</a>
-      <span>/</span>
-      <span class="mono">{d.name}</span>
-    </div>
-    <h1>{d.title}</h1>
-    <p class="lede">{d.summary}</p>
-    <div class="tagbar">
-      {tags.map((t) => <span class:list={['tag', { mono: t.mono }]}>{t.text}</span>)}
-      <Freshness date={d.evaluated_at} boxed />
-      <span class="tag">{[KIND_LABEL[d.kind], `${ORIGIN_LABEL[d.origin]}资产`, d.license].filter(Boolean).join(' · ')}</span>
-      {d.agents.length > 0 && <span class="tag">{d.agents.join(' / ')} 已验证</span>}
-      {d.upstream && (
-        <a class="tag external" href={d.upstream}>上游 {d.upstream.replace(/^https:\/\/github\.com\//, '')}
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"></path><path d="M9 7h8v8"></path></svg>
-        </a>
-      )}
+<Base title={d.title} description={d.summary} current={d.category}>
+  <section class="shell opening">
+    <div class="measure-wide">
+      <p class="t-meta"><a href={`${base}/${d.category}`}>{category.data.title}</a></p>
+      <h1 class="t-page" style="margin-top: 8px;">{d.title}</h1>
+      <p class="t-lede">{d.summary}</p>
+      <p class="byline">
+        <span class="num">{d.evaluated_version}</span>
+        <span aria-hidden="true">·</span>
+        <span class="num">{formatDate(d.evaluated_at)}</span>
+        <span aria-hidden="true">·</span>
+        <State date={d.evaluated_at} />
+        {facts.map(([, v]) => (<><span aria-hidden="true">·</span><span>{v}</span></>))}
+        {d.upstream && (<><span aria-hidden="true">·</span><a href={d.upstream}>{new URL(d.upstream).host.replace(/^www\./, '')} ↗</a></>)}
+      </p>
     </div>
   </section>
 
-  <section class="entry-body grid12">
-    <article class="entry-main prose">
+  <section class="shell section grid12">
+    <article class="span-7 prose">
       <Content />
     </article>
-    <aside class="entry-side">
-      {prompt && (
-        <button class="copy-btn" type="button" id="copy-prompt" data-prompt={prompt}
-          style="width: 100%; padding: 12px; font-size: 13px;">复制安装 prompt</button>
-      )}
-      <div class="side-note">
-        <h4>条目事实</h4>
-        <div style="display: flex; flex-direction: column; gap: 6px;">
-          {facts.map(([k, v]) => (
-            <div style="display: grid; grid-template-columns: 92px 1fr; gap: 10px;">
-              <span style="color: var(--ink-mute)">{k}</span>
-              <span>{v}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div class="side-note">
-        <h4>为什么不写上游当前版本</h4>
-        <p style="margin: 0">
-          本库只记录评估所基于的版本与日期。上游当前版本由各自机制管理，写进这里必然过期，也会与真实来源冲突。
-        </p>
-      </div>
-      <a class="side-note" href={`${base}/${d.category}`} style="color: var(--accent)">
-        ← 回到{category.data.title}
-      </a>
+    <aside class="span-4 start-9 rail">
+      <nav class="toc" id="toc" aria-label="本页小节"></nav>
     </aside>
   </section>
-</Base>
 
-<script>
-  // Wrap every fenced block in the entry body with a copyable prompt card.
-  const blocks = document.querySelectorAll<HTMLPreElement>('.prose pre');
-  blocks.forEach((pre) => {
-    const card = document.createElement('div');
-    card.className = 'prompt-card';
-    const head = document.createElement('div');
-    head.className = 'prompt-head';
-    const lang = pre.querySelector('code')?.className.match(/language-([\w-]+)/)?.[1] ?? 'text';
-    const label = document.createElement('span');
-    label.textContent = lang === 'text' ? 'PROMPT' : lang.toUpperCase();
-    head.appendChild(label);
-    const button = document.createElement('button');
-    button.className = 'copy-btn';
-    button.type = 'button';
-    button.textContent = '复制';
-    head.appendChild(button);
-    pre.replaceWith(card);
-    card.appendChild(head);
-    card.appendChild(pre);
-    pre.classList.add('prompt-body');
-
-    button.addEventListener('click', async () => {
-      await navigator.clipboard.writeText(pre.innerText);
-      button.textContent = '已复制';
-      button.dataset.copied = 'true';
-      setTimeout(() => {
-        button.textContent = '复制';
-        delete button.dataset.copied;
-      }, 1600);
+  <script>
+    // The right rail carries the page's structure so it stays useful past the fold.
+    const toc = document.getElementById('toc');
+    const headings = Array.from(document.querySelectorAll<HTMLHeadingElement>('.prose h2'));
+    headings.forEach((h, i) => {
+      h.id = h.id || `s-${i + 1}`;
+      const a = document.createElement('a');
+      a.href = `#${h.id}`;
+      a.textContent = h.textContent ?? '';
+      toc?.append(a);
     });
-  });
 
-  const sideButton = document.getElementById('copy-prompt') as HTMLButtonElement | null;
-  sideButton?.addEventListener('click', async () => {
-    await navigator.clipboard.writeText(sideButton.dataset.prompt ?? '');
-    sideButton.textContent = '已复制到剪贴板';
-    sideButton.dataset.copied = 'true';
-    setTimeout(() => {
-      sideButton.textContent = '复制安装 prompt';
-      delete sideButton.dataset.copied;
-    }, 1600);
-  });
-</script>
+    const seen = new IntersectionObserver((records) => {
+      for (const record of records) {
+        if (!record.isIntersecting) continue;
+        for (const link of toc?.querySelectorAll('a') ?? []) link.removeAttribute('aria-current');
+        toc?.querySelector(`a[href="#${record.target.id}"]`)?.setAttribute('aria-current', 'true');
+      }
+    }, { rootMargin: '0px 0px -70% 0px' });
+    for (const h of headings) seen.observe(h);
+
+    // Fenced blocks become copyable: a prompt is meant to be taken, not read.
+    for (const pre of document.querySelectorAll<HTMLPreElement>('.prose pre')) {
+      const lang = pre.querySelector('code')?.className.match(/language-([\w-]+)/)?.[1] ?? 'text';
+      const block = document.createElement('div');
+      block.className = 'block';
+      const head = document.createElement('div');
+      head.className = 'block-head';
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'copy';
+      button.textContent = lang === 'text' ? '复制 prompt' : '复制';
+      head.append(button);
+      pre.replaceWith(block);
+      block.append(head, pre);
+
+      button.addEventListener('click', async () => {
+        await navigator.clipboard.writeText(pre.innerText);
+        button.textContent = '已复制';
+        button.dataset.copied = 'true';
+        setTimeout(() => {
+          button.textContent = '复制';
+          delete button.dataset.copied;
+        }, 1600);
+      });
+    }
+  </script>
+</Base>

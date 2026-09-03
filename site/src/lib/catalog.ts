@@ -43,11 +43,15 @@ export function daysSince(date: Date, now = new Date()): number {
   return Math.floor((now.getTime() - date.getTime()) / 86_400_000);
 }
 
-export function freshness(date: Date, now = new Date()): { state: FreshnessState; label: string; days: number } {
+/** Never colour alone: every state carries a glyph and a word. */
+export function freshness(
+  date: Date,
+  now = new Date(),
+): { state: FreshnessState; label: string; glyph: string; days: number } {
   const days = daysSince(date, now);
-  if (days > STALE_AFTER_DAYS) return { state: 'stale', label: '需复核', days };
-  if (days > DUE_AFTER_DAYS) return { state: 'due', label: '待复核', days };
-  return { state: 'fresh', label: '新鲜', days };
+  if (days > STALE_AFTER_DAYS) return { state: 'stale', label: '需复核', glyph: '‡', days };
+  if (days > DUE_AFTER_DAYS) return { state: 'due', label: '待复核', glyph: '†', days };
+  return { state: 'fresh', label: '现行', glyph: '·', days };
 }
 
 export function formatDate(date: Date): string {

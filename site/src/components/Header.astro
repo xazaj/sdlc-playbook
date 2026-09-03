@@ -1,75 +1,111 @@
 ---
-import { allCategories } from '../lib/catalog';
+import { allCategories, allEntries, formatDate } from '../lib/catalog';
 
 interface Props { current?: string }
 const { current } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const categories = await allCategories();
+const entries = await allEntries();
+const updated = entries.length ? formatDate(entries[0]!.data.evaluated_at) : '—';
 ---
-<header class="site-header">
-  <div class="brand">
-    <a class="brand-name" href={`${base}/`}>SDLC Playbook</a>
-    <span class="brand-tag">面向 vibe coder 的资产目录</span>
+<header class="masthead">
+  <div class="shell inner">
+    <div class="identity">
+      <a class="wordmark" href={`${base}/`}>SDLC Playbook</a>
+      <span class="doc-meta t-meta">
+        <span class="mono">{entries.length} 个条目</span>
+        <span aria-hidden="true">·</span>
+        <span class="mono">更新于 {updated}</span>
+      </span>
+    </div>
+    <nav class="primary" aria-label="分类">
+      {categories.map((c) => (
+        <a href={`${base}/${c.data.id}`} aria-current={current === c.data.id ? 'page' : undefined}>{c.data.title}</a>
+      ))}
+      <button class="search-trigger" type="button" id="search-open" aria-haspopup="dialog">
+        搜索<kbd>⌘K</kbd>
+      </button>
+    </nav>
   </div>
-  <nav class="site-nav">
-    {categories.map((c) => (
-      <a
-        href={`${base}/${c.data.id}`}
-        class:list={[{ 'is-current': current === c.data.id }]}
-        style={current === c.data.id ? `color: ${c.data.accent}` : undefined}
-      >{c.data.title}</a>
-    ))}
-    <label class="search-box" for="site-search">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
-      <input id="site-search" type="search" placeholder="搜索条目" autocomplete="off" />
-    </label>
-    <a class="external" href="https://github.com/xazaj/sdlc-playbook">GitHub
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"></path><path d="M9 7h8v8"></path></svg>
-    </a>
-  </nav>
 </header>
-<dialog id="search-panel" style="border:1px solid var(--rule);border-radius:6px;padding:0;width:min(560px,92vw);background:var(--surface);color:var(--ink)">
-  <div style="padding:16px 20px;border-bottom:1px solid var(--rule);font-size:13px;color:var(--ink-mute)">搜索结果</div>
-  <div id="search-results" style="max-height:60vh;overflow:auto;padding:8px 0"></div>
+
+<dialog class="search" id="search-dialog" aria-label="搜索条目">
+  <input type="search" id="search-input" placeholder="搜索条目、来源或正文" autocomplete="off" aria-controls="search-results" />
+  <div class="results" id="search-results" role="listbox" data-empty="输入关键词以搜索。↑ ↓ 移动，⏎ 打开，Esc 关闭。"></div>
 </dialog>
-<script define:vars={{ endpoint: `${base}/search.json`, base }}>
-  const input = document.getElementById('site-search');
-  const panel = document.getElementById('search-panel');
-  const out = document.getElementById('search-results');
+
+<script define:vars={{ endpoint: `${base}/search.json` }}>
+  const dialog = document.getElementById('search-dialog');
+  const input = document.getElementById('search-input');
+  const list = document.getElementById('search-results');
+  const trigger = document.getElementById('search-open');
   let index = null;
+  let hits = [];
+  let cursor = 0;
 
   async function load() {
-    if (index) return index;
-    const res = await fetch(endpoint);
-    index = await res.json();
+    if (!index) index = await (await fetch(endpoint)).json();
     return index;
   }
 
-  function render(hits, query) {
-    out.innerHTML = '';
-    if (!hits.length) {
-      out.innerHTML = `<div style="padding:16px 20px;color:var(--ink-mute);font-size:14px">没有匹配「${query}」的条目。</div>`;
-      return;
-    }
-    for (const hit of hits) {
+  function paint() {
+    list.textContent = '';
+    hits.forEach((hit, i) => {
       const a = document.createElement('a');
+      a.className = 'hit';
       a.href = hit.url;
-      a.style.cssText = 'display:block;padding:12px 20px;border-bottom:1px solid var(--rule)';
-      a.innerHTML = `<div style="font-family:var(--serif);font-size:17px;font-weight:500">${hit.title}</div>`
-        + `<div style="font-size:13px;color:var(--ink-mute)">${hit.category} · ${hit.kind} · ${hit.summary}</div>`;
-      out.appendChild(a);
-    }
+      a.setAttribute('role', 'option');
+      a.setAttribute('aria-selected', String(i === cursor));
+      const name = document.createElement('div');
+      name.className = 'name';
+      name.textContent = hit.title;
+      const why = document.createElement('div');
+      why.className = 'why';
+      why.textContent = `${hit.category} · ${hit.kind} · ${hit.summary}`;
+      a.append(name, why);
+      list.append(a);
+    });
+    list.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' });
   }
 
-  input?.addEventListener('input', async () => {
-    const query = input.value.trim().toLowerCase();
-    if (!query) { panel.close(); return; }
+  async function run() {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { hits = []; cursor = 0; paint(); return; }
     const data = await load();
-    const hits = data.filter((item) => item.haystack.includes(query)).slice(0, 12);
-    render(hits, input.value.trim());
-    if (!panel.open) panel.showModal();
+    hits = data.filter((item) => item.haystack.includes(q)).slice(0, 12);
+    cursor = 0;
+    paint();
+  }
+
+  function open() {
+    if (!dialog.open) dialog.showModal();
     input.focus();
+    input.select();
+    load();
+  }
+
+  trigger?.addEventListener('click', open);
+  input?.addEventListener('input', run);
+
+  document.addEventListener('keydown', (event) => {
+    const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName ?? '');
+    if ((event.key === 'k' && (event.metaKey || event.ctrlKey)) || (event.key === '/' && !typing)) {
+      event.preventDefault();
+      open();
+    }
   });
 
-  panel?.addEventListener('click', (event) => { if (event.target === panel) panel.close(); });
+  dialog?.addEventListener('keydown', (event) => {
+    if (!hits.length) return;
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      cursor = (cursor + (event.key === 'ArrowDown' ? 1 : hits.length - 1)) % hits.length;
+      paint();
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      window.location.href = hits[cursor].url;
+    }
+  });
+
+  dialog?.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
 </script>
