@@ -74,14 +74,18 @@ SDLC/
 ├── CLAUDE.md                      # 软链至 AGENTS.md
 ├── README.md
 │
-├── stages/                        # 入口层：决策矩阵
-│   ├── 00-bootstrap/DECIDE.md     # 新项目初始化：装什么
-│   ├── 10-requirements/DECIDE.md  # 需求工程流程选型
-│   ├── 20-design/DECIDE.md        # 设计系统与设计流程选型
-│   ├── 30-coding/DECIDE.md        # 开发流程选型（SDD/TDD/其他）
-│   ├── 40-testing/DECIDE.md
-│   ├── 50-release/DECIDE.md
-│   └── 60-operate/DECIDE.md
+├── stages/                        # 入口层：索引，不存放实体资源
+│   ├── 00-bootstrap/              # 新项目初始化：装什么
+│   │   ├── DECIDE.md              # 决策矩阵（人与 agent 的主入口）
+│   │   ├── MANIFEST.yaml          # 关联的 catalog 条目与 profile，机器可读
+│   │   └── decisions/             # 真实决策记录，阶段独有内容
+│   ├── 10-requirements/           # 需求工程流程选型
+│   ├── 20-design/                 # 设计系统与设计流程选型
+│   ├── 30-coding/                 # 开发流程选型（SDD/TDD/其他）
+│   ├── 40-testing/                # 测试策略选型
+│   ├── 50-release/                # 发布流程与门禁选型
+│   └── 60-operate/                # 运维与事故响应流程选型
+│                                  # （各阶段目录结构同 00-bootstrap）
 │
 ├── catalog/                       # 资产层：唯一真源，手写只在这里
 │   ├── skills/<domain>/<name>/
@@ -105,7 +109,7 @@ SDLC/
 │
 ├── profiles/<stack>.yaml          # 技术栈组合包，只引用 catalog 条目
 │
-├── schemas/                       # 八类产物 + profile + note 的 JSON Schema
+├── schemas/                       # 八类产物 + profile + note + stage manifest 的 Schema
 ├── tools/
 │   ├── build/                     # catalog → dist 构建
 │   ├── adapters/                  # claude-code.ts / codex.ts / pi.ts
@@ -117,6 +121,8 @@ SDLC/
 ```
 
 **结构性约束**：`catalog/`、`stages/`、`library/`、`profiles/` 之外的内容原则上均为生成物或工具代码。`dist/` 完全由构建生成，手改会被覆盖。
+
+**stages 是索引而非容器**：`stages/` 下不存放任何实体资源，全部资源住在 `catalog/`。理由有二：其一，资产天然跨阶段 —— 一个 code-review skill 同时属于 `30-coding` 与 `50-release`，一套设计系统的 knowledge 包在 `00-bootstrap`（决定装不装）与 `20-design`（怎么用）都要被查阅，若按阶段物理存放，只能在重复存放（必然漂移）与强行单一归属（另一阶段找不到）之间二选一；其二，`catalog/` 已按产物类型组织一次目录，stages 再组织一次会形成双重目录树，同一份内容无法同时住在两处。按阶段浏览的需求由构建产物 `dist/by-stage/` 的索引视图满足，真源不重复。
 
 **构建产物的落地方式**：Claude Code 的 marketplace 机制要求仓库根存在 `.claude-plugin/marketplace.json`，因此该文件是唯一需要提交进 main 分支的生成物 —— 由 CI 在构建后自动同步提交，并在每次 CI 中校验它与 `catalog/` 一致，不一致即报错。其余 `dist/` 内容不进 main 分支，由 CI 发布到独立的 `release` 分支与 npm 包，避免生成物污染主干评审。
 
@@ -149,12 +155,44 @@ SDLC/
 
 ## 7. 入口层规范：DECIDE.md
 
-每个 `stages/<阶段>/DECIDE.md` 必须包含四个部分：
+每个阶段目录包含三部分：`DECIDE.md`（决策矩阵，人与 agent 的主入口）、`MANIFEST.yaml`（机器可读的资产清单）、`decisions/`（真实决策记录）。
+
+### 7.1 DECIDE.md
+
+`DECIDE.md` 必须包含四个部分：
 
 1. **本时刻要回答的问题**：以问句列出，例如"这个新项目该装哪些规范？""开发流程走 SDD 还是 TDD？"
 2. **选型矩阵**：表格形式，列出选项、适用条件、取舍代价、明确的反模式（什么情况下不要选它）。
 3. **推荐路径**：在缺乏更多信息时的默认建议，以及触发改变默认的关键信号。
 4. **落地资产**：指向 `catalog/` 中的具体条目与安装命令。
+
+### 7.2 MANIFEST.yaml
+
+每个阶段的资产清单，机器可读：
+
+```yaml
+stage: 20-design
+entry_skill: sdlc-design
+assets:
+  knowledge: [design-systems/shadcn, design-systems/material-3]
+  skills:    [design/design-review, design/token-audit]
+  templates: [design-md-dtcg]
+profiles:    [next-ts-tailwind]
+```
+
+它不能被 DECIDE.md 里的 markdown 链接替代，原因有三：CI 需要机器可读的结构来校验引用有效性；构建需要它生成 `dist/by-stage/` 反向索引；路由技能需要低成本地读取清单而非解析整篇文档。
+
+**双向引用校验**：catalog 条目 frontmatter 的 `stages` 字段与各阶段 MANIFEST 的 `assets` 列表构成双向引用，CI 校验两侧一致 —— 任一侧漏改即报错。这是防止索引与资产漂移的主要手段。
+
+### 7.3 decisions/
+
+存放真实项目中的选型记录（ADR 形式）：做了什么决定、当时的约束是什么、后来是否被推翻。这类内容不属于 catalog 的任何一类产物，且天然绑定单一阶段，因此放在阶段目录下。
+
+它不进 agent context，作用是给 DECIDE.md 的选型矩阵提供经验证据 —— 当某个决策在多个项目中反复出现同一结论时，该结论应被写回 DECIDE.md 的推荐路径。
+
+`decisions/` 需要记录习惯的养成成本，因此不进 M0，于 M2 引入。
+
+### 7.4 路由技能
 
 每个 DECIDE.md 对应一个**路由技能**，由构建脚本自动生成到 `dist/`；另加一个不绑定阶段的兜底技能 `sdlc-search`，共 8 个：
 
@@ -208,6 +246,7 @@ dist/
 ├── .claude-plugin/marketplace.json   # Claude Code plugin marketplace
 ├── skills/                            # 标准 SKILL.md 集合（通用）
 ├── routes/                            # 由 DECIDE.md 生成的路由技能
+├── by-stage/                          # 按阶段组织的索引视图，供浏览
 ├── manifest.json                      # 全量条目清单，含版本与校验和
 └── index.json                         # 供 sdlc-search 使用的轻量索引
 ```
@@ -281,9 +320,10 @@ TypeScript 实现，通过 `npx` 分发。命令名 `sdlc`，npm 包名 `sdlc-kb
 2. **description 冲突检测**：提取每个条目 description 中的触发短语，检测多个条目争抢同一短语的情况并报错。这是社区大库最普遍的病症，直接导致误触发。
 3. **token 预算**：`SKILL.md` 正文超过 5000 token 报错，强制内容下沉到 `references/`；路由技能超过 1000 token 报错。
 4. **链接有效性**：catalog 内部交叉引用、stages 指向 catalog 的引用必须可解析；外部链接做可达性抽查。
-5. **触发 eval 回归**：`evals/` 下每个技能配置"应触发"与"不应触发"的 prompt 用例，CI 计算触发准确率，低于阈值报错。
-6. **过期检查**：列出超过 `stale_after` 的 notes 与超过 12 个月未更新的 catalog 条目。
-7. **供应链声明**：带 `source` 的条目必须同时有 `license`；`manifest.json` 输出全量条目的版本与校验和。
+5. **双向引用一致性**：catalog 条目 frontmatter 的 `stages` 字段与各阶段 `MANIFEST.yaml` 的 `assets` 列表必须互相覆盖，任一侧缺失即报错。
+6. **触发 eval 回归**：`evals/` 下每个技能配置"应触发"与"不应触发"的 prompt 用例，CI 计算触发准确率，低于阈值报错。
+7. **过期检查**：列出超过 `stale_after` 的 notes 与超过 12 个月未更新的 catalog 条目。
+8. **供应链声明**：带 `source` 的条目必须同时有 `license`；`manifest.json` 输出全量条目的版本与校验和。
 
 ## 13. 版本与治理
 
@@ -297,9 +337,9 @@ TypeScript 实现，通过 `npx` 分发。命令名 `sdlc`，npm 包名 `sdlc-kb
 
 | 里程碑 | 交付内容 | 完成判据 |
 |---|---|---|
-| **M0 地基** | `schemas/` 八类 Schema、1 个样例 skill 条目、`tools/build` 基础构建、CI 接入 | `sdlc build` 能从 catalog 产出合法 dist，`sdlc check` 能拦住一个故意写错的条目 |
+| **M0 地基** | `schemas/` 八类产物 + stage manifest Schema、1 个样例 skill 条目、`tools/build` 基础构建、CI 接入 | `sdlc build` 能从 catalog 产出合法 dist，`sdlc check` 能拦住一个故意写错的条目 |
 | **M1 消费闭环** | 路由技能生成、`sdlc install`、claude-code 适配器、`.sdlc-lock.json` | 能在一个真实项目里装上样例条目并升级它 |
-| **M2 决策入口** | 7 个 DECIDE.md 骨架 + `30-coding` 的 SDD vs TDD 完整选型矩阵 | 在真实项目里提问"该走 SDD 还是 TDD"能被路由技能正确触发并给出可执行建议 |
+| **M2 决策入口** | 7 个阶段的 DECIDE.md 与 MANIFEST.yaml 骨架、`decisions/` 规范、`30-coding` 的 SDD vs TDD 完整选型矩阵、`dist/by-stage/` 视图 | 在真实项目里提问"该走 SDD 还是 TDD"能被路由技能正确触发并给出可执行建议；双向引用校验在 CI 中生效 |
 | **M3 多 agent** | codex、pi 适配器 | 同一条目在三家 agent 上均能正确安装并被识别 |
 | **M4 原料流水线** | `sdlc distill`、notes 规范、过期检查 | 从一篇真实文章走完 inbox → note → catalog 全流程 |
 | **M5 发布** | marketplace.json 生成、npm 发布、eval 回归、README 与使用文档 | 他人可通过 `npx sdlc-kb install` 完成安装 |
@@ -316,6 +356,7 @@ M0 与 M1 是硬前置，必须串行。M2 之后可并行推进。
 | 与社区大库同质化 | 无人使用 | 差异化在"决策入口"而非资产数量；stages 层是护城河 |
 | 跨 agent 适配随上游变化失效 | 安装报错 | 适配器隔离 + 每个适配器配集成测试 |
 | 知识过期 | 给出错误建议 | `stale_after` 机制 + CI 过期报告 |
+| stages 索引与 catalog 资产漂移 | 决策入口指向不存在或过时的资产 | 双向引用校验在 CI 中强制，任一侧漏改即报错 |
 | 外部内容许可证不清 | 法律风险 | 无许可证内容只作要点笔记，不整段搬运 |
 
 ## 16. 参考资料
