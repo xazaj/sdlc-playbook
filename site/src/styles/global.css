@@ -33,8 +33,11 @@
   --radius-sm: 6px;
   --radius: 8px;
 
-  --sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", sans-serif;
+  --sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   --mono: "Geist Mono", "SFMono-Regular", Consolas, Menlo, monospace;
+  /* Latin leading from the published scale; CJK needs one step more. */
+  --leading-cjk: 28px;
 
   --w-regular: 400;
   --w-heading: 450;
@@ -64,6 +67,9 @@ body {
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  /* CJK typesetting: trim full-width punctuation, space CJK against Latin. */
+  text-spacing-trim: normal;
+  text-autospace: normal;
 }
 
 a { color: inherit; text-decoration: none; }
@@ -75,11 +81,11 @@ ul, ol { padding-left: 1.2em; }
 
 /* ---------- scale ---------- */
 
-.t-display  { font-size: 48px; line-height: 56px; font-weight: var(--w-heading); letter-spacing: -0.03em; }
-.t-page     { font-size: 40px; line-height: 48px; font-weight: var(--w-heading); letter-spacing: -0.028em; }
-.t-title    { font-size: 32px; line-height: 40px; font-weight: var(--w-heading); letter-spacing: -0.024em; }
-.t-section  { font-size: 24px; line-height: 32px; font-weight: var(--w-heading); letter-spacing: -0.02em; }
-.t-sub      { font-size: 20px; line-height: 26px; font-weight: var(--w-medium); letter-spacing: -0.015em; }
+.t-display  { font-size: 48px; line-height: 56px; font-weight: var(--w-heading); letter-spacing: -0.012em; }
+.t-page     { font-size: 40px; line-height: 48px; font-weight: var(--w-heading); letter-spacing: -0.012em; }
+.t-title    { font-size: 32px; line-height: 40px; font-weight: var(--w-heading); letter-spacing: -0.01em; }
+.t-section  { font-size: 24px; line-height: 32px; font-weight: var(--w-heading); letter-spacing: -0.008em; }
+.t-sub      { font-size: 20px; line-height: 26px; font-weight: var(--w-medium); letter-spacing: normal; }
 .t-lede     { font-size: 18px; line-height: 28px; color: var(--text-2); }
 .t-compact  { font-size: 14px; line-height: 20px; }
 .t-meta     { font-size: 13px; line-height: 18px; color: var(--text-3); }
@@ -132,7 +138,7 @@ ul, ol { padding-left: 1.2em; }
   gap: var(--s6); min-height: 56px; padding-block: var(--s3);
 }
 .identity { display: flex; align-items: baseline; gap: var(--s4); flex-wrap: wrap; }
-.wordmark { font-size: 15px; font-weight: var(--w-semibold); letter-spacing: -0.015em; }
+.wordmark { font-size: 15px; font-weight: var(--w-semibold); letter-spacing: -0.01em; }
 .doc-meta { display: flex; gap: var(--s3); }
 
 nav.primary { display: flex; align-items: center; gap: var(--s6); font-size: 14px; }
@@ -262,7 +268,7 @@ table.ledger td.meta { font-size: 13px; line-height: 18px; color: var(--text-3);
 
 .scenarios { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--s6) var(--s6); }
 .scenario { grid-column: span 3; display: flex; flex-direction: column; gap: var(--s2); padding-top: var(--s4); border-top: 1px solid var(--border-strong); }
-.scenario h3 { font-size: 20px; line-height: 26px; font-weight: var(--w-medium); letter-spacing: -0.015em; }
+.scenario h3 { font-size: 20px; line-height: 26px; font-weight: var(--w-medium); letter-spacing: normal; }
 .scenario p { color: var(--text-2); font-size: 16px; line-height: 24px; }
 .scenario .count { color: var(--text-3); font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; margin-top: auto; padding-top: var(--s3); border-top: 1px solid var(--border); }
 
@@ -295,7 +301,7 @@ ol.steps li::before { counter-increment: step; content: counter(step); font-fami
 .prose h2 { font-size: 24px; line-height: 32px; font-weight: var(--w-heading); letter-spacing: -0.02em; margin-top: var(--s12); }
 .prose h3 { font-size: 20px; line-height: 26px; font-weight: var(--w-medium); margin-top: var(--s8); }
 .prose :is(h2, h3) + * { margin-top: var(--s3); }
-.prose p, .prose li { color: var(--text-2); }
+.prose p, .prose li { color: var(--text-2); line-height: var(--leading-cjk); }
 .prose li + li { margin-top: var(--s2); }
 .prose strong { color: var(--text); font-weight: var(--w-semibold); }
 .prose a { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--gray-500); }
