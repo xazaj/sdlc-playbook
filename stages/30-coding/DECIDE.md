@@ -40,6 +40,7 @@
 | 改动涉及三个以上模块 | 先按 SDD 写规格，再逐模块选择流程 |
 | 这段代码半年后仍会有人修改 | TDD。测试是唯一不会过期的文档 |
 | 需求仍需与人对齐 | SDD。规格是对齐的载体，代码不是 |
+| 同一问题反复出现，或补丁与变通方案不断堆积 | 先跑架构优先预检（见落地资产）定位归属层与根因，再回来选流程 |
 
 ## 交给 agent 执行时的差异
 
@@ -69,5 +70,6 @@ agent 自主执行时的权衡与人工编码不同，这是 2026 年最重要�
 | TDD | superpowers 的 `test-driven-development` | `registry/superpowers-tdd.md` |
 | SDD | superpowers 的 `writing-plans` 与 `brainstorming` | 待登记 |
 | spike | 尚无现成资产，按选型矩阵中 spike 一行的纪律手工执行 | 无 |
+| 变更前预检（反复失败、归属不明、跨层或高风险改动） | su-architecture-first | `registry/su-architecture-first.md` |
 
 本库不重复建设这些资产，只判断何时使用哪一个。安装方式与版本管理见各登记卡。
