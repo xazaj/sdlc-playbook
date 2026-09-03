@@ -67,6 +67,8 @@ body {
   font-weight: var(--w-regular);
   font-kerning: normal;
   font-optical-sizing: auto;
+  /* Verbatim from the published Geist body settings: ss11 changes letterforms. */
+  font-feature-settings: "rlig" 1, "calt" 0, "ss11" 1;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
