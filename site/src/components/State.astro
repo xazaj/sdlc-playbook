@@ -1,10 +1,17 @@
 ---
 import { freshness } from '../lib/catalog';
 
-interface Props { date: Date; withDays?: boolean }
-const { date, withDays = false } = Astro.props;
+interface Props { date: Date; withDays?: boolean; mark?: boolean }
+const { date, withDays = false, mark = false } = Astro.props;
 const { state, label, glyph, days } = freshness(date);
+const text = withDays ? `${label}，评估于 ${days} 天前` : label;
 ---
-<span class="state" data-state={state}>
-  <span class="glyph" aria-hidden="true">{glyph}</span>{withDays ? `${label}，评估于 ${days} 天前` : label}
-</span>
+{mark ? (
+  <span class="state mark" data-state={state}>
+    <span class="glyph" aria-hidden="true">{glyph}</span><span class="visually-hidden">{text}</span>
+  </span>
+) : (
+  <span class="state" data-state={state}>
+    <span class="glyph" aria-hidden="true">{glyph}</span>{text}
+  </span>
+)}

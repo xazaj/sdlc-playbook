@@ -28,7 +28,7 @@
   --err: oklch(54.99% 0.232 25.29);
 
   --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 20px;
-  --s6: 24px; --s8: 32px; --s10: 40px; --s12: 48px; --s16: 64px;
+  --s6: 24px; --s8: 32px; --s10: 40px; --s12: 48px; --s16: 64px; --s18: 72px;
 
   --radius-sm: 6px;
   --radius: 8px;
@@ -82,7 +82,7 @@ a { color: inherit; text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 3px; }
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 2px; }
 
-h1, h2, h3, h4, p, ul, ol, dl, figure, table { margin: 0; }
+h1, h2, h3, h4, p, ul, ol, dl, figure, table, hr { margin: 0; }
 h1, h2, h3, h4 { text-wrap: balance; }
 .prose h2 { scroll-margin-top: calc(var(--header-h) + var(--s4)); }
 p, li { text-wrap: pretty; }
@@ -151,26 +151,24 @@ ul, ol { padding-left: 1.2em; }
 .doc-meta { display: flex; gap: var(--s3); }
 
 nav.primary { display: flex; align-items: center; gap: var(--s6); font-size: 14px; }
-nav.primary a { color: var(--text-2); }
+nav.primary a { color: var(--text-2); white-space: nowrap; }
 nav.primary a:hover { color: var(--text); text-decoration: none; }
 nav.primary a[aria-current] { color: var(--text); font-weight: var(--w-medium); }
 
 .search-trigger {
-  display: inline-flex; align-items: center; gap: var(--s2);
-  height: var(--control); padding-inline: var(--s3);
-  border: 1px solid var(--border-mid); border-radius: var(--radius-sm);
-  background: var(--bg); color: var(--text-3);
-  font: inherit; font-size: 13px; cursor: pointer;
+  display: inline-flex; align-items: baseline; gap: var(--s2);
+  padding: 0; border: 0; background: none; color: var(--text-2);
+  font: inherit; font-size: 14px; cursor: pointer;
 }
-.search-trigger:hover { color: var(--text); border-color: var(--gray-500); }
+.search-trigger:hover { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
 .search-trigger kbd {
-  font-family: var(--mono); font-size: 11px; color: var(--text-3);
-  border: 1px solid var(--border-mid); border-radius: 4px; padding: 0 4px;
+  font-family: var(--mono); font-size: 12px; color: var(--text-3);
+  border: 0; padding: 0;
 }
 
 /* ---------- opening ---------- */
 
-.opening { padding-block: var(--s10) var(--s6); }
+.opening { padding-block: var(--s18) var(--s6); }
 .opening h1 { max-width: 26ch; text-wrap: balance; }
 .opening .t-lede { max-width: var(--measure); margin-top: var(--s4); }
 .measure-wide { max-width: 78ch; }
@@ -199,9 +197,14 @@ nav.primary a[aria-current] { color: var(--text); font-weight: var(--w-medium); 
 
 /* ---------- section rhythm ---------- */
 
-.section { padding-block: 0 var(--s8); }
-/* A rule is earned only at a true chapter break. */
-.section.chapter { margin-top: var(--s6); padding-top: var(--s8); border-top: 1px solid var(--border); }
+.section { padding-block: var(--s6) 0; }
+main { padding-bottom: var(--s16); }
+/* A rule is earned only at a true chapter break, and it is an element so it
+   aligns with the content, not with the shell's padded box. */
+.section.chapter { margin-top: var(--s12); padding-top: 0; }
+.chapter-rule { border: 0; border-top: 1px solid var(--border-section); margin-bottom: var(--s8); }
+/* Inside a grid the row gap already supplies part of the distance. */
+.grid12 > .chapter-rule { grid-column: 1 / -1; margin-bottom: var(--s2); }
 .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s6); flex-wrap: wrap; margin-bottom: var(--s3); }
 .section-head p { color: var(--text-2); max-width: var(--measure); }
 .flow > * + * { margin-top: var(--s4); }
@@ -210,9 +213,13 @@ nav.primary a[aria-current] { color: var(--text); font-weight: var(--w-medium); 
 
 /* ---------- filters ---------- */
 
-.filters { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s5); margin-bottom: var(--s4); }
-.filter-set { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
-.filter-set > .t-meta { margin-right: var(--s1); }
+.filters {
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: var(--s3) var(--s12); margin-bottom: var(--s6);
+  scroll-margin-top: calc(var(--header-h) + var(--s4));
+}
+.filter-set { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s4); }
+
 .filter {
   padding: 0 0 3px; border: 0; border-bottom: 1px solid transparent;
   background: none; color: var(--text-3);
@@ -220,26 +227,30 @@ nav.primary a[aria-current] { color: var(--text); font-weight: var(--w-medium); 
 }
 .filter:hover { color: var(--text); }
 .filter[aria-pressed="true"] { color: var(--text); font-weight: var(--w-medium); border-bottom-color: var(--text); }
-.filter .count { font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; color: var(--text-3); margin-left: var(--s1); }
+.filter .count { font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; color: var(--text-3); margin-left: 6px; }
 
 /* ---------- ledger (the catalogue table) ---------- */
 
 .table-wrap { width: 100%; overflow-x: auto; }
-table.ledger { width: 100%; border-collapse: collapse; table-layout: fixed; }
-table.ledger col.c-name { width: 60%; }
+/* Five columns, four of which end on their own vertical line. The reader
+   scans down a line, never across a void. */
+table.ledger { width: 100%; min-width: 760px; border-collapse: collapse; table-layout: fixed; }
+table.ledger col.c-name { width: 46%; }
+table.ledger col.c-moment { width: 15%; }
 table.ledger col.c-kind { width: 12%; }
-table.ledger col.c-eval { width: 28%; }
-p.ledger-note { color: var(--text-3); font-size: 13px; line-height: 18px; margin-top: var(--s3); max-width: var(--measure); }
+table.ledger col.c-version { width: 13%; }
+table.ledger col.c-date { width: 14%; }
+p.ledger-note { color: var(--text-3); font-size: 13px; line-height: 18px; margin-top: var(--s6); max-width: 62ch; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-table.ledger th, table.ledger td { text-align: left; vertical-align: baseline; padding: var(--s2) var(--s4) var(--s2) 0; }
+table.ledger th, table.ledger td { text-align: left; vertical-align: baseline; padding: var(--s3) var(--s4) var(--s3) 0; }
 table.ledger th:last-child, table.ledger td:last-child { padding-right: 0; }
 table.ledger thead th {
-  font-size: 13px; line-height: 18px; font-weight: var(--w-medium);
-  color: var(--text-3); padding-block: var(--s2);
+  font-size: 12px; line-height: 18px; font-weight: var(--w-medium);
+  letter-spacing: 0.06em; color: var(--text-3); padding-block: var(--s2);
   border-bottom: 1px solid var(--border-strong);
 }
 table.ledger tbody td { border-bottom: 1px solid var(--border); }
-table.ledger tbody tr:hover td { background: var(--bg-2); }
+table.ledger tbody tr:hover td { background: var(--gray-100); }
 table.ledger tbody tr[hidden] { display: none; }
 table.ledger tr.no-match td { color: var(--text-3); }
 table.ledger .name { font-size: 15px; line-height: 22px; font-weight: var(--w-medium); }
@@ -249,10 +260,12 @@ table.ledger .desc { display: block; color: var(--text-3); font-size: 13px; line
 table.ledger .num, table.ledger th.num { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 13px; color: var(--text-2); text-align: right; }
 table.ledger th.num { font-family: var(--sans); }
 table.ledger td.meta { font-size: 13px; line-height: 18px; color: var(--text-3); }
-table.ledger td.eval { text-align: right; }
-table.ledger td.eval .num { display: block; font-family: var(--mono); font-size: 13px; line-height: 18px; color: var(--text-2); }
-table.ledger td.eval .when { display: flex; justify-content: flex-end; align-items: baseline; gap: var(--s2); margin-top: 2px; }
-table.ledger td.eval .when .num { display: inline; color: var(--text-3); }
+table.ledger td.moment { color: var(--text-2); }
+/* The freshness mark hangs in a fixed gutter past the dates, so the daggers
+   line up and the dates still align with each other. */
+table.ledger .c-date-cell { padding-right: 0; }
+table.ledger th.num { padding-right: calc(var(--s4) - 0.06em); }
+table.ledger th.c-date-cell { padding-right: calc(1ch + var(--s2) - 0.06em); }
 
 .state { display: inline-flex; align-items: baseline; gap: var(--s2); font-size: 14px; line-height: 20px; font-weight: var(--w-medium); white-space: nowrap; }
 .state .glyph { font-family: var(--mono); font-weight: var(--w-regular); }
@@ -261,14 +274,28 @@ table.ledger td.eval .when .num { display: inline; color: var(--text-3); }
 .state[data-state="due"] { color: var(--warn); }
 .state[data-state="stale"] { color: var(--err); font-weight: var(--w-semibold); }
 
+/* Mark form: glyph only, in a fixed slot. "Current" is the state of every row
+   that needs no attention, so it says nothing and only holds the column. */
+.state.mark { display: inline-block; width: 1ch; margin-left: var(--s2); text-align: center; font-family: var(--mono); }
+.state.mark[data-state="fresh"] .glyph { display: inline; visibility: hidden; }
+
 .empty { padding-block: var(--s6); color: var(--text-3); }
 
 
-.scenarios { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--s6) var(--s6); }
-.scenario { grid-column: span 3; display: flex; flex-direction: column; gap: var(--s2); padding-top: var(--s4); border-top: 1px solid var(--border-strong); }
-.scenario h3 { font-size: 20px; line-height: 26px; font-weight: var(--w-medium); letter-spacing: normal; }
-.scenario p { color: var(--text-2); font-size: 16px; line-height: 24px; }
-.scenario .count { color: var(--text-3); font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; margin-top: auto; padding-top: var(--s3); border-top: 1px solid var(--border); }
+/* The four moments, as the glossary at the end of a document. Its key column
+   is the ledger's first column, so both lists share one vertical line. */
+.legend { display: flex; flex-direction: column; }
+.legend-label { display: block; margin-bottom: var(--s3); }
+.legend-row {
+  display: grid; grid-template-columns: 46% minmax(0, 1fr); align-items: baseline;
+  padding: var(--s3) 0; border: 0; border-top: 1px solid var(--border);
+  background: none; font: inherit; color: inherit; text-align: left; cursor: pointer;
+}
+.legend-row:first-of-type { border-top-color: var(--border-strong); }
+.legend-row:hover { background: var(--gray-100); }
+.legend-row .k { padding-right: var(--s4); font-size: 15px; line-height: 22px; font-weight: var(--w-medium); }
+.legend-row .v { color: var(--text-2); font-size: 14px; line-height: 20px; }
+.legend-row[aria-pressed="true"] .k { text-decoration: underline; text-underline-offset: 3px; }
 
 /* ---------- comparison (signals) ---------- */
 
@@ -380,11 +407,30 @@ dialog.search input {
 .start-8 { grid-column: 8 / span 5; }
 .start-9 { grid-column: 9 / span 4; }
 .start-10 { grid-column: 10 / span 3; }
-  .opening { padding-block: var(--s10) var(--s8); }
+  .opening { padding-block: var(--s12) var(--s6); }
   .opening .facts { align-self: start; }
   .t-page { font-size: 32px; line-height: 40px; }
   .t-display { font-size: 36px; line-height: 44px; }
   .masthead .inner { flex-wrap: wrap; }
+}
+
+/* Below the width the five columns need, the ledger stops being a table and
+   becomes a list: title, then one meta line. Sideways scrolling is not
+   reading. */
+@media (max-width: 760px) {
+  table.ledger { min-width: 0; table-layout: auto; }
+  table.ledger, table.ledger tbody, table.ledger tr { display: block; }
+  table.ledger thead { display: none; }
+  table.ledger tbody tr { padding-block: var(--s3); border-bottom: 1px solid var(--border); }
+  table.ledger tbody td { display: inline; padding: 0; border: 0; background: none; }
+  table.ledger tbody tr:hover { background: var(--gray-100); }
+  table.ledger tbody tr:hover td { background: none; }
+  table.ledger td.name { display: block; margin-bottom: var(--s1); }
+  table.ledger td.meta, table.ledger td.num { font-size: 13px; line-height: 18px; text-align: left; color: var(--text-3); }
+  table.ledger td.name ~ td + td::before { content: "·"; color: var(--gray-500); margin-inline: var(--s2); }
+  table.ledger .state.mark { width: auto; margin-left: var(--s1); }
+  .legend-row { grid-template-columns: minmax(0, 1fr); gap: var(--s1); }
+  .legend-row .k { padding-right: 0; }
 }
 
 @media (max-width: 620px) {

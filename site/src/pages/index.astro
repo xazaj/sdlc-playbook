@@ -18,17 +18,21 @@ const kinds = countByKind(entries);
     </div>
   </section>
 
+  <div class="shell"><hr class="rule-strong" /></div>
+
   <section class="shell section">
     <div class="filters">
-      <div class="filter-set" role="tablist" aria-label="按时刻筛选">
-        <button class="filter" type="button" role="tab" data-tab="" aria-pressed="true">全部<span class="count">{entries.length}</span></button>
+      <div class="filter-set" role="group" aria-label="按时刻筛选">
+        <span class="t-meta">时刻</span>
+        <button class="filter" type="button" data-tab="" aria-pressed="true">全部<span class="count">{entries.length}</span></button>
         {categories.map((c) => (
-          <button class="filter" type="button" role="tab" data-tab={c.data.id} aria-pressed="false">
+          <button class="filter" type="button" data-tab={c.data.id} aria-pressed="false">
             {c.data.title}<span class="count">{entriesOf(entries, c.data.id).length}</span>
           </button>
         ))}
       </div>
-      <div class="filter-set" aria-label="按形态筛选">
+      <div class="filter-set" role="group" aria-label="按形态筛选">
+        <span class="t-meta">形态</span>
         {kinds.map(({ kind, count }) => (
           <button class="filter" type="button" data-kind={kind} aria-pressed="false">
             {KIND_LABEL[kind] ?? kind}<span class="count">{count}</span>
@@ -47,6 +51,7 @@ const kinds = countByKind(entries);
     const d = c.data.decision!;
     return (
       <section class="shell section chapter grid12" data-panel={c.data.id} hidden>
+        <hr class="chapter-rule" />
         <div class="span-6 flow">
           <h2 class="t-sub">{d.headline}</h2>
           <p class="secondary measure">{d.intro}</p>
@@ -69,6 +74,18 @@ const kinds = countByKind(entries);
       </section>
     );
   })}
+
+  <section class="shell section chapter">
+    <h2 class="t-meta legend-label">四个时刻</h2>
+    <div class="legend">
+      {categories.map((c) => (
+        <button class="legend-row" type="button" data-tab={c.data.id} aria-pressed="false">
+          <span class="k">{c.data.title}</span>
+          <span class="v">{c.data.tagline.split('。')[0]}。</span>
+        </button>
+      ))}
+    </div>
+  </section>
 
   <script>
     const state = { tab: '', kind: '' };
@@ -99,6 +116,9 @@ const kinds = countByKind(entries);
         state.tab = tab.dataset.tab ?? '';
         history.replaceState(null, '', state.tab ? `#${state.tab}` : location.pathname);
         apply();
+        if (tab.classList.contains('legend-row')) {
+          document.querySelector('.filters')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
       });
     }
     // A second click on an active kind clears it; nothing here is decorative.

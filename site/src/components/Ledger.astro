@@ -1,6 +1,6 @@
 ---
 import State from './State.astro';
-import { KIND_LABEL, formatDate, type Entry } from '../lib/catalog';
+import { allCategories, KIND_LABEL, formatDate, type Entry } from '../lib/catalog';
 
 interface Props {
   entries: Entry[];
@@ -8,20 +8,26 @@ interface Props {
 }
 const { entries, caption } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const categories = await allCategories();
+const momentLabel = Object.fromEntries(categories.map((c) => [c.data.id, c.data.title]));
 ---
 <div class="table-wrap">
   <table class="ledger">
     <caption class="visually-hidden">{caption}</caption>
     <colgroup>
       <col class="c-name" />
+      <col class="c-moment" />
       <col class="c-kind" />
-      <col class="c-eval" />
+      <col class="c-version" />
+      <col class="c-date" />
     </colgroup>
     <thead>
       <tr>
         <th scope="col">条目</th>
+        <th scope="col">时刻</th>
         <th scope="col">形态</th>
-        <th scope="col" class="num">评估</th>
+        <th scope="col" class="num">评估版本</th>
+        <th scope="col" class="num c-date-cell">评估日期</th>
       </tr>
     </thead>
     <tbody>
@@ -31,14 +37,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
             <a href={`${base}/entries/${e.data.name}`}>{e.data.title}</a>
             <span class="desc">{e.data.summary}</span>
           </td>
+          <td class="meta moment">{momentLabel[e.data.category] ?? e.data.category}</td>
           <td class="meta">{KIND_LABEL[e.data.kind] ?? e.data.kind}</td>
-          <td class="eval">
-            <span class="num">{e.data.evaluated_version}</span>
-            <span class="when"><span class="num">{formatDate(e.data.evaluated_at)}</span><State date={e.data.evaluated_at} /></span>
-          </td>
+          <td class="num">{e.data.evaluated_version}</td>
+          <td class="num c-date-cell">{formatDate(e.data.evaluated_at)}<State date={e.data.evaluated_at} mark /></td>
         </tr>
       ))}
-      <tr class="no-match" hidden><td colspan="3">没有同时符合这两个筛选条件的条目。</td></tr>
+      <tr class="no-match" hidden><td colspan="5">没有符合当前筛选条件的条目。</td></tr>
     </tbody>
   </table>
 </div>
