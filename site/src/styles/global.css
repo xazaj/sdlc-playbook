@@ -150,7 +150,7 @@ ul, ol { padding-left: 1.2em; }
 .wordmark { font-size: 15px; font-weight: var(--w-semibold); letter-spacing: -0.01em; }
 .doc-meta { display: flex; gap: var(--s3); }
 
-nav.primary { display: flex; align-items: center; gap: var(--s6); font-size: 14px; }
+nav.primary { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s6); font-size: 14px; }
 nav.primary a { color: var(--text-2); white-space: nowrap; }
 nav.primary a:hover { color: var(--text); text-decoration: none; }
 nav.primary a[aria-current] { color: var(--text); font-weight: var(--w-medium); }
@@ -413,11 +413,12 @@ dialog.search input {
   .t-display { font-size: 36px; line-height: 44px; }
   .masthead .inner { flex-wrap: wrap; }
 }
-
 /* Below the width the five columns need, the ledger stops being a table and
-   becomes a list: title, then one meta line. Sideways scrolling is not
-   reading. */
-@media (max-width: 760px) {
+   becomes a name + meta line list. The threshold is the 760px min-width plus
+   the 24px edge padding on both sides (808): between the old 760 breakpoint
+   and 808 the fixed min-width overflowed its container. Horizontal scrolling
+   is not reading. */
+@media (max-width: 808px) {
   table.ledger { min-width: 0; table-layout: auto; }
   table.ledger, table.ledger tbody, table.ledger tr { display: block; }
   table.ledger thead { display: none; }
