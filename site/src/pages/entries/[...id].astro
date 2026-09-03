@@ -58,6 +58,9 @@ const facts = ([
       <Content />
     </article>
     <aside class="span-3 start-10 rail">
+      {prompt && (
+        <button class="copy-standing" type="button" id="copy-standing" data-prompt={prompt}>复制安装 prompt</button>
+      )}
       <nav class="toc" id="toc" aria-label="本页小节"></nav>
     </aside>
   </section>
@@ -77,25 +80,40 @@ const facts = ([
       toc?.append(a);
     });
 
-    const primary = document.getElementById('copy-primary') as HTMLButtonElement | null;
-    primary?.addEventListener('click', async () => {
-      await navigator.clipboard.writeText(primary.dataset.prompt ?? '');
-      primary.textContent = '已复制';
-      primary.dataset.copied = 'true';
-      setTimeout(() => {
-        primary.textContent = '复制安装 prompt';
-        delete primary.dataset.copied;
-      }, 1600);
-    });
+    for (const button of document.querySelectorAll<HTMLButtonElement>('#copy-primary, #copy-standing')) {
+      button.addEventListener('click', async () => {
+        await navigator.clipboard.writeText(button.dataset.prompt ?? '');
+        button.textContent = '已复制';
+        button.dataset.copied = 'true';
+        setTimeout(() => {
+          button.textContent = '复制安装 prompt';
+          delete button.dataset.copied;
+        }, 1600);
+      });
+    }
 
-    const seen = new IntersectionObserver((records) => {
-      for (const record of records) {
-        if (!record.isIntersecting) continue;
-        for (const link of toc?.querySelectorAll('a') ?? []) link.removeAttribute('aria-current');
-        toc?.querySelector(`a[href="#${record.target.id}"]`)?.setAttribute('aria-current', 'true');
+    // Position-based, not IntersectionObserver: a jump scroll never enters the
+    // observed band, which left the highlight stuck on the first section.
+    const links = new Map(headings.map((h) => [h.id, toc?.querySelector(`a[href="#${h.id}"]`)]));
+    const line = () => 61 + 24 + 8;
+    let queued = false;
+
+    function mark() {
+      queued = false;
+      let current = headings[0];
+      for (const h of headings) {
+        if (h.getBoundingClientRect().top <= line()) current = h;
       }
-    }, { rootMargin: '0px 0px -70% 0px' });
-    for (const h of headings) seen.observe(h);
+      for (const link of links.values()) link?.removeAttribute('aria-current');
+      links.get(current.id)?.setAttribute('aria-current', 'true');
+    }
+
+    addEventListener('scroll', () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(mark);
+    }, { passive: true });
+    mark();
 
     // Fenced blocks become copyable: a prompt is meant to be taken, not read.
     for (const pre of document.querySelectorAll<HTMLPreElement>('.prose pre')) {

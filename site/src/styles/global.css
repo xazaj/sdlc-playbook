@@ -48,6 +48,7 @@
   --content: 1200px;
   --edge: var(--s8);
   --control: 36px;
+  --header-h: 61px;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -82,6 +83,9 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 2px; }
 
 h1, h2, h3, h4, p, ul, ol, dl, figure, table { margin: 0; }
+h1, h2, h3, h4 { text-wrap: balance; }
+.prose h2 { scroll-margin-top: calc(var(--header-h) + var(--s4)); }
+p, li { text-wrap: pretty; }
 ul, ol { padding-left: 1.2em; }
 
 /* ---------- scale ---------- */
@@ -281,7 +285,15 @@ ol.steps li::before { counter-increment: step; content: counter(step); font-fami
 
 /* ---------- entry page ---------- */
 
-.rail { position: sticky; top: var(--s6); align-self: start; }
+.rail { position: sticky; top: calc(var(--header-h) + var(--s4)); align-self: start; display: flex; flex-direction: column; gap: var(--s4); }
+.rail .copy-standing {
+  width: 100%; height: var(--control); padding-inline: var(--s3);
+  border: 1px solid var(--text); border-radius: var(--radius-sm);
+  background: var(--text); color: var(--bg);
+  font: inherit; font-size: 13px; font-weight: var(--w-medium); cursor: pointer;
+}
+.rail .copy-standing:hover { background: oklch(0.32 0 0); border-color: oklch(0.32 0 0); }
+.rail .copy-standing[data-copied="true"] { background: var(--bg); color: var(--text); }
 .toc { display: flex; flex-direction: column; gap: var(--s2); font-size: 14px; line-height: 20px; }
 .toc a { color: var(--text-3); padding-left: var(--s3); border-left: 1px solid var(--border); }
 .toc a:hover { color: var(--text); border-left-color: var(--text); text-decoration: none; }
