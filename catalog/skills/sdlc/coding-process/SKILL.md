@@ -11,9 +11,7 @@ updated_at: "2026-09-03"
 
 读取决策矩阵，针对用户手上这次具体改动给出**一个**建议。
 
-**决策矩阵：** `/Users/zhuaijun/Work-space/SDLC/stages/30-coding/DECIDE.md`
-
-> M0 临时措施：此处硬编码本机路径。M2 由构建器生成路由技能时改为可移植形式。
+**决策矩阵：** `~/.sdlc/stages/30-coding/DECIDE.md`（`~` 为当前用户家目录）
 
 ## 用法
 
