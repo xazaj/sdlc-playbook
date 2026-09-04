@@ -68,6 +68,6 @@
 |---|---|---|
 | 需要完整设计系统 | gstack 的 `design-consultation` | `registry/gstack-design-consultation.md` |
 | AI 直接生成视觉 | `frontend-design` 一类实现技能 | 待登记 |
-| 需要 DESIGN.md 或 token 骨架 | 尚无现成资产，候选自建 | 无 |
+| 生成或改写界面后的打磨自查 | interfaces 的 `better-*` 家族 | `registry/interfaces-better.md` |
 
 本库不重复建设这些资产，只判断何时使用哪一个。安装方式与版本管理见各登记卡。
