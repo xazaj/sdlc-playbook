@@ -1,37 +1,41 @@
 /* SDLC Playbook — see DESIGN.md at the repository root.
-   Evidence-first report: full-width twelve-column layout, monochrome,
-   grouping by spacing and alignment rather than cards and colour fields.
-   Scale values follow the published Geist semantics. */
+   Vercel light: white canvas, Geist greys, 1px #eaeaea lines, black primary
+   buttons, #0070f3 links, pill badges for metadata, bordered cards for the
+   ledger and install prompts. */
 
 :root {
   color-scheme: light;
 
-  --bg: oklch(1 0 0);
-  --bg-2: oklch(0.984 0 0);
-  --gray-100: oklch(0.961 0 0);
-  --gray-200: oklch(0.94 0 0);
-  --gray-500: oklch(0.836 0 0);
-  --gray-700: oklch(0.65 0 0);
+  --bg: #ffffff;
+  --bg-2: #fafafa;            /* Geist gray-100: table heads, code, kbd */
+  --gray-200: #eaeaea;
+  --gray-300: #cccccc;
 
-  --text: oklch(0.205 0 0);
-  --text-2: oklch(0.42 0 0);
-  --text-3: oklch(0.59 0 0);
+  --text: #111111;            /* Geist gray-800 */
+  --text-2: #444444;          /* Geist gray-600 */
+  --text-3: #666666;          /* Geist gray-500 */
+  --muted: #888888;           /* placeholders, counts, block labels */
 
-  --border-subtle: oklch(0 0 0 / 0.06);
-  --border: oklch(0 0 0 / 0.08);
-  --border-mid: oklch(0 0 0 / 0.1);
-  --border-section: oklch(0 0 0 / 0.18);
-  --border-strong: oklch(0 0 0 / 0.44);
+  --border: #eaeaea;
+  --border-strong: #cbcbcb;
 
-  --focus: oklch(57.61% 0.2508 258.23);
+  --link: #0070f3;
+  --link-hover: #3291ff;
+  --focus: #0070f3;
+
+  /* Freshness only. Always paired with text, never colour alone. */
   --warn: oklch(52.79% 0.1496 54.65);
   --err: oklch(54.99% 0.232 25.29);
 
   --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 20px;
   --s6: 24px; --s8: 32px; --s10: 40px; --s12: 48px; --s16: 64px; --s18: 72px;
 
-  --radius-sm: 6px;
-  --radius: 8px;
+  --radius-sm: 6px;           /* buttons, inputs, kbd */
+  --radius: 8px;              /* cards: ledger, prompt blocks */
+  --radius-lg: 12px;          /* overlays: the search dialog */
+
+  --shadow-button: 0 1px 1px rgba(0, 0, 0, 0.04);
+  --shadow-menu: 0 4px 12px rgba(0, 0, 0, 0.08), 0 16px 40px rgba(0, 0, 0, 0.12);
 
   --sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI",
     "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
@@ -40,7 +44,7 @@
   --leading-cjk: 28px;
 
   --w-regular: 400;
-  --w-heading: 450;
+  --w-heading: 600;
   --w-medium: 500;
   --w-semibold: 600;
 
@@ -78,7 +82,7 @@ body {
   text-autospace: normal;
 }
 
-a { color: inherit; text-decoration: none; }
+a { color: var(--link); text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 3px; }
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 2px; }
 
@@ -87,6 +91,12 @@ h1, h2, h3, h4 { text-wrap: balance; }
 .prose h2 { scroll-margin-top: calc(var(--header-h) + var(--s4)); }
 p, li { text-wrap: pretty; }
 ul, ol { padding-left: 1.2em; }
+
+kbd {
+  font-family: var(--mono); font-size: 11px; line-height: 1;
+  color: var(--muted); background: var(--bg-2);
+  border: 1px solid var(--gray-200); border-radius: 4px; padding: 3px 5px;
+}
 
 /* ---------- scale ---------- */
 
@@ -137,34 +147,35 @@ ul, ol { padding-left: 1.2em; }
 .start-10 { grid-column: 10 / span 3; }
 
 .rule { border: 0; border-top: 1px solid var(--border); }
-.rule-strong { border: 0; border-top: 1px solid var(--border-strong); }
+.rule-strong { border: 0; border-top: 1px solid var(--gray-300); }
 
 /* ---------- masthead ---------- */
 
-.masthead { border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 5; }
+.masthead { border-bottom: 1px solid var(--gray-200); position: sticky; top: 0; background: var(--bg); z-index: 5; }
 .masthead .inner {
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--s6); min-height: 56px; padding-block: var(--s3);
 }
 .identity { display: flex; align-items: baseline; gap: var(--s4); flex-wrap: wrap; }
-.wordmark { font-size: 15px; font-weight: var(--w-semibold); letter-spacing: -0.01em; }
+.wordmark { font-size: 15px; font-weight: var(--w-semibold); letter-spacing: -0.01em; color: var(--text); }
 .doc-meta { display: flex; gap: var(--s3); }
 
 nav.primary { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s6); font-size: 14px; }
-nav.primary a { color: var(--text-2); white-space: nowrap; }
+nav.primary a { color: var(--text-3); white-space: nowrap; }
 nav.primary a:hover { color: var(--text); text-decoration: none; }
 nav.primary a[aria-current] { color: var(--text); font-weight: var(--w-medium); }
 
 .search-trigger {
-  display: inline-flex; align-items: baseline; gap: var(--s2);
-  padding: 0; border: 0; background: none; color: var(--text-2);
-  font: inherit; font-size: 14px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: var(--s2);
+  height: 32px; padding-inline: 10px;
+  border: 1px solid var(--gray-200); border-radius: var(--radius-sm);
+  background: var(--bg); color: var(--muted);
+  font: inherit; font-size: 13px; cursor: pointer;
+  box-shadow: var(--shadow-button);
+  transition: border-color 0.15s ease, color 0.15s ease;
 }
-.search-trigger:hover { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
-.search-trigger kbd {
-  font-family: var(--mono); font-size: 12px; color: var(--text-3);
-  border: 0; padding: 0;
-}
+.search-trigger:hover { border-color: var(--gray-300); color: var(--text-3); text-decoration: none; }
+.search-trigger kbd { margin-left: var(--s1); }
 
 /* ---------- opening ---------- */
 
@@ -172,21 +183,36 @@ nav.primary a[aria-current] { color: var(--text); font-weight: var(--w-medium); 
 .opening h1 { max-width: 26ch; text-wrap: balance; }
 .opening .t-lede { max-width: var(--measure); margin-top: var(--s4); }
 .measure-wide { max-width: 78ch; }
+
 .byline {
-  margin-top: var(--s5); display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2);
-  font-size: 13px; line-height: 18px; color: var(--text-3);
+  margin-top: var(--s5); display: flex; flex-wrap: wrap; align-items: center;
+  gap: var(--s2); font-size: 12px; line-height: 18px;
 }
-.byline .num { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--text-2); }
-.byline .state { font-size: 13px; }
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 24px; padding-inline: 10px; max-width: 100%;
+  border: 1px solid var(--gray-200); border-radius: 999px;
+  background: var(--bg); color: var(--text-3);
+  font-size: 12px; line-height: 1; white-space: nowrap;
+}
+.badge .num { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--text-2); }
+.badge a { color: var(--link); }
+.badge .state { font-size: 12px; line-height: 1; gap: 4px; }
+.badge .state .glyph { font-size: 12px; }
+
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s4); margin-top: var(--s4); }
+
+/* Geist primary button: black, white text. */
 .action {
   height: var(--control); padding-inline: var(--s4);
   border: 1px solid var(--text); border-radius: var(--radius-sm);
-  background: var(--text); color: var(--bg);
+  background: var(--text); color: #fff;
   font: inherit; font-size: 14px; font-weight: var(--w-medium); cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
-.action:hover { background: oklch(0.32 0 0); border-color: oklch(0.32 0 0); }
-.action[data-copied="true"] { background: var(--bg); color: var(--text); }
+.action:hover { background: #333333; border-color: #333333; color: #fff; text-decoration: none; }
+.action[data-copied="true"] { background: var(--bg); color: var(--link); border-color: var(--gray-200); }
+
 .facts { display: flex; flex-direction: column; gap: var(--s2); }
 .opening .facts { align-self: end; }
 .fact { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s4); padding-block: var(--s2); border-top: 1px solid var(--border); }
@@ -202,16 +228,15 @@ main { padding-bottom: var(--s16); }
 /* A rule is earned only at a true chapter break, and it is an element so it
    aligns with the content, not with the shell's padded box. */
 .section.chapter { margin-top: var(--s12); padding-top: 0; }
-.chapter-rule { border: 0; border-top: 1px solid var(--border-section); margin-bottom: var(--s8); }
+.chapter-rule { border: 0; border-top: 1px solid var(--gray-300); margin-bottom: var(--s8); }
 /* Inside a grid the row gap already supplies part of the distance. */
 .grid12 > .chapter-rule { grid-column: 1 / -1; margin-bottom: var(--s2); }
 .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s6); flex-wrap: wrap; margin-bottom: var(--s3); }
 .section-head p { color: var(--text-2); max-width: var(--measure); }
-.flow > * + * { margin-top: var(--s4); }
 .flow > h2 + *, .flow > h3 + * { margin-top: var(--s2); }
 .flow > * + :is(h2, h3) { margin-top: var(--s8); }
 
-/* ---------- filters ---------- */
+/* ---------- filters (tabs) ---------- */
 
 .filters {
   display: flex; flex-wrap: wrap; align-items: baseline;
@@ -221,41 +246,42 @@ main { padding-bottom: var(--s16); }
 .filter-set { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s4); }
 
 .filter {
-  padding: 0 0 3px; border: 0; border-bottom: 1px solid transparent;
+  padding: 6px 2px; border: 0; border-bottom: 2px solid transparent;
   background: none; color: var(--text-3);
   font: inherit; font-size: 14px; line-height: 20px; cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
 .filter:hover { color: var(--text); }
-.filter[aria-pressed="true"] { color: var(--text); font-weight: var(--w-medium); border-bottom-color: var(--text); }
-.filter .count { font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; color: var(--text-3); margin-left: 6px; }
+.filter[aria-pressed="true"] { color: var(--text); font-weight: var(--w-medium); border-bottom-color: var(--link); }
+.filter .count { font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; color: var(--muted); margin-left: 6px; }
 
-/* ---------- ledger (the catalogue table) ---------- */
+/* ---------- ledger (the catalogue card) ---------- */
 
-.table-wrap { width: 100%; overflow-x: auto; }
-/* Five columns, four of which end on their own vertical line. The reader
-   scans down a line, never across a void. */
+/* One bordered card instead of loose rules: the table reads as a unit the way
+   Geist tables do, and the rounded corners clip the header wash. */
+.table-wrap { width: 100%; overflow-x: auto; border: 1px solid var(--gray-200); border-radius: var(--radius); background: var(--bg); }
 table.ledger { width: 100%; min-width: 760px; border-collapse: collapse; table-layout: fixed; }
 table.ledger col.c-name { width: 46%; }
 table.ledger col.c-moment { width: 15%; }
 table.ledger col.c-kind { width: 12%; }
 table.ledger col.c-version { width: 13%; }
 table.ledger col.c-date { width: 14%; }
-p.ledger-note { color: var(--text-3); font-size: 13px; line-height: 18px; margin-top: var(--s6); max-width: 62ch; }
+p.ledger-note { color: var(--text-3); font-size: 13px; line-height: 18px; margin-top: var(--s4); max-width: 62ch; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-table.ledger th, table.ledger td { text-align: left; vertical-align: baseline; padding: var(--s3) var(--s4) var(--s3) 0; }
-table.ledger th:last-child, table.ledger td:last-child { padding-right: 0; }
+table.ledger th, table.ledger td { text-align: left; vertical-align: baseline; padding: var(--s3) var(--s4); }
 table.ledger thead th {
+  background: var(--bg-2);
   font-size: 12px; line-height: 18px; font-weight: var(--w-medium);
-  letter-spacing: 0.06em; color: var(--text-3); padding-block: var(--s2);
-  border-bottom: 1px solid var(--border-strong);
+  color: var(--text-3); border-bottom: 1px solid var(--gray-200);
 }
-table.ledger tbody td { border-bottom: 1px solid var(--border); }
-table.ledger tbody tr:hover td { background: var(--gray-100); }
+table.ledger tbody td { border-bottom: 1px solid var(--gray-200); }
+table.ledger tbody tr:last-child td { border-bottom: 0; }
+table.ledger tbody tr:hover td { background: var(--bg-2); }
 table.ledger tbody tr[hidden] { display: none; }
 table.ledger tr.no-match td { color: var(--text-3); }
 table.ledger .name { font-size: 15px; line-height: 22px; font-weight: var(--w-medium); }
-table.ledger .name a { text-decoration: none; }
-table.ledger .name a:hover { text-decoration: underline; text-underline-offset: 3px; }
+table.ledger .name a { color: var(--text); text-decoration: none; }
+table.ledger .name a:hover { text-decoration: underline; text-decoration-color: var(--link); text-underline-offset: 3px; }
 table.ledger .desc { display: block; color: var(--text-3); font-size: 13px; line-height: 18px; }
 table.ledger .num, table.ledger th.num { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 13px; color: var(--text-2); text-align: right; }
 table.ledger th.num { font-family: var(--sans); }
@@ -263,9 +289,9 @@ table.ledger td.meta { font-size: 13px; line-height: 18px; color: var(--text-3);
 table.ledger td.moment { color: var(--text-2); }
 /* The freshness mark hangs in a fixed gutter past the dates, so the daggers
    line up and the dates still align with each other. */
-table.ledger .c-date-cell { padding-right: 0; }
-table.ledger th.num { padding-right: calc(var(--s4) - 0.06em); }
-table.ledger th.c-date-cell { padding-right: calc(1ch + var(--s2) - 0.06em); }
+table.ledger .c-date-cell { padding-right: var(--s3); }
+table.ledger th.num { padding-right: var(--s4); }
+table.ledger th.c-date-cell { padding-right: calc(var(--s3) + 1ch); }
 
 .state { display: inline-flex; align-items: baseline; gap: var(--s2); font-size: 14px; line-height: 20px; font-weight: var(--w-medium); white-space: nowrap; }
 .state .glyph { font-family: var(--mono); font-weight: var(--w-regular); }
@@ -281,7 +307,6 @@ table.ledger th.c-date-cell { padding-right: calc(1ch + var(--s2) - 0.06em); }
 
 .empty { padding-block: var(--s6); color: var(--text-3); }
 
-
 /* The four moments, as the glossary at the end of a document. Its key column
    is the ledger's first column, so both lists share one vertical line. */
 .legend { display: flex; flex-direction: column; }
@@ -291,106 +316,135 @@ table.ledger th.c-date-cell { padding-right: calc(1ch + var(--s2) - 0.06em); }
   padding: var(--s3) 0; border: 0; border-top: 1px solid var(--border);
   background: none; font: inherit; color: inherit; text-align: left; cursor: pointer;
 }
-.legend-row:first-of-type { border-top-color: var(--border-strong); }
-.legend-row:hover { background: var(--gray-100); }
+.legend-row:first-of-type { border-top-color: var(--gray-300); }
+.legend-row:hover { background: var(--bg-2); }
 .legend-row .k { padding-right: var(--s4); font-size: 15px; line-height: 22px; font-weight: var(--w-medium); }
 .legend-row .v { color: var(--text-2); font-size: 14px; line-height: 20px; }
-.legend-row[aria-pressed="true"] .k { text-decoration: underline; text-underline-offset: 3px; }
+.legend-row[aria-pressed="true"] .k {
+  text-decoration: underline; text-decoration-color: var(--link);
+  text-decoration-thickness: 2px; text-underline-offset: 6px;
+}
 
 /* ---------- comparison (signals) ---------- */
 
 table.compare { width: 100%; border-collapse: collapse; }
 table.compare th, table.compare td { text-align: left; vertical-align: baseline; padding: var(--s3) var(--s4) var(--s3) 0; }
-table.compare thead th { font-size: 13px; font-weight: var(--w-medium); color: var(--text-3); border-bottom: 1px solid var(--border-strong); padding-block: var(--s2); }
+table.compare thead th { font-size: 13px; font-weight: var(--w-medium); color: var(--text-3); border-bottom: 1px solid var(--gray-300); padding-block: var(--s2); }
 table.compare tbody td { border-bottom: 1px solid var(--border); }
 table.compare tbody td:last-child { font-weight: var(--w-medium); }
 
 ol.steps { list-style: none; padding: 0; counter-reset: step; }
 ol.steps { display: flex; flex-direction: column; gap: var(--s3); }
 ol.steps li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: var(--s3); }
-ol.steps li::before { counter-increment: step; content: counter(step); font-family: var(--mono); font-size: 13px; color: var(--text-3); }
+ol.steps li::before { counter-increment: step; content: counter(step); font-family: var(--mono); font-size: 13px; color: var(--muted); }
 
 /* ---------- entry page ---------- */
 
 .rail { position: sticky; top: calc(var(--header-h) + var(--s4)); align-self: start; display: flex; flex-direction: column; gap: var(--s4); }
+
+/* Geist secondary button, full width in the rail. */
 .rail .copy-standing {
   width: 100%; height: var(--control); padding-inline: var(--s3);
-  border: 1px solid var(--text); border-radius: var(--radius-sm);
-  background: var(--text); color: var(--bg);
+  border: 1px solid var(--gray-200); border-radius: var(--radius-sm);
+  background: var(--bg); color: var(--text-2);
   font: inherit; font-size: 13px; font-weight: var(--w-medium); cursor: pointer;
+  box-shadow: var(--shadow-button);
+  transition: border-color 0.15s ease, color 0.15s ease;
 }
-.rail .copy-standing:hover { background: oklch(0.32 0 0); border-color: oklch(0.32 0 0); }
-.rail .copy-standing[data-copied="true"] { background: var(--bg); color: var(--text); }
+.rail .copy-standing:hover { border-color: var(--gray-300); color: var(--text); text-decoration: none; }
+.rail .copy-standing[data-copied="true"] { color: var(--link); border-color: var(--gray-200); }
+
 .toc { display: flex; flex-direction: column; gap: var(--s2); font-size: 14px; line-height: 20px; }
-.toc a { color: var(--text-3); padding-left: var(--s3); border-left: 1px solid var(--border); }
-.toc a:hover { color: var(--text); border-left-color: var(--text); text-decoration: none; }
-.toc a[aria-current] { color: var(--text); border-left-color: var(--text); font-weight: var(--w-medium); }
+.toc a { color: var(--text-3); padding-left: var(--s3); border-left: 1px solid var(--gray-200); }
+.toc a:hover { color: var(--text); border-left-color: var(--gray-300); text-decoration: none; }
+/* The blue edge marks the current section; weight is the non-colour cue. */
+.toc a[aria-current] { color: var(--text); border-left-color: var(--link); font-weight: var(--w-medium); }
 
 .prose { max-width: var(--measure); }
 /* Evidence may use the whole column; only prose is capped at the measure. */
 .prose > .block, .prose > .table-wrap { max-width: none; width: 100%; }
 .prose > * + * { margin-top: var(--s4); }
 .prose h1 { display: none; }
-.prose h2 { font-size: 24px; line-height: 32px; font-weight: var(--w-heading); letter-spacing: -0.02em; margin-top: var(--s12); }
+.prose h2 { font-size: 24px; line-height: 32px; font-weight: var(--w-heading); letter-spacing: -0.012em; margin-top: var(--s12); }
 .prose h3 { font-size: 20px; line-height: 26px; font-weight: var(--w-medium); margin-top: var(--s8); }
 .prose :is(h2, h3) + * { margin-top: var(--s3); }
 .prose p, .prose li { color: var(--text-2); line-height: var(--leading-cjk); }
 .prose li + li { margin-top: var(--s2); }
 .prose strong { color: var(--text); font-weight: var(--w-semibold); }
-.prose a { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--gray-500); }
-.prose code { font-family: var(--mono); font-size: 0.875em; background: var(--bg-2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 4px; }
+.prose a { text-decoration: underline; text-underline-offset: 3px; }
+.prose a:hover { color: var(--link-hover); }
+.prose code { font-family: var(--mono); font-size: 0.875em; background: var(--bg-2); border: 1px solid var(--gray-200); border-radius: 4px; padding: 1px 4px; }
 .prose table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; }
 .prose th, .prose td { text-align: left; vertical-align: baseline; padding: var(--s2) var(--s4) var(--s2) 0; border-bottom: 1px solid var(--border); }
-.prose th { color: var(--text-3); font-weight: var(--w-medium); border-bottom-color: var(--border-strong); }
-.prose blockquote { border-left: 2px solid var(--border-mid); padding-left: var(--s4); color: var(--text-3); }
+.prose th { color: var(--text-3); font-weight: var(--w-medium); border-bottom-color: var(--gray-300); }
+.prose blockquote { border-left: 2px solid var(--gray-200); padding-left: var(--s4); color: var(--text-3); }
+
+/* A prompt is meant to be taken: it lives in a Geist card with a header bar
+   carrying the language label and the copy button. */
+.block { display: flex; flex-direction: column; border: 1px solid var(--gray-200); border-radius: var(--radius); background: var(--bg); overflow: hidden; }
+.block-head {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--s4);
+  background: var(--bg-2); border-bottom: 1px solid var(--gray-200); padding: var(--s2) var(--s3);
+}
+.block-label { font-family: var(--mono); font-size: 12px; line-height: 18px; color: var(--muted); }
+.copy {
+  height: 28px; padding-inline: var(--s3);
+  border: 1px solid var(--gray-200); border-radius: var(--radius-sm);
+  background: var(--bg); color: var(--text-2);
+  font: inherit; font-size: 12px; line-height: 1; cursor: pointer;
+  box-shadow: var(--shadow-button);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.copy:hover { border-color: var(--gray-300); color: var(--text); }
+.copy[data-copied="true"] { color: var(--link); }
 
 .prose pre, .block pre {
-  margin: 0; padding: 0 0 0 var(--s4);
-  background: none; border: 0; border-left: 2px solid var(--border-strong);
+  margin: 0; padding: var(--s3) var(--s4);
+  background: var(--bg-2); border: 0;
   font-family: var(--mono); font-size: 13px; line-height: 20px; color: var(--text-2);
   white-space: pre-wrap; overflow-wrap: anywhere;
 }
 .prose pre code, .block pre code { background: none; border: 0; padding: 0; font-size: inherit; }
 
-.block { display: flex; flex-direction: column; gap: var(--s2); }
-.block-head { display: flex; align-items: center; justify-content: flex-end; gap: var(--s4); }
-.copy {
-  padding: 0 0 2px; border: 0; border-bottom: 1px solid var(--border-strong);
-  background: none; color: var(--text);
-  font: inherit; font-size: 13px; line-height: 18px; cursor: pointer;
-}
-.copy:hover { border-bottom-color: var(--text); }
-.copy[data-copied="true"] { color: var(--text-3); border-bottom-color: transparent; }
-
 /* ---------- search ---------- */
 
 dialog.search {
-  padding: 0; border: 1px solid var(--border-mid); border-radius: var(--radius);
+  padding: 0; border: 1px solid var(--gray-200); border-radius: var(--radius-lg);
   background: var(--bg); color: var(--text);
   width: min(720px, calc(100vw - 32px)); margin-top: 12vh;
-  box-shadow: 0 12px 32px oklch(0 0 0 / 0.12);
+  box-shadow: var(--shadow-menu);
 }
-dialog.search::backdrop { background: oklch(0 0 0 / 0.2); }
+dialog.search::backdrop { background: rgba(0, 0, 0, 0.4); }
 dialog.search input {
-  width: 100%; border: 0; border-bottom: 1px solid var(--border);
+  width: 100%; border: 0; border-bottom: 1px solid var(--gray-200); border-radius: 0;
   padding: var(--s4) var(--s5); font: inherit; font-size: 16px;
   background: none; color: var(--text); outline: none;
 }
-.results { max-height: 56vh; overflow: auto; padding: var(--s2) 0; }
+dialog.search input::placeholder { color: var(--muted); }
+.results { max-height: 56vh; overflow: auto; padding: var(--s2) 0; overscroll-behavior: contain; }
 .results:empty::after { content: attr(data-empty); display: block; padding: var(--s3) var(--s5); color: var(--text-3); font-size: 14px; }
-.hit { display: block; padding: var(--s3) var(--s5); }
+.hit { display: block; padding: var(--s3) var(--s5); color: var(--text); }
+.hit:hover { text-decoration: none; }
 .hit[aria-selected="true"] { background: var(--bg-2); }
 .hit .name { font-size: 15px; font-weight: var(--w-medium); }
 .hit .why { color: var(--text-3); font-size: 13px; line-height: 18px; }
 
-.skip { position: absolute; left: -9999px; background: var(--bg); border: 1px solid var(--text); border-radius: var(--radius-sm); padding: var(--s2) var(--s3); }
+.skip { position: absolute; left: -9999px; background: var(--bg); border: 1px solid var(--link); border-radius: var(--radius-sm); padding: var(--s2) var(--s3); color: var(--text); }
 .skip:focus { left: var(--s4); top: var(--s4); z-index: 10; }
 
 /* ---------- footer ---------- */
 
-.site-footer { margin-top: auto; border-top: 1px solid var(--border); }
+.site-footer { margin-top: auto; border-top: 1px solid var(--gray-200); }
 .site-footer .inner { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s6); flex-wrap: wrap; padding-block: var(--s6); }
 .site-footer nav { display: flex; gap: var(--s5); }
+.site-footer nav a { color: var(--text-3); }
+.site-footer nav a:hover { color: var(--text); }
+
+/* ---------- motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .action, .copy, .copy-standing, .search-trigger, .filter { transition: none; }
+}
 
 /* ---------- reflow ---------- */
 
@@ -402,11 +456,6 @@ dialog.search input {
   .grid12 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .span-3, .span-4, .span-5, .span-6, .span-7, .span-8, .span-12,
   .start-8, .start-9, .start-10 { grid-column: 1 / -1; }
-/* Column starts stay overridable at breakpoints, so they are classes,
-   never inline styles. */
-.start-8 { grid-column: 8 / span 5; }
-.start-9 { grid-column: 9 / span 4; }
-.start-10 { grid-column: 10 / span 3; }
   .opening { padding-block: var(--s12) var(--s6); }
   .opening .facts { align-self: start; }
   .t-page { font-size: 32px; line-height: 40px; }
@@ -414,21 +463,22 @@ dialog.search input {
   .masthead .inner { flex-wrap: wrap; }
 }
 /* Below the width the five columns need, the ledger stops being a table and
-   becomes a name + meta line list. The threshold is the 760px min-width plus
-   the 24px edge padding on both sides (808): between the old 760 breakpoint
-   and 808 the fixed min-width overflowed its container. Horizontal scrolling
-   is not reading. */
+   becomes a name + meta line list inside the same card. The threshold is the
+   760px min-width plus the 24px edge padding on both sides (808): between the
+   old 760 breakpoint and 808 the fixed min-width overflowed its container.
+   Horizontal scrolling is not reading. */
 @media (max-width: 808px) {
   table.ledger { min-width: 0; table-layout: auto; }
   table.ledger, table.ledger tbody, table.ledger tr { display: block; }
   table.ledger thead { display: none; }
-  table.ledger tbody tr { padding-block: var(--s3); border-bottom: 1px solid var(--border); }
+  table.ledger tbody tr { padding: var(--s3) var(--s4); border-bottom: 1px solid var(--gray-200); }
+  table.ledger tbody tr:last-child { border-bottom: 0; }
   table.ledger tbody td { display: inline; padding: 0; border: 0; background: none; }
-  table.ledger tbody tr:hover { background: var(--gray-100); }
+  table.ledger tbody tr:hover { background: var(--bg-2); }
   table.ledger tbody tr:hover td { background: none; }
   table.ledger td.name { display: block; margin-bottom: var(--s1); }
   table.ledger td.meta, table.ledger td.num { font-size: 13px; line-height: 18px; text-align: left; color: var(--text-3); }
-  table.ledger td.name ~ td + td::before { content: "·"; color: var(--gray-500); margin-inline: var(--s2); }
+  table.ledger td.name ~ td + td::before { content: "·"; color: var(--gray-300); margin-inline: var(--s2); }
   table.ledger .state.mark { width: auto; margin-left: var(--s1); }
   .legend-row { grid-template-columns: minmax(0, 1fr); gap: var(--s1); }
   .legend-row .k { padding-right: 0; }
@@ -437,4 +487,5 @@ dialog.search input {
 @media (max-width: 620px) {
   .grid12 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   nav.primary { gap: var(--s4); font-size: 13px; }
+  .badge { padding-inline: 8px; }
 }

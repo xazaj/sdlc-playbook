@@ -36,13 +36,10 @@ const facts = ([
       <h1 class="t-page" style="margin-top: 8px;">{d.title}</h1>
       <p class="t-lede">{d.summary}</p>
       <p class="byline">
-        <span class="num">{d.evaluated_version}</span>
-        <span aria-hidden="true">·</span>
-        <span class="num">{formatDate(d.evaluated_at)}</span>
-        <span aria-hidden="true">·</span>
-        <State date={d.evaluated_at} />
-        {facts.map(([, v]) => (<><span aria-hidden="true">·</span><span>{v}</span></>))}
-        {d.upstream && (<><span aria-hidden="true">·</span><a href={d.upstream}>{new URL(d.upstream).host.replace(/^www\./, '')} ↗</a></>)}
+        <span class="badge"><span class="num">{d.evaluated_version}</span></span>
+        <span class="badge"><span class="num">{formatDate(d.evaluated_at)}</span><State date={d.evaluated_at} /></span>
+        {facts.map(([k, v]) => (<span class="badge">{v}</span>))}
+        {d.upstream && (<span class="badge"><a href={d.upstream}>{new URL(d.upstream).host.replace(/^www\./, '')} ↗</a></span>)}
       </p>
       {prompt && (
         <div class="actions">
@@ -124,14 +121,16 @@ const facts = ([
       block.className = 'block';
       const head = document.createElement('div');
       head.className = 'block-head';
+      const label = document.createElement('span');
+      label.className = 'block-label';
+      label.textContent = lang === 'text' ? 'prompt' : lang;
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'copy';
       button.textContent = lang === 'text' ? '复制 prompt' : '复制';
-      head.append(button);
+      head.append(label, button);
       pre.replaceWith(block);
       block.append(head, pre);
-
       button.addEventListener('click', async () => {
         await navigator.clipboard.writeText(pre.innerText);
         button.textContent = '已复制';
