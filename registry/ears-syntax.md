@@ -4,13 +4,14 @@ title: EARS 需求句式
 summary: 五种句式把需求写成可验证的句子，评审从主观印象变成可机检的语法约束。
 category: define
 kind: doc
+invoke: direct
 origin: external
 provider: Alistair Mavin 等（Rolls-Royce，RE'09 论文）
 upstream: https://en.wikipedia.org/wiki/Easy_Approach_to_Requirements_Syntax
 release_source: local
 evaluated_version: "0.1.0"
 evaluated_at: "2026-09-03"
-updated_at: "2026-09-03"
+updated_at: "2026-09-17"
 ---
 
 ## 何时用
@@ -35,9 +36,35 @@ updated_at: "2026-09-03"
 
 本卡与 `claude-prose-style` 同型：不安装任何依赖，只往 AGENTS.md 写一段规则。规则文本由本库维护。
 
-## 安装 prompt
+## 使用 prompt
 
-复制整块，贴进目标项目的 agent 会话。prompt 描述结果而不写命令，任何 agent 都能执行：
+复制整块，贴进任何 agent 的聊天窗口，当次会话生效，无需安装：
+
+````text
+【EARS 需求句式】会话级启用 — 直接粘贴，无需安装
+
+从本条消息起，你在本次会话中按以下规则处理需求：
+
+1. 每一条会被验证或评审的需求，必须写成五种 EARS 形态之一：
+   - Ubiquitous：「The <system> shall <behavior>.」
+   - Event-driven：「When <trigger>, the <system> shall <behavior>.」
+   - State-driven：「While <in state>, the <system> shall <behavior>.」
+   - Optional：「Where <feature is included>, the <system> shall <behavior>.」
+   - Unwanted：「If <trigger>, then the <system> shall <response>.」
+2. 行为子句必须可验证：会被测试的需求，把可度量边界（时间、数量、精度）写进子句。
+3. 需求只描述行为，不描述实现选型。
+4. 评审需求时，不符合五种形态之一的条目直接拒收并按形态改写，不争论「读起来是否清楚」。
+5. 不适用：一次性备忘、探针问题、总数三五条以内的琐碎改动，不强制套句式。
+
+执行要求：
+- 先用两三行复述你理解的适用边界，确认后再开始。
+- 审查需求时，每条标注命中的形态，或标注「不适用」并给原因。
+- 本 prompt 只在会话内生效；我说「固化」时，改用本条目页的固化 prompt。
+````
+
+## 固化 prompt
+
+把句式长期落进目标项目时用。复制整块，贴进目标项目的 agent 会话。prompt 描述结果而不写命令，任何 agent 都能执行：
 
 ````text
 请把 EARS 需求句式约束装进本项目，要求：

@@ -21,6 +21,7 @@ const entries = defineCollection({
     category: categoryId,
     kind: kindId,
     origin: z.enum(['local', 'marketplace', 'external']),
+    invoke: z.enum(['direct', 'install', 'both']).optional(),
     provider: z.string().optional(),
     asset: z.string().optional(),
     upstream: z.string().url().optional(),

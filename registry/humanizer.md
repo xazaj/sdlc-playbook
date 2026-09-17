@@ -4,6 +4,7 @@ title: humanizer（英文去 AI 腔重写）
 summary: 英文去 AI 腔：25 条 Wikipedia 来源模式按强度分级整段重写，缺事实先问不编造。
 category: bootstrap
 kind: skill
+invoke: install
 origin: external
 provider: blader/humanizer
 asset: humanizer

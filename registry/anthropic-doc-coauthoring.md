@@ -4,6 +4,7 @@ title: doc-coauthoring（example-skills）
 summary: 三阶段协作写文档：收集上下文、逐节精炼、用一个无上下文的子代理当第一个读者。
 category: define
 kind: skill
+invoke: install
 origin: marketplace
 provider: example-skills@anthropic-agent-skills
 asset: example-skills:doc-coauthoring

@@ -45,31 +45,33 @@ docs/      设计文档、实现计划与验证日志
 
 ## 新增条目
 
-一个资产一个 markdown，放在 `registry/<name>.md`，构建时生成 `/entries/<name>/` 一个页面。所有形态共用同一个模板，差异只在 frontmatter 的几个字段和安装 prompt 做的事上。**不要为每种形态各建一套模板**，那样改一条通用规则要改五处。
+一个资产一个 markdown，放在 `registry/<name>.md`，构建时生成 `/entries/<name>/` 一个页面。所有形态共用同一个模板，差异只在 frontmatter 的几个字段、调用类型（`invoke`）与 prompt 小节做的事上。**不要为每种形态各建一套模板**，那样改一条通用规则要改五处。
 
 ### 模板
 
 模板是 `registry/_TEMPLATE.md`，复制成 `registry/<name>.md` 后按注释填写。**不要把模板内容抄进本文档**——两份会各自改动，很快对不上。
 
-`name`、`title`、`summary`、`category`、`kind`、`origin`、`evaluated_version`、`evaluated_at` 必填，缺任何一个构建失败。正文缺「何时用」「安装 prompt」「版本」三节之一、或缺围栏块，构建同样失败。
+`name`、`title`、`summary`、`category`、`kind`、`origin`、`evaluated_version`、`evaluated_at` 必填，缺任何一个构建失败。正文缺「何时用」「版本」两节、缺与 `invoke` 匹配的 prompt 小节（direct 需「使用」或「固化」，install 需「安装」，both 需「使用」与「安装」）、或缺围栏块，构建同样失败。
 
 清单页每个 tab 的内容在 `site/src/content/categories/<id>.md`，模板是同目录的 `_TEMPLATE.md`。新增时刻时：在 `site/src/content.config.ts` 的 `CATEGORY_IDS` 按顺序插入 id，新建对应分类文件，顺延其后各文件的 `order`，然后运行 `cd site && npm run build` 校验。
 
 ### 按形态的差异
 
-| kind | 版本怎么填 | 安装 prompt 做什么 | 额外必填 |
-|---|---|---|---|
-| `skill` | 上游发布版本 | 确保技能在项目中可用，并把适用边界写进 AGENTS.md | — |
-| `design-md` | 短 commit SHA | 从钉住 commit 的 raw 地址取文件写入项目，替换品牌项，映射 token | `license`、`pairs_with` |
-| `component-library` | 上游发布版本 | 初始化依赖，覆盖默认主题，把用法约束写进 AGENTS.md | — |
-| `doc` | 本库自己的版本号 | 只往 AGENTS.md 写一段规则，不安装任何依赖 | — |
-| `mcp` | 上游发布版本 | 配置 MCP server，并写明何时允许 agent 调用 | — |
+| kind | invoke 默认 | 版本怎么填 | prompt 做什么 | 额外必填 |
+|---|---|---|---|---|
+| `skill` | `install` | 上游发布版本 | 「安装 prompt」五步流程：检测两级安装→对版本→安装/更新→加载确认→AGENTS.md 边界 | — |
+| `design-md` | `install` | 短 commit SHA | 从钉住 commit 的 raw 地址取文件写入项目，替换品牌项，映射 token | `license`、`pairs_with` |
+| `component-library` | `install` | 上游发布版本 | 初始化依赖，覆盖默认主题，把用法约束写进 AGENTS.md | — |
+| `doc` | `direct` | 本库自己的版本号 | 「使用 prompt」贴进会话即用；「固化 prompt」把规则写进 AGENTS.md，不安装任何依赖 | — |
+| `mcp` | `install` | 上游发布版本 | 配置 MCP server，并写明何时允许 agent 调用 | — |
+
+自包含、贴进聊天窗口就能用的资产即使 kind 是 skill 也可标 `invoke: both`（如 `deai-zh`），此时「使用」与「安装」两节都要有，使用在前。
 
 ### 三条规则
 
 1. **登记卡不放入 `catalog/skills/`。** 该目录会被 `install.sh` 挂载为技能，登记卡的 description 会与上游技能争夺同一批触发词。
 2. **登记卡不复制上游当前版本号。** Claude Code 插件由 `installed_plugins.json` 管理，gstack 有自己的更新检查，本库由 git 管理。复制的版本号从当天起就开始漂移为错误数据。`evaluated_version` 记录的是「本卡评估基于哪一版」，这是永远为真的事实。
-3. **安装 prompt 描述结果而非命令。** 必须满足三点：任何 agent 都能执行，Claude Code 的快捷命令只作为附注；把适用边界一起写进目标项目的 AGENTS.md，否则上游技能「任何功能都必须」一类的触发描述会在项目中失控；可重复执行，第二次贴同一段不产生重复内容，因此要写明「若已存在则更新」。prompt 中将写入目标项目文件的片段（如 AGENTS.md 小节）用英文，其余说明用中文。
+3. **prompt 描述结果而非命令。** 「使用 prompt」自包含、当次会话生效、任何 agent 贴了就能执行；「固化/安装 prompt」必须满足三点：任何 agent 都能执行，Claude Code 的快捷命令只作为附注；把适用边界一起写进目标项目的 AGENTS.md，否则上游技能「任何功能都必须」一类的触发描述会在项目中失控；可重复执行，第二次贴同一段不产生重复内容，因此要写明「若已存在则更新」。安装 prompt 另有两道防幻觉闸门：版本号必须报告从哪个文件读到；新装技能本会话不可见时必须停下告知激活方式，不许装作可用。prompt 中将写入目标项目文件的片段（如 AGENTS.md 小节）用英文，其余说明用中文。
 
 ### 让 agent 生成条目
 
@@ -86,9 +88,11 @@ docs/      设计文档、实现计划与验证日志
    evaluated_version 填你实际查证过的版本；查不到就停下来问我，不要猜。
    evaluated_at 填今天。
 
-3. 正文四节齐全。「何时用」必须同时写出适用与不适用，不适用那半句不许省。
+3. 正文各节齐全。「何时用」必须同时写出适用与不适用，不适用那半句不许省。
    「这一版怎么样」写你实际验证过的结论，没验证过的写成待验证，不要用
-   上游 README 的宣传语充数。「安装 prompt」是一个围栏块，描述结果而非
+   上游 README 的宣传语充数。invoke 按调用方式选：贴进会话就能用的规则写
+   「使用 prompt」（direct），需要装技能/插件的写五步流程「安装 prompt」
+   (install)，两者皆可的 both 两节都要。prompt 是围栏块，描述结果而非
    命令，把适用边界一并写进目标项目的 AGENTS.md，且第二次执行不产生重复
    内容。后附一句可操作的确认方式。
 

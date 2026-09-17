@@ -4,6 +4,7 @@ title: writing-plans（superpowers）
 summary: 把已批准的规格转成实现计划：任务级文件清单、接口签名、逐步 TDD 步骤，禁止占位符。
 category: define
 kind: skill
+invoke: install
 origin: marketplace
 provider: superpowers@superpowers-marketplace
 asset: superpowers:writing-plans

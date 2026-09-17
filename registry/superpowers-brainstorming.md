@@ -4,6 +4,7 @@ title: brainstorming（superpowers）
 summary: 把模糊想法问成设计：先分级 spike/bounded/architectural，再按级澄清、提方案、过审批门。
 category: define
 kind: skill
+invoke: install
 origin: marketplace
 provider: superpowers@superpowers-marketplace
 asset: superpowers:brainstorming

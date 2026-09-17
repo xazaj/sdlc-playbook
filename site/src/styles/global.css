@@ -423,11 +423,6 @@ dialog.search input {
 dialog.search input::placeholder { color: var(--muted); }
 .results { max-height: 56vh; overflow: auto; padding: var(--s2) 0; overscroll-behavior: contain; }
 .results:empty::after { content: attr(data-empty); display: block; padding: var(--s3) var(--s5); color: var(--text-3); font-size: 14px; }
-.hit { display: block; padding: var(--s3) var(--s5); color: var(--text); }
-.hit:hover { text-decoration: none; }
-.hit[aria-selected="true"] { background: var(--bg-2); }
-.hit .name { font-size: 15px; font-weight: var(--w-medium); }
-.hit .why { color: var(--text-3); font-size: 13px; line-height: 18px; }
 
 .skip { position: absolute; left: -9999px; background: var(--bg); border: 1px solid var(--link); border-radius: var(--radius-sm); padding: var(--s2) var(--s3); color: var(--text); }
 .skip:focus { left: var(--s4); top: var(--s4); z-index: 10; }
@@ -488,4 +483,92 @@ dialog.search input::placeholder { color: var(--muted); }
   .grid12 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   nav.primary { gap: var(--s4); font-size: 13px; }
   .badge { padding-inline: 8px; }
+}
+
+/* ---------- invocation ---------- */
+
+/* The invocation suffix rides the existing 形态 column; muted so the kind
+   stays the primary signal. */
+.invoke-suffix { color: var(--muted); }
+
+.prompt-dock { display: flex; flex-direction: column; gap: var(--s3); }
+
+/* The five-step strip mirrors the install prompt's numbered steps so the
+   reader knows what the paste will do before pasting. */
+.flow-strip {
+  list-style: none; margin: 0; padding: var(--s2) var(--s3);
+  border: 1px solid var(--gray-200); border-radius: var(--radius); background: var(--bg);
+}
+.flow-strip li {
+  display: flex; align-items: baseline; gap: var(--s2); padding-block: var(--s1);
+  font-size: 13px; line-height: 18px; color: var(--text-2);
+}
+.flow-strip .n { font-family: var(--mono); font-size: 12px; color: var(--muted); width: 12px; flex: none; }
+
+/* Geist segmented control: one active segment inverts to black. */
+.segmented {
+  display: inline-flex; align-self: flex-start; gap: 2px; padding: 2px;
+  border: 1px solid var(--gray-200); border-radius: var(--radius-sm); background: var(--bg);
+}
+.seg {
+  border: 0; background: none; padding: 4px 10px; border-radius: 4px;
+  font: inherit; font-size: 12px; line-height: 18px; color: var(--text-3); cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.seg:hover { color: var(--text); }
+.seg[aria-pressed="true"] { background: var(--text); color: #fff; }
+
+.kbd-hint { margin: 0; font-size: 12px; line-height: 18px; color: var(--muted); }
+
+/* Quiet syntax cue inside prompts: step tags carry weight, list numbers recede. */
+.ph-step { color: var(--text); font-weight: var(--w-medium); }
+.ph-num { color: var(--muted); }
+
+/* Below the tablet break the rail's copy button sinks below the whole article;
+   the bar keeps the primary action one thumb away. */
+.mobile-copy { display: none; }
+@media (max-width: 900px) {
+  .mobile-copy {
+    display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    justify-content: center; padding: var(--s2) var(--s4) calc(var(--s2) + env(safe-area-inset-bottom, 0px));
+    background: var(--bg); border-top: 1px solid var(--gray-200);
+  }
+  .mobile-copy .action { width: 100%; }
+  body:has(.mobile-copy) main { padding-bottom: calc(var(--s16) + 64px); }
+}
+
+/* ---------- search hits (row with inline copy) ---------- */
+
+.hit {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--s3);
+  padding: var(--s3) var(--s4) var(--s3) var(--s5);
+}
+.hit[aria-selected="true"] { background: var(--bg-2); }
+.hit-main { display: block; color: var(--text); min-width: 0; flex: 1; }
+.hit-main .name { font-size: 15px; font-weight: var(--w-medium); }
+.hit-main .why { color: var(--text-3); font-size: 13px; line-height: 18px; }
+.hit-copy {
+  flex: none; height: 28px; padding-inline: var(--s3);
+  border: 1px solid var(--gray-200); border-radius: var(--radius-sm);
+  background: var(--bg); color: var(--text-2);
+  font: inherit; font-size: 12px; line-height: 1; cursor: pointer;
+  box-shadow: var(--shadow-button);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.hit-copy:hover { border-color: var(--gray-300); color: var(--text); }
+dialog.search .copy-note {
+  padding: var(--s2) var(--s5); border-top: 1px solid var(--gray-200);
+  font-size: 13px; line-height: 18px; color: var(--text-2);
+}
+
+/* ---------- cross-document view transitions ---------- */
+
+/* Native same-origin MPA transitions: the ledger row's title morphs into the
+   entry heading. Browsers without support navigate as before. */
+@view-transition { navigation: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) {
+    animation-duration: 0.01ms !important;
+  }
 }

@@ -4,6 +4,7 @@ title: 架构优先预检（su-architecture-first）
 summary: 动手改代码前先定位真实目标、归属层与事实源，确定变更类型与验证证据。
 category: build
 kind: skill
+invoke: install
 origin: external
 provider: doublesq97-ui
 asset: su-architecture-first

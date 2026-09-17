@@ -4,6 +4,7 @@ title: sepia（去 AI 味写作）
 summary: 修文档的 AI 指纹：发版说明、复盘、PR 回复各按场合规则去味，写作前中后三个动词入口。
 category: bootstrap
 kind: skill
+invoke: install
 origin: marketplace
 provider: sepia@sepia
 asset: sepia:sepia

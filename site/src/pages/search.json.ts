@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { allCategories, allEntries, KIND_LABEL } from '../lib/catalog';
+import { allCategories, allEntries, extractPrompts, INVOKE_LABEL, invokeOf, KIND_LABEL } from '../lib/catalog';
 
 export const GET: APIRoute = async () => {
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -10,14 +10,17 @@ export const GET: APIRoute = async () => {
   const index = entries.map((entry) => {
     const d = entry.data;
     const kind = KIND_LABEL[d.kind] ?? d.kind;
+    const invoke = INVOKE_LABEL[invokeOf(entry)];
     const category = titleOf.get(d.category) ?? d.category;
     return {
       title: d.title,
       summary: d.summary,
       category,
       kind,
+      invoke,
+      prompt: extractPrompts(entry.body)[0]?.text ?? '',
       url: `${base}/entries/${d.name}`,
-      haystack: [d.name, d.title, d.summary, category, kind, d.provider ?? '', entry.body ?? '']
+      haystack: [d.name, d.title, d.summary, category, kind, invoke, d.provider ?? '', entry.body ?? '']
         .join(' ')
         .toLowerCase(),
     };

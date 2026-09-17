@@ -4,12 +4,13 @@ title: 设计约束回路
 summary: 同类页面反复生成时，把人工纠正沉淀为约束文件、有界样式与机械检查，用基线盲比驱动更新。
 category: design
 kind: doc
+invoke: direct
 origin: local
 upstream: https://vercel.com/blog/how-our-agents-build-on-brand-pages-with-design-md
 release_source: local
 evaluated_version: "0.1.0"
 evaluated_at: "2026-09-12"
-updated_at: "2026-09-12"
+updated_at: "2026-09-17"
 ---
 
 ## 何时用
@@ -33,7 +34,28 @@ updated_at: "2026-09-12"
 
 待验证（本卡未实测）：六步回路未在真实项目完整走一轮；与 `ai-design-three-stages`、`gstack-design-consultation` 同装时 DESIGN.md 的分节共存表现。
 
-## 安装 prompt
+## 使用 prompt
+
+复制整块，贴进任何 agent 的聊天窗口，当次会话生效，无需安装：
+
+````text
+【设计约束回路】会话级启用 — 直接粘贴，无需安装
+
+本次会话中反复生成同类页面（报告、提案、benchmark、微站）时，按以下规则走：
+
+1. 同类页面的第一版先存基线：prompt、输入、配置、截图，再糙也留着。
+2. 每次我纠正你，把纠正改写成可观察规则（「证据表格吃满可用宽度」，不是
+   「更清爽」），追加进 DESIGN.md 的 Observable decisions；机械可复用的落成
+   有界类名或 token 并登记到 Available primitives；能机械验证的落成生成后
+   跑的检查。之后生成只用登记过的类名与 token，不读样式表实现。
+3. 下一版与基线盲比，不凭记忆比。
+4. 给反复出现的缺陷起短名（capsule-badge、chart-in-dark-box），列为默认禁止项。
+5. 一次性界面不走这个回路。
+
+执行要求：先复述你理解的三类落点（规则/类名与 token/检查）与适用边界，确认后开始。
+````
+
+## 固化 prompt
 
 复制整块，贴进目标项目的 agent 会话。prompt 描述结果而不写命令，任何 agent 都能执行：
 

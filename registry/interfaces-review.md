@@ -4,6 +4,7 @@ title: interface-review 与 break（interfaces）
 summary: 按变更范围审查界面（回归三态归类），把组件渲染到每种可达状态做压力测试。
 category: verify
 kind: skill
+invoke: install
 origin: external
 provider: interfaces@interfaces（jakubkrehel/skills 自带 marketplace）
 asset: interface-review / break

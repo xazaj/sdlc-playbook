@@ -31,7 +31,8 @@ const updated = entries.length ? formatDate(entries[0]!.data.evaluated_at) : '�
 
 <dialog class="search" id="search-dialog" aria-label="搜索条目">
   <input type="search" id="search-input" placeholder="搜索条目、来源或正文" autocomplete="off" aria-controls="search-results" />
-  <div class="results" id="search-results" role="listbox" data-empty="输入关键词以搜索。↑ ↓ 移动，⏎ 打开，Esc 关闭。"></div>
+  <div class="results" id="search-results" role="listbox" data-empty="输入关键词以搜索。↑ ↓ 移动，⏎ 打开；右侧「复制」直接拿走 prompt，Esc 关闭。"></div>
+  <div class="copy-note" id="search-copy-note" role="status" hidden></div>
 </dialog>
 
 <script define:vars={{ endpoint: `${base}/search.json` }}>
@@ -43,6 +44,16 @@ const updated = entries.length ? formatDate(entries[0]!.data.evaluated_at) : '�
   let hits = [];
   let cursor = 0;
 
+  const noteEl = document.getElementById('search-copy-note');
+  let noteTimer = 0;
+  function note(text) {
+    if (!noteEl) return;
+    noteEl.textContent = text;
+    noteEl.hidden = false;
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(() => { noteEl.hidden = true; }, 1800);
+  }
+
   async function load() {
     if (!index) index = await (await fetch(endpoint)).json();
     return index;
@@ -51,19 +62,38 @@ const updated = entries.length ? formatDate(entries[0]!.data.evaluated_at) : '�
   function paint() {
     list.textContent = '';
     hits.forEach((hit, i) => {
+      // A row, not a link: the row is the option, the link opens, the button copies.
+      // Nesting a button inside an anchor is invalid HTML and traps clicks.
+      const row = document.createElement('div');
+      row.className = 'hit';
+      row.setAttribute('role', 'option');
+      row.setAttribute('aria-selected', String(i === cursor));
       const a = document.createElement('a');
-      a.className = 'hit';
+      a.className = 'hit-main';
       a.href = hit.url;
-      a.setAttribute('role', 'option');
-      a.setAttribute('aria-selected', String(i === cursor));
       const name = document.createElement('div');
       name.className = 'name';
       name.textContent = hit.title;
       const why = document.createElement('div');
       why.className = 'why';
-      why.textContent = `${hit.category} · ${hit.kind} · ${hit.summary}`;
+      why.textContent = `${hit.category} · ${hit.kind} · ${hit.invoke} · ${hit.summary}`;
       a.append(name, why);
-      list.append(a);
+      const copy = document.createElement('button');
+      copy.type = 'button';
+      copy.className = 'hit-copy';
+      copy.title = `复制${hit.invoke} prompt`;
+      copy.textContent = '复制';
+      copy.addEventListener('click', async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!hit.prompt) return;
+        await navigator.clipboard.writeText(hit.prompt);
+        copy.textContent = '已复制';
+        note(`已复制「${hit.title}」的${hit.invoke} prompt`);
+        setTimeout(() => { copy.textContent = '复制'; }, 1600);
+      });
+      row.append(a, copy);
+      list.append(row);
     });
     list.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' });
   }

@@ -4,6 +4,7 @@ title: better-* 界面技能家族（interfaces）
 summary: 排版、色彩、布局、无障碍、UI、文案六域打磨规则，外加变体探索与实现逆向。
 category: design
 kind: skill
+invoke: install
 origin: external
 provider: interfaces@interfaces（jakubkrehel/skills 自带 marketplace）
 asset: better-interface / better-ui / better-typography / better-colors / better-accessibility / better-layout / better-writing / variant / explain-interface

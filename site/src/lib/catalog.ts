@@ -17,6 +17,21 @@ export const ORIGIN_LABEL: Record<string, string> = {
   external: '外部',
 };
 
+export type Invoke = 'direct' | 'install' | 'both';
+
+export const INVOKE_LABEL: Record<Invoke, string> = {
+  direct: '即时',
+  install: '需安装',
+  both: '即时/需安装',
+};
+
+/** How the user calls the asset. Orthogonal to `kind` (what the asset is):
+ *  a prompt can be self-sufficient even when the asset is a skill. Absent
+ *  frontmatter derives from kind. */
+export function invokeOf(entry: Entry): Invoke {
+  return (entry.data.invoke as Invoke | undefined) ?? (entry.data.kind === 'doc' ? 'direct' : 'install');
+}
+
 /** Days after which an evaluation is flagged for re-review. */
 const DUE_AFTER_DAYS = 90;
 const STALE_AFTER_DAYS = 180;
@@ -48,14 +63,24 @@ export async function allCategories(): Promise<Category[]> {
 }
 
 /** Sections every entry must carry. Frontmatter is checked by the schema;
- *  this is the body half of the same contract. A card missing its install
- *  prompt would otherwise render a page with nothing to copy. */
-const REQUIRED_SECTIONS = ['## 何时用', '## 安装 prompt', '## 版本'] as const;
+ *  this is the body half of the same contract. A card missing its prompt
+ *  section would otherwise render a page with nothing to copy. */
+const REQUIRED_SECTIONS = ['## 何时用', '## 版本'] as const;
+const PROMPT_HEADING = /^## (使用|固化|安装) prompt\b/m;
 
-function assertBodyContract(entry: Entry): void {
+function assertBodyContract(entry: Entry, prompts: PromptSection[]): void {
   const body = entry.body ?? '';
   const missing = REQUIRED_SECTIONS.filter((h) => !body.includes(`\n${h}`) && !body.startsWith(h));
-  if (!/^\s*`{3,}/m.test(body)) missing.push('围栏块（安装 prompt 本体）' as never);
+  if (!PROMPT_HEADING.test(body)) missing.push('prompt 小节（使用 / 固化 / 安装 任一）' as never);
+  if (!/^\s*`{3,}/m.test(body)) missing.push('围栏块（prompt 本体）' as never);
+  // The invocation type named in frontmatter must match the sections present.
+  const has = (t: PromptSection['type']) => prompts.some((p) => p.type === t);
+  const inv = invokeOf(entry);
+  const ok =
+    inv === 'both' ? has('use') && has('install')
+    : inv === 'direct' ? has('use') || has('persist')
+    : has('install');
+  if (!ok) missing.push(`与 invoke: ${inv} 匹配的 prompt 小节` as never);
   if (missing.length > 0) {
     throw new Error(
       `registry/${entry.data.name}.md 不符合条目正文契约，缺少：${missing.join('、')}。` +
@@ -66,7 +91,7 @@ function assertBodyContract(entry: Entry): void {
 
 export async function allEntries(): Promise<Entry[]> {
   const entries = await getCollection('entries');
-  for (const entry of entries) assertBodyContract(entry);
+  for (const entry of entries) assertBodyContract(entry, extractPrompts(entry.body));
   return entries.sort((a, b) => b.data.evaluated_at.getTime() - a.data.evaluated_at.getTime());
 }
 
@@ -82,9 +107,35 @@ export function countByKind(entries: Entry[]): { kind: string; count: number }[]
     .sort((a, b) => b.count - a.count);
 }
 
-/** Pulls the first fenced code block out of the raw markdown body — the install prompt. */
-export function extractPrompt(body: string | undefined): string | null {
-  if (!body) return null;
-  const match = body.match(/^\s*`{3,}[^\n]*\n([\s\S]*?)\n\s*`{3,}\s*$/m);
-  return match ? match[1]!.trimEnd() : null;
+export type PromptSection = { type: 'use' | 'persist' | 'install'; label: string; text: string };
+
+const PROMPT_SECTION_HEADINGS: [RegExp, PromptSection['type'], string][] = [
+  [/^## 使用 prompt\b/, 'use', '使用'],
+  [/^## 固化 prompt\b/, 'persist', '固化'],
+  [/^## 安装 prompt\b/, 'install', '安装'],
+];
+
+/** Every prompt section with its first fenced block, in document order.
+ *  The first section is the page's primary copy target. Only the first
+ *  block inside a prompt section counts; later blocks (review sub-prompts
+ *  and the like) stay secondary. */
+export function extractPrompts(body: string | undefined): PromptSection[] {
+  if (!body) return [];
+  const lines = body.split('\n');
+  const out: PromptSection[] = [];
+  let current: Omit<PromptSection, 'text'> | null = null;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]!;
+    if (/^##\s/.test(line)) {
+      const heading = PROMPT_SECTION_HEADINGS.find(([re]) => re.test(line));
+      current = heading ? { type: heading[1], label: heading[2] } : null;
+      continue;
+    }
+    if (current && /^\s*`{4,}/.test(line)) {
+      const end = lines.findIndex((l, j) => j > i && /^\s*`{4,}/.test(l));
+      if (end > i) out.push({ ...current, text: lines.slice(i + 1, end).join('\n').trimEnd() });
+      current = null;
+    }
+  }
+  return out;
 }

@@ -3,7 +3,16 @@ import type { GetStaticPaths } from 'astro';
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import State from '../../components/State.astro';
-import { allCategories, allEntries, extractPrompt, formatDate, KIND_LABEL, ORIGIN_LABEL } from '../../lib/catalog';
+import {
+  allCategories,
+  allEntries,
+  extractPrompts,
+  formatDate,
+  INVOKE_LABEL,
+  invokeOf,
+  KIND_LABEL,
+  ORIGIN_LABEL,
+} from '../../lib/catalog';
 
 export const getStaticPaths = (async () => {
   const entries = await allEntries();
@@ -17,10 +26,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const categories = await allCategories();
 const category = categories.find((c) => c.data.id === d.category)!;
 const { Content } = await render(entry);
-const prompt = extractPrompt(entry.body);
+const prompts = extractPrompts(entry.body);
+const primary = prompts[0];
+const invoke = invokeOf(entry);
+const hasInstall = prompts.some((p) => p.type === 'install');
+const INSTALL_STEPS = ['检测', '对版本', '安装/更新', '加载确认'];
 
 const facts = ([
-  ['形态', KIND_LABEL[d.kind] ?? d.kind],
+  ['形态', `${KIND_LABEL[d.kind] ?? d.kind} · ${INVOKE_LABEL[invoke]}`],
   ['来源', [ORIGIN_LABEL[d.origin], d.provider].filter(Boolean).join(' · ')],
   ['许可', d.license ?? ''],
   ['搭配', d.pairs_with.join(' / ')],
@@ -33,7 +46,7 @@ const facts = ([
   <section class="shell opening">
     <div class="measure-wide">
       <p class="t-meta"><a href={`${base}/#${d.category}`}>{category.data.title}</a></p>
-      <h1 class="t-page" style="margin-top: 8px;">{d.title}</h1>
+      <h1 class="t-page" style={`margin-top: 8px; view-transition-name: ${d.name};`}>{d.title}</h1>
       <p class="t-lede">{d.summary}</p>
       <p class="byline">
         <span class="badge"><span class="num">{d.evaluated_version}</span></span>
@@ -41,10 +54,10 @@ const facts = ([
         {facts.map(([k, v]) => (<span class="badge">{v}</span>))}
         {d.upstream && (<span class="badge"><a href={d.upstream}>{new URL(d.upstream).host.replace(/^www\./, '')} ↗</a></span>)}
       </p>
-      {prompt && (
+      {primary && (
         <div class="actions">
-          <button class="action" type="button" id="copy-primary" data-prompt={prompt}>复制安装 prompt</button>
-          <a class="t-compact" href="#install">看它做了什么</a>
+          <button class="action" type="button" id="copy-primary" data-prompt={primary.text}>复制{primary.label} prompt</button>
+          <a class="t-compact" href="#prompt">看它做了什么</a>
         </div>
       )}
     </div>
@@ -57,20 +70,42 @@ const facts = ([
       <Content />
     </article>
     <aside class="span-3 start-10 rail">
-      {prompt && (
-        <button class="copy-standing" type="button" id="copy-standing" data-prompt={prompt}>复制安装 prompt</button>
+      {prompts.length > 0 && (
+        <div class="prompt-dock">
+          {hasInstall && (
+            <ol class="flow-strip" aria-label="安装流程，与安装 prompt 的编号一一对应">
+              {INSTALL_STEPS.map((step, i) => (<li><span class="n">{i + 1}</span>{step}</li>))}
+            </ol>
+          )}
+          {prompts.length > 1 && (
+            <div class="segmented" role="group" aria-label="选择要复制的 prompt">
+              {prompts.map((p, i) => (
+                <button type="button" class="seg" data-seg={i} aria-pressed={String(i === 0)}>{p.label}</button>
+              ))}
+            </div>
+          )}
+          <button class="copy-standing" type="button" id="copy-standing" data-prompt={primary!.text}>复制{primary!.label} prompt</button>
+          <p class="kbd-hint"><kbd>C</kbd> 复制选中的 prompt</p>
+        </div>
       )}
       <nav class="toc" id="toc" aria-label="本页小节"></nav>
     </aside>
   </section>
 
+  {primary && (
+    <div class="mobile-copy">
+      <button class="action" type="button" id="copy-mobile" data-prompt={primary.text}>复制{primary.label} prompt</button>
+    </div>
+  )}
+  <script type="application/json" id="prompt-data" set:html={JSON.stringify(prompts.map(({ label, text }) => ({ label, text })))} />
+
   <script>
     // The right rail carries the page's structure so it stays useful past the fold.
     const toc = document.getElementById('toc');
     const headings = Array.from(document.querySelectorAll<HTMLHeadingElement>('.prose h2'));
-    // The install section is where the primary action points.
-    const install = headings.find((h) => (h.textContent ?? '').includes('安装 prompt'));
-    if (install) install.id = 'install';
+    // The first prompt section is where the primary action points.
+    const promptHeading = headings.find((h) => /prompt$/.test((h.textContent ?? '').trim()));
+    if (promptHeading) promptHeading.id = 'prompt';
     headings.forEach((h, i) => {
       h.id = h.id || `s-${i + 1}`;
       const a = document.createElement('a');
@@ -79,17 +114,53 @@ const facts = ([
       toc?.append(a);
     });
 
-    for (const button of document.querySelectorAll<HTMLButtonElement>('#copy-primary, #copy-standing')) {
+    // One selected prompt feeds the hero button, the rail button, the mobile bar,
+    // and the C key — a single source of truth per page.
+    const dataEl = document.getElementById('prompt-data');
+    const data: { label: string; text: string }[] = dataEl ? JSON.parse(dataEl.textContent ?? '[]') : [];
+    const segButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('.seg'));
+    const copyButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('#copy-primary, #copy-standing, #copy-mobile'));
+    let selected = 0;
+
+    function paint() {
+      const current = data[selected];
+      if (!current) return;
+      for (const button of copyButtons) {
+        button.dataset.prompt = current.text;
+        button.textContent = `复制${current.label} prompt`;
+      }
+      segButtons.forEach((b, i) => b.setAttribute('aria-pressed', String(i === selected)));
+    }
+
+    for (const button of segButtons) {
+      button.addEventListener('click', () => {
+        selected = Number(button.dataset.seg ?? 0);
+        paint();
+      });
+    }
+
+    for (const button of copyButtons) {
       button.addEventListener('click', async () => {
         await navigator.clipboard.writeText(button.dataset.prompt ?? '');
+        const rest = `复制${data[selected]?.label ?? ''} prompt`;
         button.textContent = '已复制';
         button.dataset.copied = 'true';
         setTimeout(() => {
-          button.textContent = '复制安装 prompt';
+          button.textContent = rest;
           delete button.dataset.copied;
         }, 1600);
       });
     }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key.toLowerCase() !== 'c' || event.metaKey || event.ctrlKey || event.altKey) return;
+      const el = document.activeElement;
+      if (el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || el.isContentEditable)) return;
+      const target = copyButtons[0];
+      if (!target) return;
+      event.preventDefault();
+      target.click();
+    });
 
     // Position-based, not IntersectionObserver: a jump scroll never enters the
     // observed band, which left the highlight stuck on the first section.
@@ -115,28 +186,52 @@ const facts = ([
     mark();
 
     // Fenced blocks become copyable: a prompt is meant to be taken, not read.
-    for (const pre of document.querySelectorAll<HTMLPreElement>('.prose pre')) {
-      const lang = pre.querySelector('code')?.className.match(/language-([\w-]+)/)?.[1] ?? 'text';
+    // The first block of a prompt section gets the section's name; the step
+    // markers and list numbers inside it get a quiet highlight.
+    function highlight(pre: HTMLPreElement) {
+      const code = pre.querySelector('code');
+      if (!code) return;
+      const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      code.innerHTML = esc(code.textContent ?? '')
+        .replace(/(【[^】]*】)/g, '<span class="ph-step">$1</span>')
+        .replace(/^(\s*\d+\.)/gm, '<span class="ph-num">$1</span>');
+    }
+
+    const prose = document.querySelector('.prose');
+    let section = '';
+    let sectionCount = 0;
+    for (const node of Array.from(prose?.children ?? [])) {
+      if (node instanceof HTMLHeadingElement && node.tagName === 'H2') {
+        section = (node.textContent ?? '').trim();
+        sectionCount = 0;
+        continue;
+      }
+      if (!(node instanceof HTMLPreElement)) continue;
+      sectionCount++;
+      const lang = node.querySelector('code')?.className.match(/language-([\w-]+)/)?.[1] ?? 'text';
+      const isPrompt = section.endsWith('prompt') && sectionCount === 1;
+      const label = isPrompt ? section : (lang === 'text' ? 'prompt' : lang);
       const block = document.createElement('div');
       block.className = 'block';
       const head = document.createElement('div');
       head.className = 'block-head';
-      const label = document.createElement('span');
-      label.className = 'block-label';
-      label.textContent = lang === 'text' ? 'prompt' : lang;
+      const labelEl = document.createElement('span');
+      labelEl.className = 'block-label';
+      labelEl.textContent = label;
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'copy';
-      button.textContent = lang === 'text' ? '复制 prompt' : '复制';
-      head.append(label, button);
-      pre.replaceWith(block);
-      block.append(head, pre);
+      button.textContent = isPrompt ? `复制${section.replace(' prompt', '')} prompt` : '复制';
+      head.append(labelEl, button);
+      node.replaceWith(block);
+      block.append(head, node);
+      if (isPrompt) highlight(node);
       button.addEventListener('click', async () => {
-        await navigator.clipboard.writeText(pre.innerText);
+        await navigator.clipboard.writeText(node.innerText);
         button.textContent = '已复制';
         button.dataset.copied = 'true';
         setTimeout(() => {
-          button.textContent = '复制';
+          button.textContent = isPrompt ? `复制${section.replace(' prompt', '')} prompt` : '复制';
           delete button.dataset.copied;
         }, 1600);
       });

@@ -4,6 +4,7 @@ title: 去AI味（中文白名单改写）
 summary: 中文成稿去 AI 味：白名单触发标记逐句改，未命中的句子逐字保留，信息不增不减。
 category: bootstrap
 kind: skill
+invoke: both
 origin: local
 upstream: https://github.com/xazaj/sdlc-playbook
 license: MIT
@@ -15,7 +16,7 @@ agents:
   - ChatGPT
 evaluated_version: "0.1.0"
 evaluated_at: "2026-09-16"
-updated_at: "2026-09-16"
+updated_at: "2026-09-17"
 ---
 
 ## 何时用
@@ -36,6 +37,22 @@ updated_at: "2026-09-16"
 待验证（本卡未实测）：真实改写质量与误报率、与 sepia 同机时的触发竞争。
 
 风险：规则的频率数据绑在测量时的模型版本上，换模型要回来复核（正文自己声明了这一点）；部分规范参考 KKKKhazix/human-writing，已用自测数据重写并收窄范围。
+
+## 使用 prompt
+
+复制整块，贴进任何 agent 的聊天窗口，当次会话生效，无需安装：
+
+````text
+【去AI味（中文白名单改写）】会话级启用 — 直接粘贴，无需安装
+
+1. 从 https://raw.githubusercontent.com/xazaj/sdlc-playbook/main/catalog/skills/prose/deai-zh/SKILL.md
+   取全文，在本次会话中按它工作：只改命中白名单触发标记的句子，未命中的
+   逐字保留；不增删事实、数字、引语、限定词与让步；改完列出命中规则的清单。
+
+2. 英文文本与工程域文档（发版说明、复盘、PR 回复）不适用，不要对它们启用。
+
+执行要求：先复述你理解的白名单边界与信息守恒约束，确认后再处理我发来的文字。
+````
 
 ## 安装 prompt
 

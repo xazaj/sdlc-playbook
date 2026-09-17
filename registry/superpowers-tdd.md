@@ -4,6 +4,7 @@ title: TDD 工作流（superpowers）
 summary: 在编写实现之前先写一个会失败的测试，以测试通过作为完成的唯一证据。
 category: build
 kind: skill
+invoke: install
 origin: marketplace
 provider: superpowers@superpowers-marketplace
 asset: superpowers:test-driven-development
@@ -13,7 +14,7 @@ agents:
   - Claude Code
 evaluated_version: "6.3.0"
 evaluated_at: "2026-09-03"
-updated_at: "2026-09-03"
+updated_at: "2026-09-17"
 ---
 
 ## 何时用
@@ -32,17 +33,30 @@ updated_at: "2026-09-03"
 
 ## 安装 prompt
 
-复制整块，贴进目标项目的 agent 会话。prompt 描述结果而不写命令，任何 agent 都能执行：
+复制整块，贴进目标项目的 agent 会话。按五步流程执行；两道防幻觉闸门——版本号必须报告从哪个文件读到、技能本会话不可见必须停下——不能省：
 
 ````text
-请把 TDD 工作流装进本项目，要求：
+请让 superpowers 的 test-driven-development 技能在本项目可用，按 1→5 顺序做完再继续别的事：
 
-1. 确保本项目能使用 superpowers 的 test-driven-development 技能。
-   - Claude Code：运行 /plugin install superpowers@superpowers-marketplace
-   - 其他 agent：从 https://github.com/obra/superpowers/tree/main/skills/test-driven-development
-     取 SKILL.md，放到本项目 .agents/skills/test-driven-development/SKILL.md
+1. 【检测】检查两个级别的安装状态，只报告结论：
+   - 用户级：Claude Code 查 ~/.claude/plugins/（installed_plugins.json）是否登记
+     superpowers@superpowers-marketplace；其他 agent 查各自技能目录。
+   - 项目级：.agents/skills/test-driven-development/、.claude/skills/。
+   结论写清：装了/没装；装了则版本号是多少、从哪个文件读到。
 
-2. 在本项目 AGENTS.md（没有则创建）追加下面这一节。若已存在同名小节则整节替换，不要重复追加：
+2. 【对版本】已安装时：从 https://github.com/obra/superpowers/releases 查最新版本，
+   与第 1 步读到的本地版本比较。一致则不动并说明依据；读不到本地版本则如实说明，
+   不要猜；落后则用插件自身机制升级到最新，升级后重读版本确认。
+
+3. 【安装】未安装时装最新版。Claude Code：/plugin install superpowers@superpowers-marketplace；
+   其他 agent：从 https://github.com/obra/superpowers/tree/main/skills/test-driven-development
+   取 SKILL.md 放到 .agents/skills/test-driven-development/SKILL.md。
+
+4. 【加载确认】确认本会话真的能用它：技能触发描述应出现在你的可用技能里。
+   新装的技能当前会话看不到时，不要装作可用——告诉我要怎么让它生效
+   （通常是重开会话），然后停下等我。
+
+5. 【边界】在本项目 AGENTS.md（没有则创建）追加下面这一节，同名小节整节替换：
 
 ## Development workflow
 
@@ -53,10 +67,10 @@ updated_at: "2026-09-03"
 - If the change is exploratory and requirements are unclear, do a throwaway
   spike first, then decide the workflow.
 
-3. 完成后列出你改动或新增的文件。
+完成后：列出改动或新增的文件，并给出第 1–4 步每步的结论。
 ````
 
-确认方式：让 agent 实现一个涉及金额计算的小函数，观察它是否先写测试；再让它调整一个按钮的边距，观察它是否跳过测试。两者都符合预期即安装正确。
+确认方式：先在一个装过旧版本的环境贴这段 prompt，它应报告本地版本与来源、比对 releases 页、落后则升级；再让 agent 实现一个涉及金额计算的小函数，观察它是否先写测试；最后让它调整一个按钮的边距，观察它是否跳过测试。全程符合即安装正确。
 
 ## 版本
 

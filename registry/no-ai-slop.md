@@ -4,6 +4,7 @@ title: no-ai-slop（英文草稿去 slop）
 summary: 英文草稿去 slop：单条目轻量，删 AI 模式并保留作者嗓音，detect 只点名不改写。
 category: bootstrap
 kind: skill
+invoke: install
 origin: external
 provider: petergyang/no-ai-slop
 asset: no-ai-slop

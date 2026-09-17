@@ -4,6 +4,7 @@ title: plan 评审四件套与 autoplan（gstack）
 summary: 四个视角评审写好的规格：值不值得做、体验、工程可行、开发者体验；autoplan 串起来自动跑。
 category: define
 kind: skill
+invoke: install
 origin: external
 provider: gstack
 asset: plan-ceo-review / plan-design-review / plan-eng-review / plan-devex-review / autoplan

@@ -4,6 +4,7 @@ title: design-consultation（gstack）
 summary: 从零产出完整设计方案：美学方向、字体、色彩、布局、间距、动效，并生成预览。
 category: design
 kind: skill
+invoke: install
 origin: external
 provider: gstack
 asset: design-consultation

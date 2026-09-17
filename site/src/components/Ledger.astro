@@ -1,6 +1,6 @@
 ---
 import State from './State.astro';
-import { allCategories, KIND_LABEL, formatDate, type Entry } from '../lib/catalog';
+import { allCategories, formatDate, INVOKE_LABEL, invokeOf, KIND_LABEL, type Entry } from '../lib/catalog';
 
 interface Props {
   entries: Entry[];
@@ -32,13 +32,19 @@ const momentLabel = Object.fromEntries(categories.map((c) => [c.data.id, c.data.
     </thead>
     <tbody>
       {entries.map((e) => (
-        <tr data-kind={e.data.kind} data-category={e.data.category}>
+        <tr data-kind={e.data.kind} data-category={e.data.category} data-invoke={invokeOf(e)}>
           <td class="name">
-            <a href={`${base}/entries/${e.data.name}`}>{e.data.title}</a>
+            <a
+              href={`${base}/entries/${e.data.name}`}
+              style={`view-transition-name: ${e.data.name};`}
+            >{e.data.title}</a>
             <span class="desc">{e.data.summary}</span>
           </td>
           <td class="meta moment">{momentLabel[e.data.category] ?? e.data.category}</td>
-          <td class="meta">{KIND_LABEL[e.data.kind] ?? e.data.kind}</td>
+          <td class="meta">
+            {KIND_LABEL[e.data.kind] ?? e.data.kind}
+            <span class="invoke-suffix"> · {INVOKE_LABEL[invokeOf(e)]}</span>
+          </td>
           <td class="num">{e.data.evaluated_version}</td>
           <td class="num c-date-cell">{formatDate(e.data.evaluated_at)}<State date={e.data.evaluated_at} mark /></td>
         </tr>
