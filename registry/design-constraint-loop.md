@@ -25,7 +25,7 @@ updated_at: "2026-09-17"
 
 来源是两篇 Vercel 博文：[How our agents build on-brand pages with design.md](https://vercel.com/blog/how-our-agents-build-on-brand-pages-with-design-md)（2026-08-31）与其前作 [Teaching agents product design at Vercel](https://vercel.com/blog/teaching-agents-product-design-at-vercel)（2026-06-25）。本卡提炼其中可固化为项目约束的部分：
 
-- **三分落地**：每条人工纠正落到能稳定执行它的最窄位置。判断类（层级、措辞、构图）进约束文件 prose；可复用的机械决策（字体、间距、表格、图表布局）进 stylesheet 并只文档化类名与 token：agent 只用登记过的名字，不读样式表实现，省下的上下文留给指导本身；能机械验证的失败（如表格不吃满可用宽度）落成生成后跑的检查。上游为同一条纠正同时落规则与检查的例子：规则进文件、检查进代码，此后该失败不再复发。
+- **三分落地**：每条人工纠正落到能稳定执行它的最窄位置。判断类（层级、措辞、构图）进约束文件 prose；可复用的机械决策（字体、间距、表格、图表布局）进 stylesheet 并只文档化类名与 token：agent 只用登记过的名字，不读样式表实现，省下的上下文留给指导本身；能机械验证的失败（如表格不吃满可用宽度）落成生成后跑的检查。上游为同一条纠正同时落规则与检查的例子：规则进文件、检查进代码，这条失败以后不再复发。
 - **六步构建法**：选一个反复出现的 artifact 而非「make it on-brand」这类宽目标 → 先存无约束 baseline（prompt、输入、配置、截图，再糙也留着）→ 把最近十次人工纠正改写成可观察规则 → 约束文件按 Scope / Reader and task / Observable decisions / Available primitives 四节组织 → 同输入、同模型、同视口与 baseline 做一次配对盲比 → 编码纠正而非手工修补本次输出。
 - **证据回流**：collector 只收集不评判，judge 分组验证并保持候选 pending，人最终决定落点（规则、样式、检查、示例、或不改）。某类纠正计数不降说明修法错了。
 - **给缺陷命名**：反复出现的生成式模式一旦有名字（capsule-badge、chart-in-dark-box），agent 识别与规避的可靠性远高于一段描述。上游实测口径：已知失败在加载约束文件后减少 57%，但博文自己给出两个 caveat（检查只能抓已见过且写下来的失败，六页样本太小），数字是作者自报，未独立验证。

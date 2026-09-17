@@ -119,7 +119,7 @@ is a suggestion to make at the end, not a change to make.
 
 ## 版本
 
-本库不记录上游当前版本，只记录本卡评估所基于的版本。这里的 `evaluated_version` 填的是**模型版本**而非文档版本。约束的有效期绑在模型行为上。
+本库不记录上游当前版本，只记录评估时基于的那一版。这里的 `evaluated_version` 填的是**模型版本**而非文档版本。约束的有效期绑在模型行为上。
 
 上游文档：见 frontmatter 的 `upstream`。换模型时必须重新评估这一条是否仍然成立。
 

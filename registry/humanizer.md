@@ -80,7 +80,7 @@ updated_at: "2026-09-16"
 
 ## 版本
 
-本库不记录上游当前版本号，只记录本卡评估所基于的版本（见 frontmatter 的 `evaluated_version`）。上游当前版本由 GitHub Releases（git tag）管理，无需本机查询命令，直接看发布页：
+本库不记录上游当前版本号，只记录评估时基于的那一版（见 frontmatter 的 `evaluated_version`）。上游当前版本由 GitHub Releases（git tag）管理，无需本机查询命令，直接看发布页：
 
 上游发布页：https://github.com/blader/humanizer/releases
 

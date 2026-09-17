@@ -16,7 +16,7 @@ const momentsLabel = `${CN_NUM[categories.length - 1] ?? categories.length}个�
   <section class="shell opening">
     <div class="measure-wide">
       <h1 class="t-page">手上这件事，现在该装哪个资产？</h1>
-      <p class="t-lede">每条给出适用边界、评估所基于的版本，以及可直接粘贴的调用 prompt。标「即时」的贴进会话就能用；标「需安装」的走检测→对版本→安装/更新→确认加载五步。</p>
+      <p class="t-lede">每条给出适用边界、评估时依据的版本，以及可直接粘贴的调用 prompt。标「即时」的贴进会话就能用；标「需安装」的按五步走：先检测与对版本，再安装更新，最后确认加载。</p>
     </div>
   </section>
 
@@ -45,7 +45,7 @@ const momentsLabel = `${CN_NUM[categories.length - 1] ?? categories.length}个�
 
     <Ledger
       entries={entries}
-      caption="按评估日期排序，最近评估的在前。评估版本指本库评估所基于的版本，不是上游当前版本；状态按评估日期计算，超过 90 天标 †，超过 180 天标 ‡。"
+      caption="按评估日期排序，最近评估的在前。评估版本指评估时依据的那一版，不是上游当前版本；状态按评估日期计算，超过 90 天标 †，超过 180 天标 ‡。"
     />
   </section>
 

@@ -76,7 +76,7 @@ updated_at: "2026-09-03"
 
 ## 版本
 
-本库不记录上游当前版本号，只记录本卡评估所基于的版本（见 frontmatter 的 `evaluated_version`）。
+本库不记录上游当前版本号，只记录评估时基于的那一版（见 frontmatter 的 `evaluated_version`）。
 
 上游当前版本由 gstack 自身管理，三处可查：本机版本在 `~/.claude/skills/gstack/VERSION`，更新检查记录在 `~/.gstack/last-update-check`，升级用 `gstack-upgrade` 技能。
 

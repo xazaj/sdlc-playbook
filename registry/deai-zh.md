@@ -85,7 +85,7 @@ updated_at: "2026-09-17"
 
 ## 版本
 
-本库自建资产，版本由本库 git 管理；资产自身的 `version` 字段维护在 SKILL.md frontmatter 中，本卡只记录评估所基于的版本。
+本库自建资产，版本由本库 git 管理；资产自身的 `version` 字段维护在 SKILL.md frontmatter 中，本卡只记录评估时基于的那一版。
 
 资产位置：`catalog/skills/prose/deai-zh/`（上游即本仓库，安装走上面的 raw 地址）。
 

@@ -78,6 +78,6 @@ updated_at: "2026-09-03"
 
 ## 版本
 
-本库不记录上游当前版本号，只记录本卡评估所基于的版本（见 frontmatter 的 `evaluated_version`）。上游没有 release 与 tag，当前内容由 git 管理：`main` 分支即最新，查询用仓库的 commits 页或 `git ls-remote`。重新评估时以当时 main 的 HEAD commit 为锚点。
+本库不记录上游当前版本号，只记录评估时基于的那一版（见 frontmatter 的 `evaluated_version`）。上游没有 release 与 tag，当前内容由 git 管理：`main` 分支即最新，查询用仓库的 commits 页或 `git ls-remote`。重新评估时以当时 main 的 HEAD commit 为锚点。
 
 评估历史：5af8727（2026-09-03）

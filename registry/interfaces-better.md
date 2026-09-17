@@ -71,6 +71,6 @@ updated_at: "2026-09-04"
 
 ## 版本
 
-本库不记录上游当前版本号，只记录本卡评估所基于的版本（见 frontmatter 的 `evaluated_version`，对应 plugin.json 的 version 字段）。上游无 releases 页，版本随 main 分支提交演进：插件方式安装的由 Claude Code 插件机制管理，`npx skills add` 安装的重跑同一命令即更新。评估基线提交：267330e1ad（2026-08-29）。
+本库不记录上游当前版本号，只记录评估时基于的那一版（见 frontmatter 的 `evaluated_version`，对应 plugin.json 的 version 字段）。上游无 releases 页，版本随 main 分支提交演进：插件方式安装的由 Claude Code 插件机制管理，`npx skills add` 安装的重跑同一命令即更新。评估基线提交：267330e1ad（2026-08-29）。
 
 评估历史：1.6.3（2026-09-04）
