@@ -30,7 +30,7 @@ updated_at: "2026-09-04"
 ## 这一版怎么样（1.6.3）
 
 - 规则带具体数值而非口号：300 以下字重只许用于 28px 以上的展示字号；正文行高 1.5–1.6、标题约 1.1；长文每行 60–75 字符；iOS 上小于 16px 的输入框会触发整页缩放，并给出两种修法及取舍。每域末尾有 Mistake→Fix 对照表与 Block/Approve 判定。
-- 域间所有权切分干净：文字渲染归 typography、语义结构归 accessibility、对比度测量归 colors——同一问题不会被两条规则给出不同答案。
+- 域间所有权切分干净：文字渲染归 typography、语义结构归 accessibility、对比度测量归 colors，同一问题不会被两条规则给出不同答案。
 - 多文件结构：每个技能是 SKILL.md 加若干专题 md 与 `agents/openai.yaml`（Codex 适配），不能只拷单个 SKILL.md 安装。
 - 热度与来源：5228★ / 175 fork，2026-07 建仓，评估时（8-29）仍在推送；作者经营设计工程杂志 interfaces.dev，技能内容是其文章体系的可执行化，MIT。
 - 触发面：`better-*` 会随界面工作自动触发，这是期望行为；但变更审查属于 `interface-review`（仅用户调用），安装 prompt 写明了这条边界。

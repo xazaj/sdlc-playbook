@@ -36,7 +36,7 @@ sections:
   - kind: skill
     title: 执行技能
     code: SKILLS
-    note: 按需调用的操作：对外文档去 AI 味——工程文档域走 sepia 的动词入口，英文重写走 humanizer，英文只要审计或轻磨走 no-ai-slop，中文走 sdlc-deai-zh；同装只装一个。
+    note: 按需调用的操作：对外文档去 AI 味。工程文档域走 sepia 的动词入口，英文重写走 humanizer，英文只要审计或轻磨走 no-ai-slop，中文走 sdlc-deai-zh；同装只装一个。
   - kind: doc
     title: 常驻规则
     code: RULES

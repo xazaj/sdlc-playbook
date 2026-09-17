@@ -2,7 +2,7 @@
 id: define
 code: DEFINE
 title: 需求与规格
-tagline: 动手之前把要做的事写清楚的时刻：要做什么、写到多细、按什么句式、谁来审。规格是对齐的载体，也是交给 agent 长时间执行时唯一不随上下文丢失的锚点。
+tagline: 动手之前把要做的事写清楚的时刻：要做什么、写到多细，按什么句式，谁来审。规格是对齐的载体，也是交给 agent 长时间执行时唯一不随上下文丢失的锚点。
 order: 2
 accent: "#a3722e"
 decision:
@@ -27,7 +27,7 @@ decision:
       then: 变更级规格，条目用 EARS 句式
     - when: PRD 写完要开工
       then: 先 EARS 自检，再上评审四件套
-  pitfalls: 常见误判：为三五条需求的小改动上 PRD 流程；需求里写实现而非行为；评审停留在「我觉得不清楚」没有可检验标准；把「要不要写规格」与「写到多细」混为一谈——前者是编码工作流的判定。
+  pitfalls: 常见误判：为三五条需求的小改动上 PRD 流程；需求里写实现而非行为；评审停留在「我觉得不清楚」没有可检验标准；把「要不要写规格」与「写到多细」混为一谈，前者是编码工作流的判定。
   sourceLabel: 完整判断依据 stages/15-define/DECIDE.md
   sourceHref: https://github.com/xazaj/sdlc-playbook/blob/main/stages/15-define/DECIDE.md
 sections:

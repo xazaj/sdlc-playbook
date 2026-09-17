@@ -24,9 +24,9 @@ updated_at: "2026-09-05"
 
 ## 何时用
 
-`stages/10-bootstrap/DECIDE.md` 判定为「产出含对外发表的文档」之后，用它去 AI 指纹。适用对象：agent 起草、要给项目外的人读、且「被认出是 AI 写的」会造成实际损害的文档——release notes 与公告、postmortem、PR/issue 回复、工单、技术文章。判据不是「文字难看」——那是 `registry/claude-prose-style.md` 的常驻约束管的——而是读者会认出 AI 指纹并因此减分：发版说明的营销腔、复盘的模板感、技术文章被平台打 AI 标。四个动词入口按伤情选：write（新写）、review（只诊断不改）、refactor（最小改动）、recreate（病入膏肓时全文重写）。已有人类点名某篇「AI 味重」时也走这里，先 review 后 refactor。
+`stages/10-bootstrap/DECIDE.md` 判定为「产出含对外发表的文档」之后，用它去 AI 指纹。适用对象：agent 起草、要给项目外的人读、且「被认出是 AI 写的」会造成实际损害的文档：release notes 与公告、postmortem、PR/issue 回复、工单、技术文章。判据是读者会认出 AI 指纹并因此减分：发版说明的营销腔、复盘的模板感，以及技术文章被平台打 AI 标；「文字难看」则归 `registry/claude-prose-style.md` 的常驻约束管。四个动词入口按伤情选：write（新写）、review（只诊断不改）、refactor（最小改动）、recreate（病入膏肓时全文重写）。已有人类点名某篇「AI 味重」时也走这里，先 review 后 refactor。
 
-不适用：日常对话、代码注释、提交信息、只在团队内部传阅的工作笔记——一般输出的文风由常驻约束覆盖，没必要每个输出去味；小说与创作路由（含 hemingway/voice 堆叠）与工程仓库无关，装了也不许在这类项目触发。
+不适用：日常对话、代码注释、提交信息、只在团队内部传阅的工作笔记，一般输出的文风由常驻约束覆盖，没必要每个输出去味；小说与创作路由（含 hemingway/voice 堆叠）与工程仓库无关，装了也不许在这类项目触发。
 
 ## 这一版怎么样（0.7.0）
 
@@ -35,7 +35,7 @@ updated_at: "2026-09-05"
 - 一个总路由 `skills/sepia` 加五个操作包装（write/review/refactor/recreate/hemingway）；专业文档规则按域拆在 `references/domains/`（dev-replies、postmortems、release-notes、tech-articles、tickets 各一份薄规则），中文校准单独成文件 `references/languages/zh.md`，对中文文档有实际意义。
 - 规则有证据链：`research/` 消化了 12 篇以上研究（主线是 StoryScope：叙事结构特征单独就能以 93.2% macro-F1 检出 AI 小说，表面修辞改动几乎不移动检出率），每条规则能指回来源。校准原则「对齐人类分布，而不是反向做 AI」写在路由里，防止矫枉过正成新指纹；每篇只选 3–5 个动作、留松弛。
 - 工程质量：behavioral-eval 与 version-consistency 两套 CI，plugin.json 版本与最新 release 一致（均 0.7.0，2026-09-04 发布）；MIT；Claude Code、Codex、Grok Build、Antigravity 四平台原生插件包。
-- 操作包装依赖主技能，不支持单独安装——装就是整包，边界要靠 AGENTS.md 压住。
+- 操作包装依赖主技能，不支持单独安装，装就是整包，边界要靠 AGENTS.md 压住。
 
 待验证（本卡未实测运行）：去味的实际质量、review 的 30 项 rubric 误报率、zh.md 中文校准的效果、与既有写作类技能的触发竞争。装进项目后先拿一篇旧 release note 跑 review 验证再投入使用。
 
@@ -51,7 +51,7 @@ updated_at: "2026-09-05"
 1. 确保本项目能使用 sepia 的全部六个条目（总路由加 write/review/
    refactor/recreate/hemingway 五个操作包装；包装依赖主技能，必须整包装，
    不支持单独装某一个）。
-   - Claude Code：附注——/plugin marketplace add Nanako0129/sepia 后
+   - Claude Code：附注：/plugin marketplace add Nanako0129/sepia 后
      /plugin install sepia@sepia，scope 选 user。
    - 其他 agent：用 Skills CLI 安装该仓库，或把仓库 skills/ 目录下六个
      条目整体放进本项目 .agents/skills/（project scope 钉住版本）。

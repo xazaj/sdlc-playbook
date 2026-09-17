@@ -26,15 +26,15 @@ updated_at: "2026-09-03"
 
 它同时承接 `stages/30-coding/DECIDE.md` 判定 SDD 后的执行段：规格由 brainstorming 产出，计划由它产出，两者是同一链条。
 
-不适用：没有规格直接写计划——它假设澄清已完成，跳过 brainstorming 直接调用它等于把最便宜的返工阶段删掉；已明确知道改哪几行的小修改；可行性未定的探索（先做探针，计划会把探针错误地固化）。
+不适用：没有规格直接写计划（它假设澄清已完成，跳过 brainstorming 直接调用它等于把最便宜的返工阶段删掉）；已明确知道改哪几行的小修改；可行性未定的探索（先做探针，计划会把探针错误地固化）。
 
 ## 这一版怎么样（6.3.0）
 
-- 「No Placeholders」是硬约束：TBD、"add appropriate error handling"、"Similar to Task N" 都被点名为计划失败。这正好堵住 agent 写计划最常见的偷懒方式——描述做什么而不给出内容。
+- 「No Placeholders」是硬约束：TBD、"add appropriate error handling"、"Similar to Task N" 都被点名为计划失败。这正好堵住 agent 写计划最常见的偷懒方式：描述做什么而不给出内容。
 - 任务边界按「评审者能否单独否决一项而批准相邻项」划分，而不是按代码层级切。
 - 自检三步可操作：规格覆盖（每条规格能指到对应任务）、占位符扫描、跨任务类型一致性（Task 3 的 `clearLayers` 与 Task 7 的 `clearFullLayers` 不一致是 bug）。
 - 交接给两个执行技能：subagent-driven（每任务一个新子代理，推荐）或 executing-plans（本会话内分批执行），都是 superpowers 自家资产，与 `registry/superpowers-tdd.md` 同链。
-- 计划头部要求把规格的全局约束逐字抄进 Global Constraints 一节——上下文压缩后任务执行者仍能读到精确值。
+- 计划头部要求把规格的全局约束逐字抄进 Global Constraints 一节，上下文压缩后任务执行者仍能读到精确值。
 
 ## 安装 prompt
 

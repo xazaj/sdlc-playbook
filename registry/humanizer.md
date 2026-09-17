@@ -24,7 +24,7 @@ updated_at: "2026-09-16"
 
 ## 何时用
 
-英文一般文章被嫌 AI 腔、要重写而不是轻磨时用它：博客、公告、随笔、文档散文。三个判据：读者会认出 AI 指纹并因此减分；改写强度要到「整段重写」这一档（轻磨或只审计走 no-ai-slop）；最好能给 2–3 段自己写的样本——它按样本的节奏、选词、标点乃至破折号习惯对齐声音。缺事实细节时它先问而不是编：姓名、数字、日期、引语必须来自原文或作者。
+英文一般文章被嫌 AI 腔、要重写而不是轻磨时用它：博客、公告、随笔、文档散文。三个判据：读者会认出 AI 指纹并因此减分；改写强度要到「整段重写」这一档（轻磨或只审计走 no-ai-slop）；最好能给 2–3 段自己写的样本：它按样本的节奏与选词、标点，乃至破折号习惯对齐声音。缺事实细节时它先问而不是编：姓名、数字、日期、引语必须来自原文或作者。
 
 与 no-ai-slop 同占英文位，分工：humanizer 是 25 条模式分级（前 5 条单次命中即改，标 *weak alone* 的需多处共现，防误伤）加事实核查的整段重写；no-ai-slop 的 detect 只点名不改写、edit 轻量磨尖。同为单条目，二选一，不同装。
 
@@ -51,7 +51,7 @@ updated_at: "2026-09-16"
 
 1. 确保本项目能使用 humanizer 技能（单条目：仓库根目录一个 SKILL.md，
    无其他依赖）。
-   - Claude Code：附注——npx skills add blader/humanizer（--global 装到
+   - Claude Code：附注：npx skills add blader/humanizer（--global 装到
      用户级，省略则装进当前项目）；也可 /plugin marketplace add
      blader/humanizer 后 /plugin install humanizer@humanizer。
    - 其他 agent：把仓库根目录的 SKILL.md 复制进本项目
