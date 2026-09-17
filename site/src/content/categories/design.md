@@ -17,7 +17,7 @@ decision:
       text: 搭配。DESIGN.md 的 token 必须能映射到组件库的主题变量，条目中的「搭配」字段记录实测组合。
     - label: 四
       text: 执行。视觉方向尚未成形时用 design-consultation 产出完整方案；方向已定、开始写界面时用 frontend-design 执行。
-  note: 由 agent 生成 UI 时，模板感来自缺少约束而非模型能力。一份显式的 DESIGN.md 比口头描述可靠；语义 token 层则把 agent 改动品牌色的范围限制在一处。
+  note: 由 agent 生成 UI 时，模板感来自缺少约束，与模型能力无关。一份显式的 DESIGN.md 比口头描述可靠；语义 token 层则把 agent 改动品牌色的范围限制在一处。
   signals:
     - when: 需要品牌辨识度
       then: 定制排版与色彩，不用默认主题
