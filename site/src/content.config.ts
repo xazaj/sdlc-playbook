@@ -67,4 +67,21 @@ const categories = defineCollection({
   }),
 });
 
-export const collections = { entries, categories };
+// Reading assets: distilled long-form articles for humans. No agent-facing
+// contract — the body is free prose under the conventions in articles/_TEMPLATE.
+const articles = defineCollection({
+  loader: glob({ base: '../articles', pattern: ['**/*.md', '!**/_*.md'] }),
+  schema: z.object({
+    name: z.string(),
+    title: z.string(),
+    summary: z.string(),
+    date: z.coerce.date(),
+    updated: z.coerce.date().optional(),
+    source: z.string().url(),
+    author: z.string().optional(),
+    tags: z.array(z.string()).default([]),
+    related: z.array(z.string()).default([]),
+  }),
+});
+
+export const collections = { entries, categories, articles };

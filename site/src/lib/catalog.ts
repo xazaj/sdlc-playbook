@@ -95,6 +95,17 @@ export async function allEntries(): Promise<Entry[]> {
   return entries.sort((a, b) => b.data.evaluated_at.getTime() - a.data.evaluated_at.getTime());
 }
 
+export async function allArticles(): Promise<Article[]> {
+  const articles = await getCollection('articles');
+  return articles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+}
+
+/** Rough reading time for CJK prose: 400 characters per minute. */
+export function readingMinutes(body: string | undefined): number {
+  const chars = (body ?? '').replace(/\s/g, '').length;
+  return Math.max(1, Math.round(chars / 400));
+}
+
 export function entriesOf(entries: Entry[], category: string): Entry[] {
   return entries.filter((e) => e.data.category === category);
 }

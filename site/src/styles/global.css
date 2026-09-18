@@ -572,3 +572,61 @@ dialog.search .copy-note {
     animation-duration: 0.01ms !important;
   }
 }
+
+
+/* ---------- articles ---------- */
+
+/* Reading progress: a 2px link-coloured hairline pinned under the masthead.
+   It fills with scroll; no transition, the scroll is the state. */
+.progress { position: fixed; top: var(--header-h); left: 0; height: 2px; width: 0; background: var(--link); z-index: 6; }
+
+.meta-line {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2);
+  margin-top: var(--s4); font-size: 13px; line-height: 18px; color: var(--text-3);
+}
+.meta-line .mono { font-variant-numeric: tabular-nums; }
+
+/* The reading body: a tighter measure than the entry page plus a margin-note
+   gutter. Every child flows in column 1; an <aside class="mnote"> lands in
+   column 2 beside its reference. */
+.article-body {
+  max-width: none;
+  display: grid;
+  grid-template-columns: minmax(0, 62ch) minmax(0, 200px);
+  column-gap: var(--s8);
+}
+.article-body > * { grid-column: 1; min-width: 0; }
+.article-body > aside.mnote {
+  grid-column: 2;
+  margin-top: var(--s4);
+  font-size: 13px; line-height: 18px; color: var(--text-3);
+  border-left: 1px solid var(--gray-200); padding-left: var(--s3);
+}
+.article-body > aside.mnote a { color: var(--link); }
+
+.rail-block { display: flex; flex-direction: column; }
+
+/* The archive: one row per article, title left, mono date right — a timeline,
+   not another table. */
+.archive { display: flex; flex-direction: column; }
+.archive-row { display: block; padding: var(--s4) 0; border-top: 1px solid var(--border); color: inherit; }
+.archive-row:first-child { border-top-color: var(--gray-300); }
+.archive-row:hover { text-decoration: none; }
+.archive-row .head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s4); }
+.archive-row .title { font-size: 16px; line-height: 24px; font-weight: var(--w-medium); color: var(--text); }
+.archive-row:hover .title { text-decoration: underline; text-decoration-color: var(--link); text-underline-offset: 3px; }
+.archive-row .date { font-size: 13px; color: var(--muted); flex: none; }
+.archive-row .desc { margin: var(--s1) 0 0; color: var(--text-3); font-size: 14px; line-height: 20px; max-width: 68ch; }
+.archive-row .meta-line-inline { margin: var(--s1) 0 0; font-size: 12px; line-height: 18px; color: var(--muted); }
+
+/* Below the wide breakpoint the margin note folds inline: same content, a
+   quiet grey block instead of a gutter. */
+@media (max-width: 1120px) {
+  .article-body { grid-template-columns: minmax(0, 1fr); }
+  .article-body > aside.mnote {
+    grid-column: 1;
+    border: 1px solid var(--gray-200); border-left: 2px solid var(--gray-300);
+    border-radius: var(--radius-sm); background: var(--bg-2);
+    padding: var(--s2) var(--s3);
+  }
+}
