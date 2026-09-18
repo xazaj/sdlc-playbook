@@ -11,8 +11,6 @@ related: []
 
 前几天我在 X 上发了一条讨论，问大家在现在的日常开发（尤其是 AI Coding / 多 Agent 并行）中到底用不用 git worktree。
 
-<aside class="mnote">原文讨论：x.com/realchendahuang/status/2100285445825495169，140 余条回复与引用。</aside>
-
 原本以为这是个相对小众的 Git 进阶功能，结果炸出了 140 多条深度回复和引用。评论区立场分明：有人视其为神器，有人搭出了全自动的 Agent 任务流水线；也有人直言「最佳实践是坚决不用」，还有人一边用一边被磁盘暴涨和合并冲突搞得焦头烂额。甚至有朋友顺手翻了 DeepSeek Harness 官方仓库的提交记录，指出多 Agent 并行开发在现实中留下的冲突痕迹。
 
 争论的对象是一个命令行工具，争论的内容其实是另一件事：当 AI 把写代码的吞吐量放大数倍之后，我们该怎么管理本地的开发环境、并发任务和代码合并。这篇文章把这件事讲完整，从底层原理、从零上手、实战痛点与避坑，到社区沉淀出的工作流和工具。
@@ -117,8 +115,6 @@ git worktree prune
 
 痛点 3：任务拆分不良，「合并地狱」。
 
-<aside class="mnote">佐证：DeepSeek Harness 官方仓库的 commit 记录里有大量解冲突提交，出处见 @cxjwin 的回复。</aside>
-
 不少人发现「多开了几个 Worktree 让 Agent 去写，结果合代码的时间比写代码还长」。@cxjwin 给了一个经典证据：翻 DeepSeek Harness 的官方仓库，能看到大量 commit 都在解冲突，正是多 Agent 并行留下的痕迹。@tootoocvc 说得更透：「谁提交快谁就不用合并，这会把合并键变成赛跑奖品。」
 
 解法两条。先拆任务，后开工位：并发的前提是高内聚、低耦合，两个任务要改同一张表、同一个公共工具类，就坚决串行（@Jevik_AI, @dlzhou2）。守住单一合并权：分支可以让多个 Agent 狂飙，合并主干必须由人亲自审核，或指定唯一的调度 Agent 排队合并、逐一 rebase 跑集成测试（@tootoocvc, @ysj_aaron）。
@@ -133,13 +129,9 @@ git worktree prune
 
 讨论里几位深度用户分享了自研或在用的工具与工作流，值得借鉴。
 
-worktrunk（Rust 写的 Worktree 管理器，worktrunk.dev，@roylee0x 推荐）：把目录操作收进极简的 wt 命令，直接按分支名或 PR 编号切工作区（wt switch feature-a、wt switch pr:12）；创建 Worktree 时可自动触发脚本，比如按 .worktreeinclude 复制 .env、装依赖；wt merge 在当前 Worktree 一键合入目标分支并清理。
+worktrunk（Rust 写的 Worktree 管理器，[worktrunk.dev](https://worktrunk.dev)，@roylee0x 推荐）：把目录操作收进极简的 wt 命令，直接按分支名或 PR 编号切工作区（wt switch feature-a、wt switch pr:12）；创建 Worktree 时可自动触发脚本，比如按 .worktreeinclude 复制 .env、装依赖；wt merge 在当前 Worktree 一键合入目标分支并清理。
 
-<aside class="mnote">工具站：<a href="https://worktrunk.dev">worktrunk.dev</a></aside>
-
-gmc（为 AI Coding 定制的 Git 工作流工具，samzong/gmc，作者 @samzong）：gmc wt dup 3 一行命令批量生成 3 个平行的 Agent 工作区；gmc wt share add .env / node_modules 在各 Worktree 间配置共享，解决的正是最大的痛点；另支持按 staged 差异自动生成规范的提交信息。
-
-<aside class="mnote">仓库：<a href="https://github.com/samzong/gmc">github.com/samzong/gmc</a></aside>
+gmc（为 AI Coding 定制的 Git 工作流工具，[samzong/gmc](https://github.com/samzong/gmc)，作者 @samzong）：gmc wt dup 3 一行命令批量生成 3 个平行的 Agent 工作区；gmc wt share add .env / node_modules 在各 Worktree 间配置共享，解决的正是最大的痛点；另支持按 staged 差异自动生成规范的提交信息。
 
 工作法 A：「固定 8 工位」轮转（@sjdhoome 强烈推荐）。不为临时需求频繁建删目录，而是本地常驻 8 个固定编号的分支与 Worktree（worker-1 到 worker-8），全部跟踪主干。来新活挑一个空闲的 worker-N 开 Claude Code 写；测试通过提 PR 合回主干；然后在目录里 git rebase origin/main，这个工位立刻恢复为最新、干净的状态。好处是免掉频繁增删目录的琐碎，node_modules 这类大依赖装一次长期复用。
 

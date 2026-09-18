@@ -11,8 +11,6 @@ related: []
 
 「第二大脑」这个词听着有点玄，说白了就是几个文件夹里放着一批文本文件，由根目录的一份索引文件告诉 AI 该去哪里找。不装 Obsidian，不建数据库，也不上笨重的应用，就是躺在硬盘上的普通 Markdown。
 
-<aside class="mnote">原文：@Bober_smart 发表于 2026-07-19，本文为中文全译。</aside>
-
 ![原文封面图](/sdlc-playbook/articles/claude-second-brain/01-cover.jpg)
 
 这篇文章从零搭一遍这套结构：目录怎么组织、路线图（CLAUDE.md）怎么写、命名遵守什么约定、agent 又是怎么解析这一切的。跟着做完，你会得到一套可以直接复制、马上往里填内容的系统。

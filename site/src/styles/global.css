@@ -584,25 +584,10 @@ dialog.search .copy-note {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2);
   margin-top: var(--s4); font-size: 13px; line-height: 18px; color: var(--text-3);
 }
-.article-body {
-  max-width: none;
-  display: grid;
-  grid-template-columns: minmax(0, 62ch) 160px;
-  column-gap: var(--s6);
-}
-.article-body > * { grid-column: 1; min-width: 0; }
-.article-body > aside.mnote {
-  grid-column: 2;
-  margin-top: var(--s4);
-  font-size: 13px; line-height: 18px; color: var(--text-3);
-  border-left: 1px solid var(--gray-200); padding-left: var(--s3);
-}
-.article-body > aside.mnote a { color: var(--link); }
-
-/* The article rail sits one column closer than the entry rail: the margin
-   gutter already provides the breathing room, and a third empty band would
-   read as a hole. Capped so the TOC keeps its measure. */
-.rail.article-rail { max-width: 280px; }
+/* The reading body: prose only. Margin notes were tried and removed — with
+   sparse notes the gutter read as a band splitting body and rail; sources
+   live in the header meta line and the 来源与边界 section instead. */
+.article-body { max-width: 62ch; }
 
 .rail-block { display: flex; flex-direction: column; }
 
@@ -625,15 +610,3 @@ dialog.search .copy-note {
 .archive-row .date { font-size: 13px; color: var(--muted); flex: none; }
 .archive-row .desc { margin: var(--s1) 0 0; color: var(--text-3); font-size: 14px; line-height: 20px; max-width: 68ch; }
 .archive-row .meta-line-inline { margin: var(--s1) 0 0; font-size: 12px; line-height: 18px; color: var(--muted); }
-
-/* Below the wide breakpoint the margin note folds inline: same content, a
-   quiet grey block instead of a gutter. */
-@media (max-width: 1120px) {
-  .article-body { grid-template-columns: minmax(0, 1fr); }
-  .article-body > aside.mnote {
-    grid-column: 1;
-    border: 1px solid var(--gray-200); border-left: 2px solid var(--gray-300);
-    border-radius: var(--radius-sm); background: var(--bg-2);
-    padding: var(--s2) var(--s3);
-  }
-}
