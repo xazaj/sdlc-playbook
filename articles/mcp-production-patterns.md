@@ -100,6 +100,8 @@ server 应该自己持有产品形态的交互，而不是把所有渲染都外�
 
 ## 生产形态
 
+![十二个生产级 MCP 模式总览：工具界面、交互语义、认证与凭据、上下文经济、打包与分发五个方面](/sdlc-playbook/articles/mcp-production-patterns/01-patterns-overview.png)
+
 合起来，这些模式指向一个更大的架构：
 
 - 工具按意图组织，不按端点。
