@@ -610,3 +610,19 @@ dialog.search .copy-note {
 .archive-row .date { font-size: 13px; color: var(--muted); flex: none; }
 .archive-row .desc { margin: var(--s1) 0 0; color: var(--text-3); font-size: 14px; line-height: 20px; max-width: 68ch; }
 .archive-row .meta-line-inline { margin: var(--s1) 0 0; font-size: 12px; line-height: 18px; color: var(--muted); }
+
+/* Article source card: rendered from frontmatter at the end of the body.
+   Author, link, and — for full translations — one tag. Nothing else. */
+.source-card {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2) var(--s3);
+  margin-top: var(--s12); padding: var(--s3) var(--s4);
+  border: 1px solid var(--gray-200); border-radius: var(--radius); background: var(--bg);
+  font-size: 13px; line-height: 18px;
+}
+.source-card .label { color: var(--muted); }
+.source-card .who { color: var(--text-2); font-weight: var(--w-medium); }
+.source-card a { color: var(--link); }
+.source-card .tag {
+  border: 1px solid var(--gray-200); border-radius: 999px;
+  padding: 2px 8px; color: var(--text-3); font-size: 12px; line-height: 1;
+}

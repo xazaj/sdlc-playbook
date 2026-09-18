@@ -41,6 +41,12 @@ const related = entries.filter((e) => d.related.includes(e.data.name));
   <section class="shell section grid12">
     <article class="span-8 prose article-body">
       <Content />
+      <footer class="source-card">
+        <span class="label">来源</span>
+        {d.author && <span class="who">{d.author}</span>}
+        <a href={d.source}>{host} ↗</a>
+        {d.translated && <span class="tag">中文全译</span>}
+      </footer>
     </article>
     <aside class="span-3 start-10 rail">
       {related.length > 0 && (

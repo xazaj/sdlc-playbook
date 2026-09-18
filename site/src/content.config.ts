@@ -73,8 +73,8 @@ const articles = defineCollection({
   loader: glob({ base: '../articles', pattern: ['**/*.md', '!**/_*.md'] }),
   schema: z.object({
     name: z.string(),
-    title: z.string(),
-    summary: z.string(),
+    author: z.string().optional(),
+    translated: z.boolean().default(false),
     date: z.coerce.date(),
     updated: z.coerce.date().optional(),
     source: z.string().url(),
