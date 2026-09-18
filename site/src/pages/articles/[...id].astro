@@ -38,12 +38,11 @@ const related = entries.filter((e) => d.related.includes(e.data.name));
   </section>
 
   <div class="shell"><hr class="rule-strong" /></div>
-
   <section class="shell section grid12">
     <article class="span-8 prose article-body">
       <Content />
     </article>
-    <aside class="span-3 start-10 rail">
+    <aside class="start-9 rail article-rail">
       {related.length > 0 && (
         <div class="rail-block">
           <p class="t-meta">相关条目</p>

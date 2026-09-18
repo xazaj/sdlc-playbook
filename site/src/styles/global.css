@@ -584,16 +584,11 @@ dialog.search .copy-note {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2);
   margin-top: var(--s4); font-size: 13px; line-height: 18px; color: var(--text-3);
 }
-.meta-line .mono { font-variant-numeric: tabular-nums; }
-
-/* The reading body: a tighter measure than the entry page plus a margin-note
-   gutter. Every child flows in column 1; an <aside class="mnote"> lands in
-   column 2 beside its reference. */
 .article-body {
   max-width: none;
   display: grid;
-  grid-template-columns: minmax(0, 62ch) minmax(0, 200px);
-  column-gap: var(--s8);
+  grid-template-columns: minmax(0, 62ch) 160px;
+  column-gap: var(--s6);
 }
 .article-body > * { grid-column: 1; min-width: 0; }
 .article-body > aside.mnote {
@@ -603,6 +598,11 @@ dialog.search .copy-note {
   border-left: 1px solid var(--gray-200); padding-left: var(--s3);
 }
 .article-body > aside.mnote a { color: var(--link); }
+
+/* The article rail sits one column closer than the entry rail: the margin
+   gutter already provides the breathing room, and a third empty band would
+   read as a hole. Capped so the TOC keeps its measure. */
+.rail.article-rail { max-width: 280px; }
 
 .rail-block { display: flex; flex-direction: column; }
 
