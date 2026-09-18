@@ -606,6 +606,13 @@ dialog.search .copy-note {
 
 .rail-block { display: flex; flex-direction: column; }
 
+/* Article figures: the original's banner images render as full-width cards
+   inside the prose column, bordered like every other card on the site. */
+.article-body img {
+  display: block; width: 100%; height: auto;
+  border: 1px solid var(--gray-200); border-radius: var(--radius);
+}
+
 /* The archive: one row per article, title left, mono date right — a timeline,
    not another table. */
 .archive { display: flex; flex-direction: column; }
