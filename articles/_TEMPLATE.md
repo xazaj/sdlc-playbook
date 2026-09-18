@@ -16,6 +16,7 @@ articles/<name>.md 使用。
 必填字段：name title summary date source
 related 填 registry/ 里的条目名，文章页右栏会互链；没有就留空数组。
 排版按 DESIGN.md 的「文章」一节；页面随首批文章一起构建，不留空归档页。
+标题：原文有标题就译其原题；没有就为成稿定最切题的一个，不套模板后缀。
 
 收录三门槛（见 CONTRIBUTING.md「新增文章」）：
 1. 蒸馏为默认，全译需声明：原文不进库，成稿是观点重述，可核对的数字、结论与引语

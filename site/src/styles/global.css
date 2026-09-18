@@ -584,10 +584,29 @@ dialog.search .copy-note {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2);
   margin-top: var(--s4); font-size: 13px; line-height: 18px; color: var(--text-3);
 }
-/* The reading body: prose only. Margin notes were tried and removed — with
-   sparse notes the gutter read as a band splitting body and rail; sources
-   live in the header meta line and the 来源与边界 section instead. */
-.article-body { max-width: 62ch; }
+/* The article page runs its own two-column layout instead of the 12-column
+   grid: a 68ch reading column and a capped rail sit 48px apart, so no dead
+   band opens between body and navigation. The prose measure equals the
+   column — nothing inside it goes unfilled. */
+.article-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 68ch) minmax(0, 280px);
+  column-gap: var(--s12);
+  align-items: start;
+}
+
+/* Article titles run long; the entry page's 26ch cap would wrap them after a
+   few characters. The reading page uses the 32px title step, uncapped, and
+   lets text-wrap: balance handle the rare overflow. */
+.opening.article-opening h1 {
+  font-size: 32px; line-height: 40px; letter-spacing: -0.01em;
+  max-width: none;
+}
+
+@media (max-width: 900px) {
+  .article-layout { grid-template-columns: minmax(0, 1fr); }
+  .article-layout .rail { position: static; }
+}
 
 .rail-block { display: flex; flex-direction: column; }
 
