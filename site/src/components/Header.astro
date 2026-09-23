@@ -33,7 +33,7 @@ const updated = entries.length ? formatDate(entries[0]!.data.evaluated_at) : '�
 
 <dialog class="search" id="search-dialog" aria-label="搜索条目">
   <input type="search" id="search-input" placeholder="搜索条目、来源或正文" autocomplete="off" aria-controls="search-results" />
-  <div class="results" id="search-results" role="listbox" data-empty="输入关键词以搜索。↑ ↓ 移动，⏎ 打开；右侧「复制」直接拿走 prompt，Esc 关闭。"></div>
+  <div class="results" id="search-results" data-empty="输入关键词以搜索。↑ ↓ 移动，⏎ 打开；右侧「复制」直接拿走 prompt，Esc 关闭。"></div>
   <div class="copy-note" id="search-copy-note" role="status" hidden></div>
 </dialog>
 
@@ -64,15 +64,15 @@ const updated = entries.length ? formatDate(entries[0]!.data.evaluated_at) : '�
   function paint() {
     list.textContent = '';
     hits.forEach((hit, i) => {
-      // A row, not a link: the row is the option, the link opens, the button copies.
-      // Nesting a button inside an anchor is invalid HTML and traps clicks.
+      // A row, not a listbox option: the row holds a real link and a real
+      // button, which interactive children inside role=option would break.
+      // The keyboard cursor is marked with aria-current on the link.
       const row = document.createElement('div');
-      row.className = 'hit';
-      row.setAttribute('role', 'option');
-      row.setAttribute('aria-selected', String(i === cursor));
+      row.className = 'hit' + (i === cursor ? ' active' : '');
       const a = document.createElement('a');
       a.className = 'hit-main';
       a.href = hit.url;
+      if (i === cursor) a.setAttribute('aria-current', 'true');
       const name = document.createElement('div');
       name.className = 'name';
       name.textContent = hit.title;
@@ -97,7 +97,7 @@ const updated = entries.length ? formatDate(entries[0]!.data.evaluated_at) : '�
       row.append(a, copy);
       list.append(row);
     });
-    list.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' });
+    list.querySelector('a[aria-current="true"]')?.scrollIntoView({ block: 'nearest' });
   }
 
   async function run() {
@@ -107,6 +107,14 @@ const updated = entries.length ? formatDate(entries[0]!.data.evaluated_at) : '�
     hits = data.filter((item) => item.haystack.includes(q)).slice(0, 12);
     cursor = 0;
     paint();
+    // No hits is a different state from "nothing typed yet": say so in real
+    // DOM, not the idle hint in the CSS ::after.
+    if (!hits.length) {
+      const p = document.createElement('p');
+      p.className = 'no-hit';
+      p.textContent = '没有匹配的条目。换个关键词，或按 Esc 关闭。';
+      list.append(p);
+    }
   }
 
   function open() {

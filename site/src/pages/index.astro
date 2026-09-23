@@ -119,7 +119,9 @@ const momentsLabel = `${CN_NUM[categories.length - 1] ?? categories.length}ä¸ªæ—
         history.replaceState(null, '', state.tab ? `#${state.tab}` : location.pathname);
         apply();
         if (tab.classList.contains('legend-row')) {
-          document.querySelector('.filters')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // Smooth scroll is motion; reduced-motion users get the jump.
+          const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+          document.querySelector('.filters')?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
         }
       });
     }
