@@ -377,6 +377,13 @@ ol.steps li::before { counter-increment: step; content: counter(step); font-fami
 .prose table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; }
 .prose th, .prose td { text-align: left; vertical-align: baseline; padding: var(--s2) var(--s4) var(--s2) 0; border-bottom: 1px solid var(--border); }
 .prose th { color: var(--text-3); font-weight: var(--w-medium); border-bottom-color: var(--gray-300); }
+
+/* Result tables carry more columns than a phone grid fits: below tablet the
+   table keeps one row per line and scrolls sideways inside its row, the way
+   the ledger card handles five columns, instead of pushing the page wide. */
+@media (max-width: 720px) {
+  .prose table { display: block; overflow-x: auto; white-space: nowrap; }
+}
 .prose blockquote { border-left: 2px solid var(--gray-200); padding-left: var(--s4); color: var(--text-3); }
 
 /* A prompt is meant to be taken: it lives in a Geist card with a header bar
