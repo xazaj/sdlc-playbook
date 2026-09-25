@@ -622,11 +622,20 @@ dialog.search .copy-note {
 
 .rail-block { display: flex; flex-direction: column; }
 
-/* Article figures: the original's banner images render as full-width cards
-   inside the prose column, bordered like every other card on the site. */
+/* Article figures split by how the source marked them up. Unsized markdown
+   images are banners (screenshots, charts): full-width cards in the prose
+   column, bordered like every other card on the site. Images the source
+   gave width/height attributes are icons in running text — honor their
+   attributes, inline them, drop the card framing. */
 .article-body img {
-  display: block; width: 100%; height: auto;
+  display: block; max-width: 100%;
   border: 1px solid var(--gray-200); border-radius: var(--radius);
+}
+.article-body img:not([width]):not([height]) { width: 100%; }
+.article-body img[width],
+.article-body img[height] {
+  display: inline-block; width: auto; vertical-align: middle;
+  border: 0; border-radius: 0;
 }
 
 /* The archive: one row per article, title left, mono date right — a timeline,
