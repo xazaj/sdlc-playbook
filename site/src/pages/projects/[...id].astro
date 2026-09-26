@@ -1,0 +1,84 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import RepoCard from '../../components/RepoCard.astro';
+import { allEntries, allProjects, formatDate, readingMinutes, repoPath } from '../../lib/catalog';
+
+export const getStaticPaths = (async () => {
+  const projects = await allProjects();
+  return projects.map((project) => ({ params: { id: project.data.name }, props: { project } }));
+}) satisfies GetStaticPaths;
+
+const { project } = Astro.props;
+const d = project.data;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const { Content } = await render(project);
+const minutes = readingMinutes(project.body);
+const entries = d.related.length ? await allEntries() : [];
+const related = entries.filter((e) => d.related.includes(e.data.name));
+---
+<Base title={d.title} description={d.summary}>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+
+  <section class="shell opening article-opening">
+    <div class="measure-wide">
+      <p class="t-meta"><a href={`${base}/projects/`}>项目</a>{d.tags.length > 0 && ` · ${d.tags.join(' / ')}`}</p>
+      <h1 class="t-page" style={`margin-top: 8px; view-transition-name: ${d.name};`}>{d.title}</h1>
+      <p class="t-lede">{d.summary}</p>
+      <p class="meta-line">
+        <span class="mono">{formatDate(d.evaluated_at)}</span>
+        <span aria-hidden="true">·</span>
+        <span class="mono">{minutes} 分钟</span>
+        <span aria-hidden="true">·</span>
+        <a href={d.repo}>{repoPath(d.repo)} ↗</a>
+      </p>
+    </div>
+  </section>
+
+  <div class="shell"><hr class="rule-strong" /></div>
+  <section class="shell section">
+    <div class="article-layout">
+      <article class="prose article-body">
+        <RepoCard data={d} />
+        <Content />
+      </article>
+      <aside class="rail">
+        {related.length > 0 && (
+          <div class="rail-block">
+            <p class="t-meta">相关条目</p>
+            <div class="byline" style="margin-top: 8px;">
+              {related.map((e) => (<span class="badge"><a href={`${base}/entries/${e.data.name}/`}>{e.data.title}</a></span>))}
+            </div>
+          </div>
+        )}
+        <nav class="toc" id="toc" aria-label="本页小节"></nav>
+      </aside>
+    </div>
+  </section>
+
+  <script>
+    const toc = document.getElementById('toc');
+    const headings = Array.from(document.querySelectorAll<HTMLHeadingElement>('.article-body h2'));
+    headings.forEach((h, i) => {
+      h.id = h.id || `p-${i + 1}`;
+      const a = document.createElement('a');
+      a.href = `#${h.id}`;
+      a.textContent = h.textContent ?? '';
+      toc?.append(a);
+    });
+
+    // Reading progress: a hairline under the header that fills with the page.
+    // Scroll itself is the state change; there is no transition to disable.
+    const bar = document.getElementById('progress');
+    function paintProgress() {
+      if (!bar) return;
+      const doc = document.scrollingElement;
+      if (!doc) return;
+      const max = doc.scrollHeight - window.innerHeight;
+      bar.style.width = max > 0 ? `${(doc.scrollTop / max) * 100}%` : '0%';
+    }
+    addEventListener('scroll', paintProgress, { passive: true });
+    paintProgress();
+  </script>
+</Base>

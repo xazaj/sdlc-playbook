@@ -1,7 +1,9 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 export type Entry = CollectionEntry<'entries'>;
-export type Category = CollectionEntry<'categories'>;
+export type Article = CollectionEntry<'articles'>;
+export type Project = CollectionEntry<'projects'>;
+
 
 export const KIND_LABEL: Record<string, string> = {
   skill: '技能',
@@ -98,6 +100,36 @@ export async function allEntries(): Promise<Entry[]> {
 export async function allArticles(): Promise<Article[]> {
   const articles = await getCollection('articles');
   return articles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+}
+
+/** "https://github.com/owner/repo" → "owner/repo". */
+export function repoPath(repo: string): string {
+  return new URL(repo).pathname.replace(/^\//, '').replace(/\/$/, '');
+}
+
+/** Sections every project card must carry, plus at least one permalink
+ *  anchored to the pinned commit — the difference between an anatomy card
+ *  and a recommendation blurb is that every claim can be clicked open. */
+const PROJECT_REQUIRED_SECTIONS = ['## 它解决什么问题', '## 设计亮点', '## 借鉴清单'] as const;
+
+function assertProjectBodyContract(project: Project): void {
+  const body = project.body ?? '';
+  const missing = PROJECT_REQUIRED_SECTIONS.filter(
+    (h) => !body.includes(`\n${h}`) && !body.startsWith(h),
+  );
+  if (!body.includes('/blob/')) missing.push('锚定 commit 的 GitHub permalink（…/blob/<sha>/…）' as never);
+  if (missing.length > 0) {
+    throw new Error(
+      `projects/${project.data.name}.md 不符合项目卡正文契约，缺少：${missing.join('、')}。` +
+        ' 见 CONTRIBUTING.md 的「新增项目卡」一节。',
+    );
+  }
+}
+
+export async function allProjects(): Promise<Project[]> {
+  const projects = await getCollection('projects');
+  for (const project of projects) assertProjectBodyContract(project);
+  return projects.sort((a, b) => b.data.evaluated_at.getTime() - a.data.evaluated_at.getTime());
 }
 
 /** Rough reading time for CJK prose: 400 characters per minute. */

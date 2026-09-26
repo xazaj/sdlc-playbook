@@ -1,0 +1,41 @@
+---
+import Base from '../../layouts/Base.astro';
+import { allProjects, formatDate, repoPath } from '../../lib/catalog';
+
+const projects = await allProjects();
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<Base
+  title="项目"
+  description="开源项目解剖卡：它解决什么设计问题、怎么解的、哪些能搬，证据钉在 commit 上。"
+>
+  <section class="shell opening">
+    <div class="measure-wide">
+      <h1 class="t-page">项目</h1>
+      <p class="t-lede">
+        开源项目的解剖卡。每张卡回答三件事：它解决什么设计问题、怎么解的、哪些能搬进自己的项目。结论钉在评估时的
+        commit 上，不转述宣传语，也不只说好话。
+      </p>
+    </div>
+  </section>
+
+  <div class="shell"><hr class="rule-strong" /></div>
+
+  <section class="shell section">
+    <div class="archive">
+      {projects.map((p) => (
+        <a class="archive-row" href={`${base}/projects/${p.data.name}/`}>
+          <div class="head">
+            <span class="title">{p.data.title}</span>
+            <span class="date mono">{formatDate(p.data.evaluated_at)}</span>
+          </div>
+          <p class="desc">{p.data.summary}</p>
+          <p class="meta-line-inline mono">
+            {repoPath(p.data.repo)}
+            {p.data.tags.length > 0 && ` · ${p.data.tags.join(' / ')}`}
+          </p>
+        </a>
+      ))}
+    </div>
+  </section>
+</Base>

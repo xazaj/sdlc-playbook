@@ -1,13 +1,13 @@
 ---
-import { allArticles, allCategories, allEntries, formatDate } from '../lib/catalog';
-
+import { allArticles, allCategories, allEntries, allProjects, formatDate } from '../lib/catalog';
 interface Props { current?: string }
 const { current } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const categories = await allCategories();
 const entries = await allEntries();
-const articles = await allArticles();
 const updated = entries.length ? formatDate(entries[0]!.data.evaluated_at) : '—';
+const articles = await allArticles();
+const projects = await allProjects();
 ---
 <header class="masthead">
   <div class="shell inner">
@@ -24,6 +24,7 @@ const updated = entries.length ? formatDate(entries[0]!.data.evaluated_at) : '�
         <a href={`${base}/#${c.data.id}`} data-tab-link={c.data.id}>{c.data.title}</a>
       ))}
       {articles.length > 0 && <a href={`${base}/articles/`}>文章</a>}
+      {projects.length > 0 && <a href={`${base}/projects/`}>项目</a>}
       <button class="search-trigger" type="button" id="search-open" aria-haspopup="dialog">
         搜索<kbd>⌘K</kbd>
       </button>

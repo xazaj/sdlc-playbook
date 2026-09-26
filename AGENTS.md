@@ -9,8 +9,10 @@
 | `stages/` | 决策入口，仅含 DECIDE.md 一类索引 | 不放实体资源 |
 | `catalog/` | 本库自有资产 | 由 `install.sh` 挂载为可触发技能 |
 | `registry/` | 外部资产的登记卡 | 纯文档，不挂载 |
+| `articles/` | 阅读资产：外部材料蒸馏成文 | 给人读，不进 agent 上下文 |
+| `projects/` | 项目解剖卡：开源项目的设计借鉴分析 | 纯文档，不挂载，不进 agent 上下文 |
 | `bin/` | 安装与更新检查脚本 | 只保留极少量脚本 |
-| `site/` | 目录站点（Astro），由 Actions 构建并托管于 GitHub Pages | 只渲染 `registry/`，不存放条目内容 |
+| `site/` | 目录站点（Astro），由 Actions 构建并托管于 GitHub Pages | 只渲染 `registry/`、`articles/`、`projects/`，不存放条目正文 |
 | `library/` | 外部文章原料，尚未启用 | 不进入 agent 上下文 |
 | `docs/` | 设计文档、实现计划与验证日志 | |
 

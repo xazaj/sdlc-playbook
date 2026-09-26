@@ -666,3 +666,33 @@ dialog.search .copy-note {
   border: 1px solid var(--gray-200); border-radius: 999px;
   padding: 2px 8px; color: var(--text-3); font-size: 12px; line-height: 1;
 }
+
+/* ---------- projects ---------- */
+
+/* The repo card: an unfurled snapshot of the repository, pinned to the
+   commit the evaluation read. Everything renders from frontmatter — nothing
+   is fetched at build or runtime, so the card can only state facts as of
+   evaluated_at, never a stale "current" number. */
+.repo-card {
+  display: block; margin: 0 0 var(--s8); padding: var(--s4) var(--s5);
+  border: 1px solid var(--gray-200); border-radius: var(--radius);
+  color: inherit; text-decoration: none;
+}
+.repo-card:hover { border-color: var(--gray-300); }
+.repo-card .rc-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s2); }
+.repo-card .rc-repo { font-size: 16px; line-height: 24px; font-weight: var(--w-medium); }
+.repo-card:hover .rc-repo {
+  text-decoration: underline; text-decoration-color: var(--link);
+  text-decoration-thickness: 1px; text-underline-offset: 3px;
+}
+.repo-card .rc-arrow { color: var(--link); font-size: 14px; line-height: 20px; }
+.repo-card .rc-desc { margin: var(--s1) 0 0; color: var(--text-2); font-size: 14px; line-height: 20px; }
+.repo-card .rc-meta {
+  margin: var(--s2) 0 0; font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: 13px; line-height: 18px; color: var(--text-3);
+}
+.repo-card .rc-tags { margin-top: var(--s2); }
+.repo-card .rc-snapshot {
+  margin: var(--s2) 0 0; font-family: var(--mono);
+  font-size: 13px; line-height: 18px; color: var(--text-3);
+}

@@ -85,4 +85,26 @@ const articles = defineCollection({
   }),
 });
 
-export const collections = { entries, categories, articles };
+// Project anatomy cards: one open-source repo dissected for design lessons.
+// Human-facing like articles, but the source is a repository, not a post, and
+// the body must argue from permalinks pinned to `pinned_commit`.
+const projects = defineCollection({
+  loader: glob({ base: '../projects', pattern: ['**/*.md', '!**/_*.md'] }),
+  schema: z.object({
+    name: z.string(),
+    title: z.string(),
+    summary: z.string(),
+    repo: z.string().url(),
+    description: z.string().optional(),
+    stars: z.number().int().nonnegative(),
+    language: z.string().optional(),
+    license: z.string().optional(),
+    tags: z.array(z.string()).default([]),
+    pinned_commit: z.string().regex(/^[0-9a-f]{40}$/),
+    evaluated_at: z.coerce.date(),
+    updated_at: z.coerce.date().optional(),
+    related: z.array(z.string()).default([]),
+  }),
+});
+
+export const collections = { entries, categories, articles, projects };

@@ -1,0 +1,33 @@
+---
+import { formatDate, repoPath, type Project } from '../lib/catalog';
+
+interface Props {
+  data: Project['data'];
+}
+
+const { data } = Astro.props;
+const meta = [`${data.stars.toLocaleString('en-US')} stars`, data.language, data.license].filter(
+  Boolean,
+);
+const desc = data.description ?? data.summary;
+---
+<a class="repo-card" href={data.repo}>
+  <span class="rc-head">
+    <span class="rc-repo">{repoPath(data.repo)}</span>
+    <span class="rc-arrow" aria-hidden="true">↗</span>
+  </span>
+  <p class="rc-desc">{desc}</p>
+  <p class="rc-meta">{meta.join(' · ')}</p>
+  {
+    data.tags.length > 0 && (
+      <span class="byline rc-tags">
+        {data.tags.map((t) => (
+          <span class="badge">{t}</span>
+        ))}
+      </span>
+    )
+  }
+  <p class="rc-snapshot">
+    数据截至 {formatDate(data.evaluated_at)} · commit {data.pinned_commit.slice(0, 7)}
+  </p>
+</a>
