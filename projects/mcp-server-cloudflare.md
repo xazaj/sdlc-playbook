@@ -66,4 +66,3 @@ monorepo 三层。`apps/` 每个服务一个目录，内部固定三件套：入
 ## 相关
 
 - 站内文章[《生产级 Agent 背后的 12 个 MCP 模式》](/sdlc-playbook/articles/mcp-production-patterns/)——模式层面的论述，这个仓库是那些模式的一次全量落地。
-- 本库尚无 MCP 选型的决策入口（`stages/` 未覆盖），需要时优先补 DECIDE.md，而不是先写登记卡。

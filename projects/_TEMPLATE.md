@@ -37,6 +37,8 @@ related 填 registry/ 里的条目名，项目页右栏互链；没有就留空�
 - 篇幅向意外之处倾斜：读者不知道的部分写透，背景一笔带过。
 - 中文成稿后按 sepia 技术文章路线润色（professional-pass + tech-articles，
   中文加 zh 校准），成品不留润色痕迹，正文也不写评估过程。
+- 正文只面向读者：不写本库的建设规划（缺什么决策入口、打算补什么条目）
+  与收录润色过程，这类事项放 docs/ 或 issue。
 - 站内链接写 `/sdlc-playbook/…` 前缀（与 articles 正文图片同约定），
   不写根绝对路径，否则在 GitHub Pages 的 base 下 404。
 -->
