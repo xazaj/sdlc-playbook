@@ -43,6 +43,9 @@
 | 会超过 20 屏 | 无论周期长短都要有 token 层，否则改一次主色要改几十处 |
 | 设计师会参与 | 提前建 token 体系，它是设计与开发的交接界面 |
 | 同一类页面会反复生成（报告、提案、数据页） | 沉淀为约束文件加有界样式 API，不再每次口头描述 |
+| 界面动效被嫌廉价、迟钝、不可中断 | improve-animations 做全库动效审计，产出带精确数值的修复计划 |
+| 要按知名公司的设计语言立规范（报告页、B 端后台） | design.md 家族：Vercel 报告规范管方法论与构图，Ant Design 快照管 token 数值 |
+| 需要的 UI 技能不在本库登记之列 | ui-skills 目录按主题找上游；装前读 SKILL.md 全文，一句指针的空壳不要 |
 
 ## 交给 agent 执行时的差异
 
@@ -70,8 +73,12 @@
 | 判定 | 使用资产 | 登记卡 |
 |---|---|---|
 | 需要完整设计系统 | gstack 的 `design-consultation` | `registry/gstack-design-consultation.md` |
-| AI 直接生成视觉 | `frontend-design` 一类实现技能 | 待登记 |
+| AI 直接生成视觉 | Anthropic 官方 `frontend-design` 技能 | `registry/frontend-design.md` |
 | 生成或改写界面后的打磨自查 | interfaces 的 `better-*` 家族 | `registry/interfaces-better.md` |
 | 同类页面反复生成，需沉淀人工纠正 | 设计约束回路 | `registry/design-constraint-loop.md` |
+| 动效审计与修复路线图 | emilkowalski 的 `improve-animations` | `registry/improve-animations.md` |
+| 证据型页面的完整设计规范 | Vercel 报告规范（design.md，方法论） | `registry/vercel-brand-guidelines.md` |
+| B 端基线的 token 数值 | Ant Design 快照（design.md，数值） | `registry/ant-design.md` |
+| 本库登记之外的 UI 技能发现 | ui-skills 目录与 CLI | `registry/ui-skills.md` |
 
 本库不重复建设这些资产，只判断何时使用哪一个。安装方式与版本管理见各登记卡。
