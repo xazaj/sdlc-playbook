@@ -11,6 +11,8 @@ related: [frontend-design, interfaces-better]
 
 AI 把写代码的门槛抹平之后，UI 成了区分玩具与真实商业产品的最后壁垒。用户给一个新产品的耐心只有 3 秒，界面若是一股「AI 塑料感」，底层再惊艳信任也当场归零。作者对照《Refactoring UI》（Adam Wathan、Steve Schoge 著）全书 9 章 50 篇，提炼出 20 条可执行的军规，每条配一张前后对比图。核心主张只有一句：**UI 设计不是玄学，是一套可计算、可度量、可规则化的视觉逻辑**——这正是「人人都是 UI 设计师」的底气。
 
+![原文头图：20 条设计军规的前后对比总览](/sdlc-playbook/articles/ui-design-rules/cover.jpg)
+
 ## 一、动手之前：定基调
 
 ### 01 给设计选一种个性
