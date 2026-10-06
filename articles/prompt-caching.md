@@ -1,5 +1,5 @@
 ---
-name: prompt-caching-in-agents
+name: prompt-caching
 title: 从零开始理解提示缓存
 summary: KV 缓存、前缀匹配、TTL 与计费的完整机理：为什么改一个工具会作废整段对话的缓存、一句「继续」也可能很贵——编程 Agent 经济学的底层一篇讲透。
 date: 2026-10-06
