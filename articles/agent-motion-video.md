@@ -316,7 +316,7 @@ out/final.mp4 · out/loop_check.mp4 · out/poster.png · out/contact.png · READ
 
 ## 讲解片模板：把设计负责人的工作方法写成提示词
 
-营销片要观众记住产品，讲解片要观众离开时多懂一件事，结构不一样。下面这份「Explainer Motion Studio」提示词由 @0xCarnagee 整理，原则来自 Meaghan Choi（Anthropic 的 Claude Code 与 Cowork 设计负责人）在公开访谈和帖子里讲的工作方式。卡片注明措辞是整理者的，未经她本人撰写或背书；卡片标题里「ex. Meta」的履历本文没有查到出处。
+营销片要观众记住产品，讲解片要观众离开时多懂一件事，结构不一样。下面这份「Explainer Motion Studio」提示词由 @0xCarnagee 整理，原则来自 Meaghan Choi（Anthropic 的 Claude Code 与 Cowork 设计负责人）在公开访谈和帖子里讲的工作方式。卡片注明措辞是整理者的，未经她本人撰写或背书。
 
 ![Explainer Motion Studio 提示词卡片](/sdlc-playbook/articles/agent-motion-video/explainer-prompt.png)
 
