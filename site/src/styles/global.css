@@ -40,8 +40,14 @@
   --sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI",
     "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   --mono: "Geist Mono", "SFMono-Regular", Consolas, Menlo, monospace;
-  /* Latin leading from the published scale; CJK needs one step more. */
-  --leading-cjk: 28px;
+  /* The reading voice for prose columns. Latin from Source Serif 4; CJK from
+     platform Songti on Apple, the subset-loaded Noto Serif SC elsewhere —
+     Windows' native SimSun fails at UI sizes, so there the webfont is the
+     primary, not the fallback (recorded inversion, see DESIGN.md 上限). */
+  --font-serif: "Source Serif 4", "Songti SC", "Noto Serif SC", serif;
+  /* Latin leading from the published scale; CJK serif prose needs one more
+     step than the sans figure it replaced (see DESIGN.md 中文适配). */
+  --leading-cjk: 30px;
 
   --w-regular: 400;
   --w-heading: 600;
@@ -365,10 +371,16 @@ ol.steps li::before { counter-increment: step; content: counter(step); font-fami
 .prose > .block, .prose > .table-wrap { max-width: none; width: 100%; }
 .prose > * + * { margin-top: var(--s4); }
 .prose h1 { display: none; }
-.prose h2 { font-size: 24px; line-height: 32px; font-weight: var(--w-heading); letter-spacing: -0.012em; margin-top: var(--s12); }
-.prose h3 { font-size: 20px; line-height: 26px; font-weight: var(--w-medium); margin-top: var(--s8); }
+.prose h2 { font-family: var(--font-serif); font-size: 24px; line-height: 32px; font-weight: var(--w-heading); letter-spacing: normal; margin-top: var(--s12); }
+.prose h3 { font-family: var(--font-serif); font-size: 20px; line-height: 26px; font-weight: var(--w-medium); letter-spacing: normal; margin-top: var(--s8); }
 .prose :is(h2, h3) + * { margin-top: var(--s3); }
-.prose p, .prose li { color: var(--text-2); line-height: var(--leading-cjk); overflow-wrap: break-word; }
+/* Reading voice: paragraphs, lists, and quotes set in the serif family.
+   Tables, code, and prompts one rule below stay in Geist — they are data,
+   not prose. Positive tracking gives CJK serif glyphs room (DESIGN.md 中文适配). */
+.prose p, .prose li, .prose dt, .prose dd, .prose blockquote {
+  font-family: var(--font-serif); letter-spacing: 0.01em;
+  color: var(--text-2); line-height: var(--leading-cjk); overflow-wrap: break-word;
+}
 .prose li + li { margin-top: var(--s2); }
 .prose strong { color: var(--text); font-weight: var(--w-semibold); }
 .prose a { text-decoration: underline; text-underline-offset: 3px; }
@@ -607,6 +619,10 @@ dialog.search .copy-note {
   align-items: start;
 }
 
+/* The detail-page lede opens the reading voice. List-page ledes stay Geist —
+   there the same sentence is catalogue metadata, shown identically in rows. */
+.opening.article-opening .t-lede { font-family: var(--font-serif); }
+
 /* Article titles run long; the entry page's 26ch cap would wrap them after a
    few characters. The reading page uses the 32px title step, uncapped, and
    lets text-wrap: balance handle the rare overflow. */
@@ -696,3 +712,6 @@ dialog.search .copy-note {
   margin: var(--s2) 0 0; font-family: var(--mono);
   font-size: 13px; line-height: 18px; color: var(--text-3);
 }
+/* The repo card is a data snapshot, not prose: it keeps the system voice even
+   though it lives inside .prose. */
+.repo-card :is(p, li) { font-family: var(--sans); letter-spacing: normal; }
