@@ -7,6 +7,7 @@ on:
       - 'site/**'
       - 'registry/**'
       - 'articles/**'
+      - 'projects/**'
       - '.github/workflows/pages.yml'
   # Freshness badges are computed at build time, so the site is rebuilt weekly
   # even when nothing changed: an evaluation ages without anyone touching it.
