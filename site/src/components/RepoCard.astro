@@ -1,23 +1,57 @@
 ---
-import { formatDate, repoPath, type Project } from '../lib/catalog';
+import { formatDate, languageBar, repoParts, type Project } from '../lib/catalog';
 
 interface Props {
   data: Project['data'];
 }
 
+// Octicons (MIT, github/octicons), inlined at 16px. GitHub's own nouns keep
+// GitHub's own glyphs; drawing substitutes would be the invented-icon case
+// DESIGN.md rules out.
+const ICON: Record<string, string> = {
+  contributors:
+    'M2 5.5a3.5 3.5 0 1 1 5.898 2.549 5.508 5.508 0 0 1 3.034 4.084.75.75 0 1 1-1.482.235 4 4 0 0 0-7.9 0 .75.75 0 0 1-1.482-.236A5.507 5.507 0 0 1 3.102 8.05 3.493 3.493 0 0 1 2 5.5ZM11 4a3.001 3.001 0 0 1 2.22 5.018 5.01 5.01 0 0 1 2.56 3.012.749.749 0 0 1-.885.954.752.752 0 0 1-.549-.514 3.507 3.507 0 0 0-2.522-2.372.75.75 0 0 1-.574-.73v-.352a.75.75 0 0 1 .416-.672A1.5 1.5 0 0 0 11 5.5.75.75 0 0 1 11 4Zm-5.5-.5a2 2 0 1 0-.001 3.999A2 2 0 0 0 5.5 3.5Z',
+  usedBy:
+    'M8.878.392a1.75 1.75 0 0 0-1.756 0l-5.25 3.045A1.75 1.75 0 0 0 1 4.951v6.098c0 .624.332 1.2.872 1.514l5.25 3.045a1.75 1.75 0 0 0 1.756 0l5.25-3.045c.54-.313.872-.89.872-1.514V4.951c0-.624-.332-1.2-.872-1.514L8.878.392ZM7.875 1.69a.248.248 0 0 1 .25 0l4.63 2.685L8 7.133 3.245 4.375l4.63-2.685ZM2.5 5.677v5.372c0 .09.047.171.125.216l4.625 2.683V8.432Zm6.25 8.271 4.625-2.683a.25.25 0 0 0 .125-.216V5.677L8.75 8.432Z',
+  stars:
+    'M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Zm0 2.445L6.615 5.5a.75.75 0 0 1-.564.41l-3.097.45 2.24 2.184a.75.75 0 0 1 .216.664l-.528 3.084 2.769-1.456a.75.75 0 0 1 .698 0l2.77 1.456-.53-3.084a.75.75 0 0 1 .216-.664l2.24-2.183-3.096-.45a.75.75 0 0 1-.564-.41L8 2.694Z',
+  forks:
+    'M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z',
+};
+
 const { data } = Astro.props;
-const meta = [`${data.stars.toLocaleString('en-US')} stars`, data.language, data.license].filter(
-  Boolean,
-);
-const desc = data.description ?? data.summary;
+// `avatar` is stored base-free so frontmatter stays portable; the deployed
+// base lives in one place.
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const avatar = data.avatar ? `${base}${data.avatar}` : undefined;
+const [owner, name] = repoParts(data.repo);
+const langs = languageBar(data.languages, data.language);
+
+// A column only exists when its number was recorded. Absent is absent; a zero
+// would claim a count that was never taken.
+const stats = (
+  [
+    ['contributors', 'Contributors', data.contributors],
+    ['usedBy', 'Used by', data.used_by],
+    ['stars', 'Stars', data.stars],
+    ['forks', 'Forks', data.forks],
+  ] as const
+).filter((s): s is readonly [string, string, number] => typeof s[2] === 'number');
 ---
 <a class="repo-card" href={data.repo}>
-  <span class="rc-head">
-    <span class="rc-repo">{repoPath(data.repo)}</span>
-    <span class="rc-arrow" aria-hidden="true">↗</span>
+  <span class="rc-top">
+    <span class="rc-title">
+      <span class="rc-owner">{owner}/</span><span class="rc-name">{name}</span>
+      <span class="rc-arrow" aria-hidden="true">↗</span>
+    </span>
+    {avatar && <img class="rc-avatar" src={avatar} alt="" width="48" height="48" loading="lazy" />}
   </span>
-  <p class="rc-desc">{desc}</p>
-  <p class="rc-meta">{meta.join(' · ')}</p>
+
+  {/* Upstream's own About line only. With none, the card stays silent: the
+      page lede two lines above is already our sentence about this repo, and
+      echoing it here would be the same text twice. */}
+  {data.description && <p class="rc-desc">{data.description}</p>}
+
   {
     data.tags.length > 0 && (
       <span class="byline rc-tags">
@@ -27,7 +61,36 @@ const desc = data.description ?? data.summary;
       </span>
     )
   }
+
+  <span class="rc-stats">
+    {stats.map(([icon, label, value]) => (
+      <span class="rc-stat">
+        <span class="rc-stat-value">
+          <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
+            <path d={ICON[icon]} />
+          </svg>
+          {value.toLocaleString('en-US')}
+        </span>
+        <span class="rc-stat-label">{label}</span>
+      </span>
+    ))}
+  </span>
+
+  {/* Two-end line: the snapshot's provenance left, the licence right. It is
+      the site's label-left/value-right idiom, and it gives the card's bottom
+      edge a right-hand anchor without borrowing anyone's wordmark. */}
   <p class="rc-snapshot">
-    数据截至 {formatDate(data.evaluated_at)} · commit {data.pinned_commit.slice(0, 7)}
+    <span>数据截至 {formatDate(data.evaluated_at)} · commit {data.pinned_commit.slice(0, 7)}</span>
+    {data.license && <span>{data.license}</span>}
   </p>
+
+  {
+    langs.length > 0 && (
+      <span class="rc-langs" aria-hidden="true">
+        {langs.map((l) => (
+          <span style={`flex: ${l.percent} 0 0; background: ${l.color};`} title={`${l.name} ${l.percent}%`} />
+        ))}
+      </span>
+    )
+  }
 </a>

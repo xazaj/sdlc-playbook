@@ -3,9 +3,15 @@ name: 条目唯一标识与文件名一致用作URL
 title: 项目卡标题
 summary: 为什么值得看，一句话，六十字以内
 repo: https://github.com/owner/repo
-description: 上游仓库自述（About 栏那行英文）；上游没写就删掉此键，卡片用 summary 兜底
+description: 上游仓库自述（About 栏那行英文）；上游没写就删掉此键，卡片不画这一行
 stars: 0
+contributors: 0        # 可省；缺哪一项卡上就少哪一栏，不补零
+used_by: 0             # 可省；GitHub 的 network/dependents 页顶部那个数
+forks: 0               # 可省
 language: 主语言，可省
+languages:             # 可省；GitHub 语言条的百分比，卡片下边缘照此着色
+  TypeScript: 0.0
+avatar: /projects/<owner>.png   # 可省；头像下载进 site/public/projects/，不热链
 license: SPDX 标识，可省
 tags: []
 pinned_commit: 0000000000000000000000000000000000000000
@@ -19,11 +25,15 @@ related: []
 projects/<owner>-<repo>.md 使用。
 
 必填字段：name title summary repo stars pinned_commit evaluated_at
+统计字段（contributors / used_by / forks / languages / avatar）可省，缺席
+的栏位卡片直接不渲染——零是一个计数结果，空白才是「没数过」。
 pinned_commit 是 40 位完整 SHA：正文所有证据链接锚定它，卡片快照以它为口径。
 related 填 registry/ 里的条目名，项目页右栏互链；没有就留空数组。
 
-快照原则（与登记卡规则 2 同构）：stars、language、license 是评估当天的
-事实，不追新、不更新。上游数据漂移由「数据截至」那行说明兜住。
+快照原则（与登记卡规则 2 同构）：stars、contributors、used_by、forks、
+languages、language、license 都是评估当天的事实，不追新、不更新。上游数据
+漂移由「数据截至」那行说明兜住。卡片构建期与运行期都不请求 GitHub，头像
+也下载进仓库，因此没有任何一个数字会在读者面前悄悄变成「当前值」。
 
 正文契约（缺任一构建失败，见 site/src/lib/catalog.ts）：
 1. 必需小节「## 它解决什么问题」「## 设计亮点」「## 借鉴清单」；

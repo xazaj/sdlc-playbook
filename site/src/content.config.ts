@@ -97,7 +97,19 @@ const projects = defineCollection({
     repo: z.string().url(),
     description: z.string().optional(),
     stars: z.number().int().nonnegative(),
+    // Snapshot counters, all optional: a card states what was counted on
+    // `evaluated_at` and stays silent about what was not. The repo card drops
+    // any column whose number is absent rather than printing a zero.
+    contributors: z.number().int().nonnegative().optional(),
+    used_by: z.number().int().nonnegative().optional(),
+    forks: z.number().int().nonnegative().optional(),
     language: z.string().optional(),
+    // Percentages as GitHub's language breakdown reported them, name → percent.
+    languages: z.record(z.string(), z.number().min(0).max(100)).optional(),
+    // Site-local avatar path such as `/projects/cloudflare.png`. Downloaded at
+    // evaluation time; never hot-linked, so the card renders no third-party
+    // request and cannot break when upstream moves the file.
+    avatar: z.string().optional(),
     license: z.string().optional(),
     tags: z.array(z.string()).default([]),
     pinned_commit: z.string().regex(/^[0-9a-f]{40}$/),

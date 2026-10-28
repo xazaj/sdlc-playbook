@@ -619,10 +619,6 @@ dialog.search .copy-note {
   align-items: start;
 }
 
-/* The detail-page lede opens the reading voice. List-page ledes stay Geist —
-   there the same sentence is catalogue metadata, shown identically in rows. */
-.opening.article-opening .t-lede { font-family: var(--font-serif); }
-
 /* Article titles run long; the entry page's 26ch cap would wrap them after a
    few characters. The reading page uses the 32px title step, uncapped, and
    lets text-wrap: balance handle the rare overflow. */
@@ -630,6 +626,10 @@ dialog.search .copy-note {
   font-size: 32px; line-height: 40px; letter-spacing: -0.01em;
   max-width: none;
 }
+
+/* The detail-page lede opens the reading voice. List-page ledes stay Geist —
+   there the same sentence is catalogue metadata, shown identically in rows. */
+.opening.article-opening .t-lede { font-family: var(--font-serif); }
 
 @media (max-width: 900px) {
   .article-layout { grid-template-columns: minmax(0, 1fr); }
@@ -689,29 +689,72 @@ dialog.search .copy-note {
    commit the evaluation read. Everything renders from frontmatter — nothing
    is fetched at build or runtime, so the card can only state facts as of
    evaluated_at, never a stale "current" number. */
+/* Repo card: GitHub's own summary layout — owner/name split by weight, owner
+   avatar, a row of counted columns, a language bar on the bottom edge —
+   rebuilt as real text on Geist tokens. Every number is the frontmatter
+   snapshot; nothing here requests GitHub at build or read time. */
 .repo-card {
-  display: block; margin: 0 0 var(--s8); padding: var(--s4) var(--s5);
+  display: block; position: relative; overflow: hidden;
+  margin: 0 0 var(--s8); padding: var(--s5) var(--s5) calc(var(--s5) + 4px);
   border: 1px solid var(--gray-200); border-radius: var(--radius);
   color: inherit; text-decoration: none;
 }
 .repo-card:hover { border-color: var(--gray-300); }
-.repo-card .rc-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s2); }
-.repo-card .rc-repo { font-size: 16px; line-height: 24px; font-weight: var(--w-medium); }
-.repo-card:hover .rc-repo {
+/* The card lives inside .prose, whose link rule would underline every line of
+   it: the whole card is one anchor, but only the repo name is the affordance. */
+.prose a.repo-card, .prose a.repo-card:hover { text-decoration: none; color: inherit; }
+/* The repo card is a data snapshot, not prose: it keeps the system voice even
+   though it lives inside .prose (same reason the link rule above excludes it). */
+.repo-card :is(p, li) { font-family: var(--sans); letter-spacing: normal; }
+.repo-card .rc-top { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s4); }
+.repo-card .rc-title { font-size: 24px; line-height: 32px; letter-spacing: -0.012em; }
+.repo-card .rc-owner { font-weight: var(--w-regular); color: var(--text-2); }
+.repo-card .rc-name { font-weight: var(--w-semibold); }
+.repo-card:hover .rc-name {
   text-decoration: underline; text-decoration-color: var(--link);
   text-decoration-thickness: 1px; text-underline-offset: 3px;
 }
 .repo-card .rc-arrow { color: var(--link); font-size: 14px; line-height: 20px; }
-.repo-card .rc-desc { margin: var(--s1) 0 0; color: var(--text-2); font-size: 14px; line-height: 20px; }
-.repo-card .rc-meta {
-  margin: var(--s2) 0 0; font-family: var(--mono); font-variant-numeric: tabular-nums;
-  font-size: 13px; line-height: 18px; color: var(--text-3);
+.repo-card .rc-avatar {
+  flex: none; width: 48px; height: 48px; border-radius: var(--radius-sm);
+  border: 1px solid var(--gray-200);
 }
-.repo-card .rc-tags { margin-top: var(--s2); }
+.repo-card .rc-desc {
+  margin: var(--s2) 0 0; max-width: 60ch;
+  color: var(--text-2); font-size: 14px; line-height: 20px;
+}
+.repo-card .rc-tags { margin-top: var(--s1); }
+
+/* Columns, not a metadata run-on: label under number is what makes four
+   counts scannable as four counts. The 32px above them is what makes the
+   stats plus the snapshot line read as the card's footer rather than as two
+   more rows — the reference does the same separation with whitespace, and a
+   divider rule here would be one line more than the job needs. */
+.repo-card .rc-stats { display: flex; flex-wrap: wrap; gap: var(--s6); margin-top: var(--s8); }
+.repo-card .rc-stat { display: flex; flex-direction: column; gap: var(--s1); }
+.repo-card .rc-stat-value {
+  display: flex; align-items: center; gap: var(--s2);
+  font-size: 16px; line-height: 24px; font-weight: var(--w-medium);
+  font-variant-numeric: tabular-nums;
+}
+.repo-card .rc-stat-value svg { fill: var(--text-3); }
+.repo-card .rc-stat-label { font-size: 13px; line-height: 18px; color: var(--text-3); }
+
 .repo-card .rc-snapshot {
-  margin: var(--s2) 0 0; font-family: var(--mono);
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--s1) var(--s4);
+  margin: var(--s3) 0 0; font-family: var(--mono);
   font-size: 13px; line-height: 18px; color: var(--text-3);
 }
-/* The repo card is a data snapshot, not prose: it keeps the system voice even
-   though it lives inside .prose. */
-.repo-card :is(p, li) { font-family: var(--sans); letter-spacing: normal; }
+
+/* Recorded deviation from the "no coloured bars" rule — see DESIGN.md. The
+   stripe is data (the recorded language breakdown), not decoration, and it
+   sits on the card edge where GitHub puts it. */
+.repo-card .rc-langs { display: flex; position: absolute; inset: auto 0 0 0; height: 4px; }
+.repo-card .rc-langs > span { display: block; height: 100%; }
+
+@media (max-width: 640px) {
+  /* Four columns do not fit; wrapping leaves one count orphaned on its own
+     row, so the narrow layout is an explicit 2x2 instead. */
+  .repo-card .rc-stats { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s4) var(--s5); }
+  .repo-card .rc-title { font-size: 20px; line-height: 28px; }
+}

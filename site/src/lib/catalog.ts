@@ -107,6 +107,70 @@ export function repoPath(repo: string): string {
   return new URL(repo).pathname.replace(/^\//, '').replace(/\/$/, '');
 }
 
+/** "https://github.com/owner/repo" → ["owner", "repo"]. The repo card sets the
+ *  two halves in different weights, so they have to be separate text nodes. */
+export function repoParts(repo: string): [owner: string, name: string] {
+  const [owner = '', name = ''] = repoPath(repo).split('/');
+  return [owner, name];
+}
+
+/** GitHub Linguist colours, only for languages this catalogue has actually
+ *  used. An unlisted language falls back to the neutral border grey: the bar
+ *  states composition, and an invented colour would state nothing. */
+const LANGUAGE_COLOR: Record<string, string> = {
+  Astro: '#ff5a03',
+  C: '#555555',
+  'C++': '#f34b7d',
+  CSS: '#663399',
+  Dart: '#00b4ab',
+  Dockerfile: '#384d54',
+  Elixir: '#6e4a7e',
+  Go: '#00add8',
+  HTML: '#e34c26',
+  Haskell: '#5e5086',
+  Java: '#b07219',
+  JavaScript: '#f1e05a',
+  Kotlin: '#a97bff',
+  Lua: '#000080',
+  MDX: '#fcb32c',
+  Makefile: '#427819',
+  Markdown: '#083fa1',
+  Nix: '#7e7eff',
+  PHP: '#4f5d95',
+  Python: '#3572a5',
+  Ruby: '#701516',
+  Rust: '#dea584',
+  SCSS: '#c6538c',
+  Scala: '#c22d40',
+  Shell: '#89e051',
+  Swift: '#f05138',
+  TypeScript: '#3178c6',
+  Vue: '#41b883',
+  Zig: '#ec915c',
+};
+
+export type LanguageSlice = { name: string; percent: number; color: string };
+
+/** The bottom bar of the repo card, largest share first. Falls back to the
+ *  single `language` field so a card that never recorded a breakdown still
+ *  shows one honest stripe instead of nothing. */
+export function languageBar(
+  languages: Record<string, number> | undefined,
+  language: string | undefined,
+): LanguageSlice[] {
+  const entries = Object.entries(languages ?? {});
+  if (entries.length === 0) {
+    return language ? [{ name: language, percent: 100, color: colorOf(language) }] : [];
+  }
+  return entries
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, percent]) => ({ name, percent, color: colorOf(name) }));
+}
+
+function colorOf(name: string): string {
+  return LANGUAGE_COLOR[name] ?? 'var(--gray-300)';
+}
+
 /** Sections every project card must carry, plus at least one permalink
  *  anchored to the pinned commit — the difference between an anatomy card
  *  and a recommendation blurb is that every claim can be clicked open. */

@@ -156,7 +156,7 @@ docs/      设计文档、实现计划与验证日志
 收录三门槛，缺一不收：
 
 1. **判断而非推荐。** 「借鉴清单」必须分「能搬的」与「不适用的」两半，不适用那半句不许省；只说好话的卡是软文，不收。
-2. **快照钉 commit。** frontmatter 的 stars、language、license 是评估当天的事实，`pinned_commit` 是全文证据锚定的那个 commit，不追新、不更新——与登记卡规则 2 同构。
+2. **快照钉 commit。** frontmatter 的 stars、contributors、used_by、forks、languages、language、license 都是评估当天的事实，`pinned_commit` 是全文证据锚定的那个 commit，不追新、不更新——与登记卡规则 2 同构。统计字段可省，缺席的栏位卡片直接不渲染：零是一个计数结果，空白才是「没数过」，不许拿零冒充计数。
 3. **证据可点开。** 正文至少一个 `blob/<commit>/…` permalink；「它解决什么问题」「设计亮点」「借鉴清单」三节缺任一，构建失败并指名文件。
 
 中文成稿按 sepia 技术文章路线润色（professional-pass + tech-articles，中文加 zh 校准），成品不留润色痕迹，正文也不写评估过程与库内建设规划（AGENTS.md 硬性约束同此）。
@@ -174,8 +174,18 @@ docs/      设计文档、实现计划与验证日志
 2. 把仓库读透：README、目录结构、关键源文件。结论只写你实际读到的
    东西，不转述上游宣传语；读不到的停下来问我，不要猜。
 
-3. 查证快照：stars、language、license，以及你克隆或抓取时 HEAD 的完整
-   commit SHA。全文证据链接全部锚定这个 SHA。
+3. 查证快照，全部记成评估当天的事实：
+
+   - `stars`、`forks`、`language` 取自 `api.github.com/repos/<owner>/<repo>`；
+   - `contributors` 取 `/contributors?per_page=1&anon=false` 响应头 Link 里
+     rel="last" 的页码；
+   - `used_by` 取仓库 `network/dependents` 页顶部的 Repositories 计数，
+     API 没有这个数，查不到就删掉此键；
+   - `languages` 由 `/languages` 的字节数换算成百分比，保留一位小数；
+   - `avatar` 把 `https://github.com/<owner>.png?size=160` 下载成
+     `site/public/projects/<owner>.png`（确认落盘的确实是 PNG），
+     frontmatter 写不带 base 的 `/projects/<owner>.png`；
+   - 以及你克隆或抓取时 HEAD 的完整 commit SHA，全文证据链接全部锚定它。
 
 4. 复制模板为 projects/<owner>-<repo>.md，按模板小节写正文。「借鉴
    清单」分「能搬的」与「不适用的」两半，不适用那半句不许省。关键

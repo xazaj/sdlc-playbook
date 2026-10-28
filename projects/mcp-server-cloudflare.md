@@ -3,8 +3,19 @@ name: mcp-server-cloudflare
 title: mcp-server-cloudflare：把 MCP 服务当产品族量产
 summary: 十五个生产级 MCP 服务共用一套工厂与书面规范，服务只写差异部分；请求级无状态、能力接口封装与 LLM 评估层都能直接搬。
 repo: https://github.com/cloudflare/mcp-server-cloudflare
-stars: 4301
+stars: 4303
+contributors: 43
+used_by: 11
+forks: 533
 language: TypeScript
+languages:
+  TypeScript: 91.6
+  JavaScript: 3.4
+  CSS: 2.6
+  HTML: 1.9
+  Shell: 0.3
+  Dockerfile: 0.2
+avatar: /projects/cloudflare.png
 license: Apache-2.0
 tags: [mcp, monorepo, typescript]
 pinned_commit: 1d7a16b25db74ed44539cd5079e2db46b42f08db
