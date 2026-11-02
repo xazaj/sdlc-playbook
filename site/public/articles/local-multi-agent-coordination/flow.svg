@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" role="img" aria-labelledby="flowTitle flowDesc">
+  <title id="flowTitle">v0 的主 Agent 循环</title>
+  <desc id="flowDesc">主 Agent 用 bd ready 取任务，用 orch dispatch 派出 worker；worker 在独立 worktree 中执行，验收后进入合并。主 Agent 只收到信封和升级请求。</desc>
+  <defs>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#666666"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0070f3"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #ffffff; }
+    .box { fill: #fafafa; stroke: #eaeaea; stroke-width: 1; }
+    .ink { fill: #111111; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .mid { fill: #444444; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .dim { fill: #666666; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .mono { fill: #666666; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; }
+    .blue { fill: #0070f3; }
+    .line { stroke: #666666; stroke-width: 1.5; fill: none; }
+    .lineBlue { stroke: #0070f3; stroke-width: 1.5; fill: none; }
+    .dash { stroke: #cccccc; stroke-width: 1.5; stroke-dasharray: 4 5; fill: none; }
+  </style>
+
+  <rect class="bg" x="0" y="0" width="1200" height="640"/>
+  <text class="mono" x="40" y="38" font-size="18.0">V0 LOOP</text>
+  <text class="ink" x="40" y="88" font-size="45.0" font-weight="600">Dispatch, wait, review, merge</text>
+  <text class="mid" x="40" y="124" font-size="21.0">Four decisions, not forty status checks.</text>
+
+  <rect class="box" x="40" y="260" width="190" height="84" rx="8"/>
+  <text class="ink" x="135" y="286" font-size="24.0" font-weight="600" text-anchor="middle">Main agent</text>
+  <text class="dim" x="135" y="312" font-size="15.0" text-anchor="middle">plans · dispatches</text>
+  <text class="dim" x="135" y="330" font-size="15.0" text-anchor="middle">adjudicates · reviews</text>
+
+  <rect class="box" x="280" y="130" width="160" height="58" rx="8"/>
+  <text class="ink" x="360" y="150" font-size="21.0" font-weight="500" text-anchor="middle">bd ready</text>
+  <text class="dim" x="360" y="174" font-size="15.0" text-anchor="middle">no open blockers</text>
+
+  <rect class="box" x="280" y="310" width="180" height="58" rx="8"/>
+  <text class="ink" x="370" y="330" font-size="21.0" font-weight="500" text-anchor="middle">orch dispatch</text>
+  <text class="dim" x="370" y="354" font-size="15.0" text-anchor="middle">lease · worktree · spawn</text>
+
+  <path class="line" d="M 230 280 L 280 170" marker-end="url(#arrowGray)"/>
+  <path class="line" d="M 230 320 L 280 334" marker-end="url(#arrowGray)"/>
+  <path class="dash" d="M 360 188 L 360 310" marker-end="url(#arrowGray)"/>
+  <text class="dim" x="372" y="250" font-size="15.0">ready tasks</text>
+
+  <rect class="box" x="520" y="110" width="190" height="72" rx="8"/>
+  <text class="ink" x="615" y="134" font-size="19.5" font-weight="500" text-anchor="middle">Claude</text>
+  <text class="dim" x="615" y="158" font-size="15.0" text-anchor="middle">worktree · fresh context</text>
+  <rect class="box" x="520" y="220" width="190" height="72" rx="8"/>
+  <text class="ink" x="615" y="244" font-size="19.5" font-weight="500" text-anchor="middle">Codex</text>
+  <text class="dim" x="615" y="268" font-size="15.0" text-anchor="middle">worktree · fresh context</text>
+  <rect class="box" x="520" y="330" width="190" height="72" rx="8"/>
+  <text class="ink" x="615" y="354" font-size="19.5" font-weight="500" text-anchor="middle">pi / omp</text>
+  <text class="dim" x="615" y="378" font-size="15.0" text-anchor="middle">worktree · fresh context</text>
+
+  <path class="line" d="M 460 334 L 520 146" marker-end="url(#arrowGray)"/>
+  <path class="line" d="M 460 339 L 520 256" marker-end="url(#arrowGray)"/>
+  <path class="line" d="M 460 344 L 520 366" marker-end="url(#arrowGray)"/>
+
+  <rect class="box" x="770" y="220" width="130" height="64" rx="8"/>
+  <text class="ink" x="835" y="242" font-size="19.5" font-weight="500" text-anchor="middle">verify</text>
+  <text class="dim" x="835" y="266" font-size="15.0" text-anchor="middle">checks · scope</text>
+
+  <path class="line" d="M 710 146 L 740 146 L 740 252 L 770 252" marker-end="url(#arrowGray)"/>
+  <path class="line" d="M 710 256 L 770 256" marker-end="url(#arrowGray)"/>
+  <path class="line" d="M 710 366 L 740 366 L 740 268 L 770 268" marker-end="url(#arrowGray)"/>
+
+  <rect class="box" x="940" y="220" width="120" height="64" rx="8"/>
+  <text class="ink" x="1000" y="242" font-size="19.5" font-weight="500" text-anchor="middle">merge</text>
+  <text class="dim" x="1000" y="266" font-size="15.0" text-anchor="middle">one at a time</text>
+  <path class="line" d="M 900 252 L 940 252" marker-end="url(#arrowGray)"/>
+  <text class="dim" x="940" y="310" font-size="15.0">done ≠ merged</text>
+
+  <path class="lineBlue" d="M 1000 284 L 1000 540 L 135 540 L 135 344" marker-end="url(#arrowBlue)"/>
+  <text class="blue" x="420" y="528" font-size="16.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">envelope + L1/L2 · ≤ 500 tokens</text>
+
+  <text class="dim" x="280" y="600" font-size="18.0">L0 progress stays in SQLite. The main agent never reads worker logs.</text>
+</svg>

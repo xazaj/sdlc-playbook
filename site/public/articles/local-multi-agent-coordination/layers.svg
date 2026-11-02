@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="layersTitle layersDesc">
+  <title id="layersTitle">多 Agent 协同的三层结构</title>
+  <desc id="layersDesc">通信层负责谁说了什么；任务与状态层负责该做什么；执行层负责谁来做、做完没有。主 Agent 只接触最上面一层，其余以信封形式返回。</desc>
+  <defs>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0070f3"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #ffffff; }
+    .band { fill: #ffffff; stroke: #eaeaea; stroke-width: 1; }
+    .box { fill: #fafafa; stroke: #eaeaea; stroke-width: 1; }
+    .ink { fill: #111111; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .mid { fill: #444444; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .dim { fill: #666666; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .mono { fill: #666666; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; }
+    .blue { fill: #0070f3; }
+    .line { stroke: #0070f3; stroke-width: 1.5; fill: none; }
+  </style>
+
+  <rect class="bg" x="0" y="0" width="1200" height="620"/>
+  <text class="mono" x="40" y="38" font-size="18.0">THREE LAYERS</text>
+  <text class="ink" x="40" y="88" font-size="45.0" font-weight="600">Separate the bus from the work</text>
+  <text class="mid" x="40" y="124" font-size="21.0">Each layer has one job. Mixing them is how the main context grows.</text>
+
+  <!-- communication -->
+  <rect class="band" x="40" y="140" width="1120" height="120" rx="10"/>
+  <text class="mono" x="64" y="166" font-size="16.5">01 · COMMUNICATION</text>
+  <text class="ink" x="64" y="200" font-size="30.0" font-weight="600">Who says what</text>
+  <text class="dim" x="64" y="228" font-size="18.0">optional</text>
+  <rect class="box" x="360" y="164" width="220" height="56" rx="8"/>
+  <text class="ink" x="470" y="184" font-size="21.0" font-weight="500" text-anchor="middle">agentbus</text>
+  <text class="dim" x="470" y="208" font-size="15.0" text-anchor="middle">local session messages</text>
+  <rect class="box" x="600" y="164" width="220" height="56" rx="8"/>
+  <text class="ink" x="710" y="184" font-size="21.0" font-weight="500" text-anchor="middle">AgentBridge</text>
+  <text class="dim" x="710" y="208" font-size="15.0" text-anchor="middle">Claude ↔ Codex channel</text>
+  <rect class="box" x="840" y="164" width="220" height="56" rx="8"/>
+  <text class="ink" x="950" y="184" font-size="21.0" font-weight="500" text-anchor="middle">native @mention</text>
+  <text class="dim" x="950" y="208" font-size="15.0" text-anchor="middle">Claude Code only</text>
+
+  <!-- task -->
+  <rect class="band" x="40" y="280" width="1120" height="120" rx="10"/>
+  <text class="mono" x="64" y="306" font-size="16.5">02 · TASK &amp; STATE</text>
+  <text class="ink" x="64" y="340" font-size="30.0" font-weight="600">What needs doing</text>
+  <text class="dim" x="64" y="368" font-size="18.0">source of truth</text>
+  <rect class="box" x="360" y="304" width="220" height="56" rx="8"/>
+  <text class="ink" x="470" y="324" font-size="21.0" font-weight="500" text-anchor="middle">Beads</text>
+  <text class="dim" x="470" y="348" font-size="15.0" text-anchor="middle">graph · claim · close</text>
+  <rect class="box" x="600" y="304" width="220" height="56" rx="8"/>
+  <text class="ink" x="710" y="324" font-size="21.0" font-weight="500" text-anchor="middle">SQLite</text>
+  <text class="dim" x="710" y="348" font-size="15.0" text-anchor="middle">run · checks · artifacts</text>
+  <rect class="box" x="840" y="304" width="220" height="56" rx="8"/>
+  <text class="ink" x="950" y="324" font-size="21.0" font-weight="500" text-anchor="middle">Kanzo</text>
+  <text class="dim" x="950" y="348" font-size="15.0" text-anchor="middle">human board · comments</text>
+
+  <!-- execution -->
+  <rect class="band" x="40" y="420" width="1120" height="120" rx="10"/>
+  <text class="mono" x="64" y="446" font-size="16.5">03 · EXECUTION</text>
+  <text class="ink" x="64" y="480" font-size="30.0" font-weight="600">Who does it, did it pass</text>
+  <text class="dim" x="64" y="508" font-size="18.0">deterministic</text>
+  <rect class="box" x="360" y="444" width="180" height="56" rx="8"/>
+  <text class="ink" x="450" y="464" font-size="19.5" font-weight="500" text-anchor="middle">orch dispatch</text>
+  <text class="dim" x="450" y="488" font-size="15.0" text-anchor="middle">concurrency · lease</text>
+  <rect class="box" x="560" y="444" width="180" height="56" rx="8"/>
+  <text class="ink" x="650" y="464" font-size="19.5" font-weight="500" text-anchor="middle">worktree</text>
+  <text class="dim" x="650" y="488" font-size="15.0" text-anchor="middle">one task, one branch</text>
+  <rect class="box" x="760" y="444" width="180" height="56" rx="8"/>
+  <text class="ink" x="850" y="464" font-size="19.5" font-weight="500" text-anchor="middle">adapters</text>
+  <text class="dim" x="850" y="488" font-size="15.0" text-anchor="middle">claude · codex · pi · omp</text>
+  <rect class="box" x="960" y="444" width="180" height="56" rx="8"/>
+  <text class="ink" x="1050" y="464" font-size="19.5" font-weight="500" text-anchor="middle">verify + merge</text>
+  <text class="dim" x="1050" y="488" font-size="15.0" text-anchor="middle">checks · queue</text>
+
+  <path class="line" d="M 600 260 L 600 280" marker-end="url(#arrowBlue)"/>
+  <path class="line" d="M 600 400 L 600 420" marker-end="url(#arrowBlue)"/>
+  <text class="dim" x="620" y="276" font-size="15.0">tasks</text>
+  <text class="dim" x="620" y="416" font-size="15.0">runs</text>
+
+  <text class="dim" x="64" y="580" font-size="18.0">The main agent touches the top edge. Everything below returns as an envelope.</text>
+</svg>
