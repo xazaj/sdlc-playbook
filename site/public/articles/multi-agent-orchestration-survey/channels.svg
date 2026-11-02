@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" role="img" aria-labelledby="chTitle chDesc">
+  <title id="chTitle">grokbot-local-agent 的四条通信通道</title>
+  <desc id="chDesc">Grok Bot 通过 Shell 启动 pi-task；pi-task 以 RPC 驱动 pi 子进程；任务状态与结果写入磁盘目录；完成时由独立进程 POST 五字段 webhook 唤醒 Bot 的例行任务；Bot 再用子命令查询、找回并确认。</desc>
+  <defs>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#999999"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0070f3"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #ffffff; }
+    .panel { fill: #ffffff; stroke: #eaeaea; stroke-width: 1; }
+    .soft { fill: #fafafa; stroke: #eaeaea; stroke-width: 1; }
+    .ink { fill: #111111; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .mid { fill: #444444; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .dim { fill: #666666; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .mono { fill: #666666; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; }
+    .blue { fill: #0070f3; }
+    .ctrl { stroke: #0070f3; stroke-width: 2; fill: none; }
+    .lineGray { stroke: #cccccc; stroke-width: 1.5; stroke-dasharray: 4 5; fill: none; }
+  </style>
+
+  <rect class="bg" x="0" y="0" width="1200" height="600"/>
+  <text class="mono" x="40" y="38" font-size="18.0">FOUR CHANNELS, ONE DELEGATION</text>
+  <text class="ink" x="40" y="86" font-size="40.0" font-weight="600">委派被拆成四条互不越界的通道</text>
+
+  <!-- webhook arc (wake channel) -->
+  <path class="lineGray" d="M 230 150 C 420 40 780 40 970 150" marker-end="url(#arrowGray)"/>
+  <rect class="soft" x="470" y="56" width="260" height="44" rx="8"/>
+  <text class="ink" x="600" y="76" font-size="16.5" font-weight="500" text-anchor="middle">③ 唤醒 · webhook</text>
+  <text class="mono" x="600" y="94" font-size="11.5" text-anchor="middle">{source, id, owner, state, exit_code}</text>
+  <text class="dim" x="600" y="126" font-size="14.5" text-anchor="middle">只带定位符，不带内容；丢了靠 pending 找回</text>
+
+  <!-- Bot -->
+  <rect class="panel" x="80" y="150" width="300" height="130" rx="12"/>
+  <text class="mono" x="104" y="180" font-size="14.0">DISPATCHER</text>
+  <text class="ink" x="104" y="208" font-size="24.0" font-weight="600">Grok Bot</text>
+  <text class="dim" x="104" y="234" font-size="15.0">对话、调度、连接器、核查汇报</text>
+  <text class="dim" x="104" y="256" font-size="15.0">① Shell 后台启动 pi-task run</text>
+
+  <!-- pi-task -->
+  <rect class="panel" x="470" y="150" width="300" height="130" rx="12"/>
+  <text class="mono" x="494" y="180" font-size="14.0">RUNNER</text>
+  <text class="ink" x="494" y="208" font-size="24.0" font-weight="600">pi-task</text>
+  <text class="dim" x="494" y="234" font-size="15.0">任务记录、超时升级、孤儿检查</text>
+  <text class="dim" x="494" y="256" font-size="15.0">② stdin/stdout · NDJSON 事件流</text>
+
+  <!-- pi -->
+  <rect class="panel" x="860" y="150" width="300" height="130" rx="12"/>
+  <text class="mono" x="884" y="180" font-size="14.0">WORKER</text>
+  <text class="ink" x="884" y="208" font-size="24.0" font-weight="600">pi --mode rpc</text>
+  <text class="dim" x="884" y="234" font-size="15.0">独立模型账号，自包含 prompt 进</text>
+  <text class="dim" x="884" y="256" font-size="15.0">工件与结论出</text>
+
+  <!-- control channel -->
+  <path class="ctrl" d="M 380 190 L 470 190" marker-end="url(#arrowBlue)"/>
+  <path class="ctrl" d="M 770 190 L 860 190" marker-end="url(#arrowBlue)"/>
+  <text class="blue" x="620" y="176" font-size="15.0" text-anchor="middle" font-weight="500">① 控制通道：结构化调用（prompt / abort / 事件）</text>
+
+  <!-- disk -->
+  <rect class="panel" x="470" y="360" width="300" height="150" rx="12"/>
+  <text class="mono" x="494" y="390" font-size="14.0">② DATA · DISK</text>
+  <text class="ink" x="494" y="416" font-size="19.5" font-weight="600">~/.pi/tasks/&lt;ID&gt;/</text>
+  <text class="mono" x="494" y="444" font-size="14.0">status.json · events.jsonl</text>
+  <text class="mono" x="494" y="466" font-size="14.0">result.md · prompt-N.txt</text>
+  <text class="dim" x="494" y="492" font-size="14.5">磁盘是唯一事实来源</text>
+
+  <path class="lineGray" d="M 620 280 L 620 360" marker-end="url(#arrowGray)"/>
+  <path class="lineGray" d="M 920 280 C 860 340 780 350 776 360" marker-end="url(#arrowGray)"/>
+
+  <!-- manage channel -->
+  <path class="lineGray" d="M 330 280 C 380 330 440 340 500 360" marker-end="url(#arrowGray)"/>
+  <text class="dim" x="372" y="314" font-size="15.0">④ 管理 · 查询与认领</text>
+  <text class="mono" x="356" y="336" font-size="13.5">status / list / pending / ack</text>
+
+  <text class="mid" x="600" y="566" font-size="16.5" text-anchor="middle">通知只是门铃，磁盘才是账本；两条通道互不承担对方的职责</text>
+</svg>

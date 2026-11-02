@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" role="img" aria-labelledby="piTitle piDesc">
+  <title id="piTitle">全 pi 栈的三层结构</title>
+  <desc id="piDesc">底层是 models.json 指向大模型网关，一次配置全体生效；中层是 .pi/agents 目录下的角色定义，每个角色绑定网关里的一个模型；顶层是主控 pi 会话，装 pi-subagents 扩展后并行派出多个 worker，各自使用不同模型。</desc>
+  <defs>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#999999"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0070f3"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #ffffff; }
+    .panel { fill: #ffffff; stroke: #eaeaea; stroke-width: 1; }
+    .soft { fill: #fafafa; stroke: #eaeaea; stroke-width: 1; }
+    .ink { fill: #111111; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .mid { fill: #444444; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .dim { fill: #666666; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .mono { fill: #666666; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; }
+    .blue { fill: #0070f3; }
+    .ctrl { stroke: #0070f3; stroke-width: 2; fill: none; }
+    .lineGray { stroke: #cccccc; stroke-width: 1.5; stroke-dasharray: 4 5; fill: none; }
+  </style>
+
+  <rect class="bg" x="0" y="0" width="1200" height="660"/>
+  <text class="mono" x="40" y="38" font-size="18.0">ALL-PI STACK</text>
+  <text class="ink" x="40" y="86" font-size="40.0" font-weight="600">集成问题塌缩成配置问题</text>
+
+  <!-- orchestrator -->
+  <rect class="panel" x="400" y="116" width="400" height="120" rx="12"/>
+  <text class="mono" x="424" y="144" font-size="14.0">ORCHESTRATOR</text>
+  <text class="ink" x="424" y="172" font-size="23.0" font-weight="600">主控 pi 会话</text>
+  <text class="dim" x="424" y="198" font-size="15.0">/model 选旗舰模型 · 装 pi-subagents</text>
+  <text class="blue" x="424" y="220" font-size="15.0" font-weight="500">Agent 工具 · parallel() · pipeline() · steer</text>
+
+  <!-- workers -->
+  <rect class="soft" x="120" y="316" width="300" height="120" rx="10"/>
+  <text class="mono" x="144" y="344" font-size="14.0">.pi/agents/coder.md</text>
+  <text class="ink" x="144" y="372" font-size="20.0" font-weight="600">coder</text>
+  <text class="mono" x="144" y="398" font-size="14.5">model: gw/coder</text>
+  <text class="dim" x="144" y="420" font-size="14.5">thinking: medium · 全工具</text>
+
+  <rect class="soft" x="450" y="316" width="300" height="120" rx="10"/>
+  <text class="mono" x="474" y="344" font-size="14.0">.pi/agents/researcher.md</text>
+  <text class="ink" x="474" y="372" font-size="20.0" font-weight="600">researcher</text>
+  <text class="mono" x="474" y="398" font-size="14.5">model: gw/flagship</text>
+  <text class="dim" x="474" y="420" font-size="14.5">thinking: high · 只读工具</text>
+
+  <rect class="soft" x="780" y="316" width="300" height="120" rx="10"/>
+  <text class="mono" x="804" y="344" font-size="14.0">.pi/agents/chores.md</text>
+  <text class="ink" x="804" y="372" font-size="20.0" font-weight="600">chores</text>
+  <text class="mono" x="804" y="398" font-size="14.5">model: gw/cheap-fast</text>
+  <text class="dim" x="804" y="420" font-size="14.5">杂活、批量替换、格式转换</text>
+
+  <path class="ctrl" d="M 500 236 C 400 270 300 280 280 316" marker-end="url(#arrowBlue)"/>
+  <path class="ctrl" d="M 600 236 L 600 316" marker-end="url(#arrowBlue)"/>
+  <path class="ctrl" d="M 700 236 C 800 270 900 280 920 316" marker-end="url(#arrowBlue)"/>
+  <text class="blue" x="990" y="270" font-size="15.0" font-weight="500">并行分派</text>
+  <text class="dim" x="990" y="292" font-size="14.5">默认并发上限 10</text>
+
+  <!-- gateway -->
+  <rect class="panel" x="220" y="508" width="760" height="110" rx="12"/>
+  <text class="mono" x="244" y="536" font-size="14.0">LAYER 1 · GATEWAY</text>
+  <text class="ink" x="244" y="564" font-size="20.0" font-weight="600">大模型网关 + ~/.pi/agent/models.json</text>
+  <text class="mono" x="244" y="592" font-size="14.5">baseUrl: http://gw.internal/v1 · api: openai-completions · apiKey: $GATEWAY_KEY</text>
+
+  <path class="lineGray" d="M 270 436 L 400 508" marker-end="url(#arrowGray)"/>
+  <path class="lineGray" d="M 600 436 L 600 508" marker-end="url(#arrowGray)"/>
+  <path class="lineGray" d="M 930 436 L 800 508" marker-end="url(#arrowGray)"/>
+
+  <text class="mid" x="600" y="652" font-size="16.5" text-anchor="middle">一份 models.json 全体生效；一个 RPC 方言主控与 worker 通用；角色换模型只改 frontmatter 一行</text>
+</svg>
