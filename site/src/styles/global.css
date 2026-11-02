@@ -683,6 +683,51 @@ dialog.search .copy-note {
   padding: 2px 8px; color: var(--text-3); font-size: 12px; line-height: 1;
 }
 
+/* ---------- sites ---------- */
+
+/* A navigation row, not a card: title, one-line judgement, host and tags.
+   The note link is the only in-site destination; the title goes out. */
+.site-groups { display: flex; flex-direction: column; gap: var(--s16); }
+.site-group-head {
+  display: flex; justify-content: space-between; align-items: baseline; gap: var(--s4);
+  padding-bottom: var(--s3); border-bottom: 1px solid var(--gray-300);
+}
+.site-list { display: flex; flex-direction: column; }
+.site-row {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s4);
+  padding: var(--s4) 0; border-bottom: 1px solid var(--border);
+}
+.site-copy { min-width: 0; }
+.site-title {
+  color: var(--text); font-size: 16px; line-height: 24px; font-weight: var(--w-medium);
+}
+.site-title:hover { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
+.site-arrow { color: var(--text-3); font-size: 13px; }
+.site-summary {
+  margin-top: var(--s1); color: var(--text-2); font-size: 14px; line-height: 20px; max-width: 68ch;
+}
+.site-meta { margin-top: var(--s1); color: var(--text-3); font-size: 12px; line-height: 18px; }
+.site-note {
+  align-self: start; color: var(--text-3); font-size: 13px; line-height: 18px; white-space: nowrap;
+}
+.site-note:hover { color: var(--link); }
+.site-visit {
+  display: inline-flex; align-items: center; height: 36px; padding-inline: var(--s4);
+  border-radius: var(--radius-sm); background: var(--text); color: var(--bg);
+  font-family: var(--sans); font-size: 13px; font-weight: var(--w-medium);
+}
+.site-visit:hover { background: #333333; text-decoration: none; }
+.site-caveats {
+  margin-top: var(--s2); padding-left: 1.1em; color: var(--text-3);
+  font-size: 13px; line-height: 20px;
+}
+.site-caveats li + li { margin-top: var(--s1); }
+
+@media (max-width: 720px) {
+  .site-row { grid-template-columns: minmax(0, 1fr); }
+  .site-note { justify-self: start; }
+}
+
 /* ---------- projects ---------- */
 
 /* The repo card: an unfurled snapshot of the repository, pinned to the

@@ -1,0 +1,64 @@
+---
+import Base from '../../layouts/Base.astro';
+import {
+  allSites,
+  siteHost,
+  SITE_CATEGORY_LABEL,
+  SITE_CATEGORY_ORDER,
+  SITE_STATUS_LABEL,
+} from '../../lib/catalog';
+
+const sites = await allSites();
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const groups = SITE_CATEGORY_ORDER.map((id) => ({
+  id,
+  label: SITE_CATEGORY_LABEL[id] ?? id,
+  sites: sites.filter((site) => site.data.category === id),
+})).filter((group) => group.sites.length > 0);
+---
+<Base
+  title="网站"
+  description="AI 时代值得收藏的外部站点：目录、文档、比价页和工具。每条只回答为什么收、什么时候用、注意什么。"
+>
+  <section class="shell opening">
+    <div class="measure-wide">
+      <h1 class="t-page">网站</h1>
+      <p class="t-lede">AI 时代值得收藏的外部站点。不是工具大全，只收那些会改变一个具体决定的页面：选模型、选套餐、找免费额度、搭 agent、做界面、查文档。每条先给判断，再让你点出去。</p>
+    </div>
+  </section>
+
+  <div class="shell"><hr class="rule-strong" /></div>
+
+  <section class="shell section">
+    <div class="site-groups">
+      {groups.map((group) => (
+        <section class="site-group" aria-labelledby={`site-${group.id}`}>
+          <div class="site-group-head">
+            <h2 class="t-section" id={`site-${group.id}`}>{group.label}</h2>
+            <span class="t-meta mono">{group.sites.length} 个站点</span>
+          </div>
+          <div class="site-list">
+            {group.sites.map((site) => (
+              <article class="site-row">
+                <div class="site-copy">
+                  <a class="site-title" href={site.data.url} target="_blank" rel="noopener noreferrer">
+                    {site.data.title}<span class="site-arrow" aria-hidden="true"> ↗</span>
+                  </a>
+                  <p class="site-summary">{site.data.summary}</p>
+                  <p class="site-meta mono">
+                    {siteHost(site.data.url)}
+                    {site.data.tags.length > 0 && ` · ${site.data.tags.join(' / ')}`}
+                    {site.data.status !== 'active' && ` · ${SITE_STATUS_LABEL[site.data.status]}`}
+                  </p>
+                </div>
+                <a class="site-note" href={`${base}/sites/${site.data.name}/`} aria-label={`${site.data.title} 的收录笔记`}>
+                  笔记
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  </section>
+</Base>

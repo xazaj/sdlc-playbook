@@ -3,6 +3,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 export type Entry = CollectionEntry<'entries'>;
 export type Article = CollectionEntry<'articles'>;
 export type Project = CollectionEntry<'projects'>;
+export type Site = CollectionEntry<'sites'>;
 
 
 export const KIND_LABEL: Record<string, string> = {
@@ -12,6 +13,30 @@ export const KIND_LABEL: Record<string, string> = {
   doc: '文档',
   mcp: 'MCP',
 };
+
+export const SITE_CATEGORY_LABEL: Record<string, string> = {
+  'agent-engineering': '智能体工程',
+  'models-credits': '模型与额度',
+  'local-infra': '本地与部署',
+  'design-frontend': '设计与前端',
+  'knowledge-research': '知识与研究',
+  productivity: '效率工具',
+};
+
+export const SITE_STATUS_LABEL: Record<string, string> = {
+  active: '现行',
+  stale: '待复核',
+  dead: '已失效',
+};
+
+export const SITE_CATEGORY_ORDER = [
+  'agent-engineering',
+  'models-credits',
+  'local-infra',
+  'design-frontend',
+  'knowledge-research',
+  'productivity',
+] as const;
 
 export const ORIGIN_LABEL: Record<string, string> = {
   local: '自建',
@@ -100,6 +125,40 @@ export async function allEntries(): Promise<Entry[]> {
 export async function allArticles(): Promise<Article[]> {
   const articles = await getCollection('articles');
   return articles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+}
+
+/** A site entry must say why it is here, when to use it, and what to watch out
+ *  for. Without those three the page is a bookmark, not a navigation entry. */
+const SITE_REQUIRED_SECTIONS = ['## 为什么收', '## 什么时候用', '## 注意'] as const;
+
+function assertSiteBodyContract(site: Site): void {
+  const body = site.body ?? '';
+  const missing = SITE_REQUIRED_SECTIONS.filter(
+    (h) => !body.includes(`\n${h}`) && !body.startsWith(h),
+  );
+  if (missing.length > 0) {
+    throw new Error(
+      `sites/${site.data.name}.md 不符合网站条目契约，缺少：${missing.join('、')}。` +
+        ' 见 docs/网站导航.md。',
+    );
+  }
+}
+
+export async function allSites(): Promise<Site[]> {
+  const sites = await getCollection('sites');
+  for (const site of sites) assertSiteBodyContract(site);
+  return sites.sort((a, b) => {
+    const featured = Number(b.data.featured) - Number(a.data.featured);
+    if (featured) return featured;
+    const order = a.data.order - b.data.order;
+    if (order) return order;
+    return a.data.title.localeCompare(b.data.title, 'zh-CN');
+  });
+}
+
+/** "https://www.example.com/x" → "example.com". */
+export function siteHost(url: string): string {
+  return new URL(url).host.replace(/^www\./, '');
 }
 
 /** "https://github.com/owner/repo" → "owner/repo". */

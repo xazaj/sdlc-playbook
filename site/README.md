@@ -1,6 +1,6 @@
 # site：目录站点
 
-把 `registry/` 的条目渲染成静态站点，由 GitHub Actions 构建、GitHub Pages 托管。
+把 `registry/`、`articles/`、`projects/`、`sites/` 的内容渲染成静态站点，由 GitHub Actions 构建、GitHub Pages 托管。
 
 地址：https://aibrev.com/sdlc-playbook
 
@@ -18,10 +18,10 @@
 | `src/content/categories/` | 各分类的元数据与「怎么选」面板 |
 | `src/lib/catalog.ts` | 新鲜度计算、分类与形态的中文标签 |
 | `src/layouts/`、`src/components/` | 版式与可复用组件 |
-| `src/pages/` | 首页、分类页、条目页、类型索引页、搜索索引 |
+| `src/pages/` | 首页、分类页、条目页、文章页、项目页、网站页、搜索索引 |
 | `src/styles/global.css` | 全部设计 token 与版式规则 |
 
-条目本身不在这个目录里。站点读取仓库根部的 `registry/`，路径在 `src/content.config.ts` 的 `glob({ base: ... })` 一处声明。
+内容本身不在这个目录里。站点读取仓库根部的 `registry/`、`articles/`、`projects/`、`sites/`，路径在 `src/content.config.ts` 的 `glob({ base: ... })` 一处声明。
 
 ## 本地开发
 
@@ -35,6 +35,10 @@ npm run build    # 产物在 site/dist
 ## 新增条目
 
 在 `registry/` 新建 markdown，frontmatter 至少包含 `name`、`title`、`summary`、`category`、`kind`、`origin`、`evaluated_version`、`evaluated_at`。正文的第一个围栏代码块被视为安装 prompt，会被渲染成可复制的深色块。推送后 Action 自动重新构建。
+
+## 新增网站
+
+在 `sites/` 新建 markdown，frontmatter 至少包含 `name`、`title`、`url`、`summary`、`category`、`evaluated_at`。正文必须有 `## 为什么收`、`## 什么时候用`、`## 注意` 三节，缺一构建失败。分类取 `SITE_CATEGORY_IDS`，有 referral / affiliate 的写进 `caveats`。
 
 ## 新鲜度
 

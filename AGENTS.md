@@ -11,8 +11,9 @@
 | `registry/` | 外部资产的登记卡 | 纯文档，不挂载 |
 | `articles/` | 阅读资产：外部材料蒸馏成文 | 给人读，不进 agent 上下文 |
 | `projects/` | 项目解剖卡：开源项目的设计借鉴分析 | 纯文档，不挂载，不进 agent 上下文 |
+| `sites/` | 网站导航：AI 工具、文档、比价页等外部站点 | 纯文档，由 site 渲染，不进 agent 上下文 |
 | `bin/` | 安装与更新检查脚本 | 只保留极少量脚本 |
-| `site/` | 目录站点（Astro），由 Actions 构建并托管于 GitHub Pages | 只渲染 `registry/`、`articles/`、`projects/`，不存放条目正文 |
+| `site/` | 目录站点（Astro），由 Actions 构建并托管于 GitHub Pages | 只渲染 `registry/`、`articles/`、`projects/`、`sites/`，不存放正文 |
 | `library/` | 外部文章原料，尚未启用 | 不进入 agent 上下文 |
 | `docs/` | 设计文档、实现计划与验证日志 | |
 
@@ -22,8 +23,8 @@
 - 新增或改名路由技能后执行 `./install.sh`。
 - 不把资源文件放入 `stages/`。资产跨阶段，按阶段物理存放会造成重复与漂移。
 - 当前处于 M0/M1，不编写代码，`install.sh`、`bin/check-update.sh` 与 `site/` 除外。工具留到 M2，且每一项必须对应 `docs/验证日志.md` 中记录的具体痛点。
-- 站点只做呈现，不产生内容。条目的唯一来源是 `registry/`，`site/` 里不得出现条目正文。
-- 资产正文只面向读者。本仓库的内部事务——建设规划（缺什么决策入口、打算补什么条目）、收录与润色过程、对其他资产的处理安排——不写进 `registry/`、`articles/`、`projects/` 的正文；要记录放 `docs/` 或 issue。分界线：引用 DECIDE.md 说明「何时走到这里」是读者信息，可以写；说「本库尚无／需要时补」是维护者备注，不写。
+- 站点只做呈现，不产生内容。登记卡唯一来源是 `registry/`，文章唯一来源是 `articles/`，项目卡唯一来源是 `projects/`，网站条目唯一来源是 `sites/`；`site/` 里不得出现正文。
+- 资产正文只面向读者。本仓库的内部事务——建设规划（缺什么决策入口、打算补什么条目）、收录与润色过程、对其他资产的处理安排——不写进 `registry/`、`articles/`、`projects/`、`sites/` 的正文；要记录放 `docs/` 或 issue。分界线：引用 DECIDE.md 说明「何时走到这里」是读者信息，可以写；说「本库尚无／需要时补」是维护者备注，不写。
 
 ## 语言约定
 

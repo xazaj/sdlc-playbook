@@ -1,0 +1,91 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import {
+  allSites,
+  formatDate,
+  siteHost,
+  SITE_CATEGORY_LABEL,
+  SITE_STATUS_LABEL,
+} from '../../lib/catalog';
+
+export const getStaticPaths = (async () => {
+  const sites = await allSites();
+  return sites.map((site) => ({ params: { id: site.data.name }, props: { site } }));
+}) satisfies GetStaticPaths;
+
+const { site } = Astro.props;
+const d = site.data;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const { Content } = await render(site);
+const host = siteHost(d.url);
+---
+<Base title={d.title} description={d.summary}>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+
+  <section class="shell opening article-opening">
+    <div class="measure-wide">
+      <p class="t-meta">
+        <a href={`${base}/sites/`}>网站</a>
+        {' · '}{SITE_CATEGORY_LABEL[d.category] ?? d.category}
+      </p>
+      <h1 class="t-page" style={`margin-top: 8px; view-transition-name: ${d.name};`}>{d.title}</h1>
+      <p class="t-lede">{d.summary}</p>
+      <p class="meta-line">
+        <span class="mono">{formatDate(d.evaluated_at)}</span>
+        <span aria-hidden="true">·</span>
+        <a href={d.url} target="_blank" rel="noopener noreferrer">{host} ↗</a>
+        <span aria-hidden="true">·</span>
+        <span>{SITE_STATUS_LABEL[d.status] ?? d.status}</span>
+        {d.stage && (<><span aria-hidden="true">·</span><span class="mono">{d.stage}</span></>)}
+      </p>
+    </div>
+  </section>
+
+  <div class="shell"><hr class="rule-strong" /></div>
+
+  <section class="shell section">
+    <div class="article-layout">
+      <article class="prose article-body">
+        <Content />
+        <p>
+          <a class="site-visit" href={d.url} target="_blank" rel="noopener noreferrer">
+            访问网站 ↗
+          </a>
+        </p>
+      </article>
+      <aside class="rail">
+        {d.tags.length > 0 && (
+          <div class="rail-block">
+            <p class="t-meta">标签</p>
+            <div class="byline" style="margin-top: 8px;">
+              {d.tags.map((tag) => <span class="badge">{tag}</span>)}
+            </div>
+          </div>
+        )}
+        {d.caveats.length > 0 && (
+          <div class="rail-block">
+            <p class="t-meta">注意</p>
+            <ul class="site-caveats">
+              {d.caveats.map((caveat) => <li>{caveat}</li>)}
+            </ul>
+          </div>
+        )}
+      </aside>
+    </div>
+  </section>
+
+  <script>
+    const bar = document.getElementById('progress');
+    function paintProgress() {
+      if (!bar) return;
+      const doc = document.scrollingElement;
+      if (!doc) return;
+      const max = doc.scrollHeight - window.innerHeight;
+      bar.style.width = max > 0 ? `${(doc.scrollTop / max) * 100}%` : '0%';
+    }
+    addEventListener('scroll', paintProgress, { passive: true });
+    paintProgress();
+  </script>
+</Base>

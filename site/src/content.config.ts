@@ -6,8 +6,20 @@ import { glob } from 'astro/loaders';
 export const CATEGORY_IDS = ['bootstrap', 'define', 'design', 'build', 'verify'] as const;
 export const KIND_IDS = ['skill', 'design-md', 'component-library', 'doc', 'mcp'] as const;
 
+// Site navigation categories. These are a different axis from the SDLC
+// moments above: a site answers "where do I go", not "which asset do I install".
+export const SITE_CATEGORY_IDS = [
+  'agent-engineering',
+  'models-credits',
+  'local-infra',
+  'design-frontend',
+  'knowledge-research',
+  'productivity',
+] as const;
+
 const categoryId = z.enum(CATEGORY_IDS);
 const kindId = z.enum(KIND_IDS);
+const siteCategoryId = z.enum(SITE_CATEGORY_IDS);
 
 // Entry files keep the repository's existing snake_case frontmatter. The site
 // reads them where they already live: this repository is a catalog first and a
@@ -85,6 +97,28 @@ const articles = defineCollection({
   }),
 });
 
+// External sites worth keeping: directories, docs, pricing pages, and tools
+// that change a decision. A site has no install prompt and no repo card, so it
+// gets its own collection instead of being forced into registry/.
+const sites = defineCollection({
+  loader: glob({ base: '../sites', pattern: ['**/*.md', '!**/_*.md'] }),
+  schema: z.object({
+    name: z.string(),
+    title: z.string(),
+    url: z.string().url(),
+    summary: z.string(),
+    category: siteCategoryId,
+    tags: z.array(z.string()).default([]),
+    stage: categoryId.optional(),
+    source: z.enum(['manual', 'bookmark', 'community']).default('manual'),
+    evaluated_at: z.coerce.date(),
+    status: z.enum(['active', 'stale', 'dead']).default('active'),
+    caveats: z.array(z.string()).default([]),
+    featured: z.boolean().default(false),
+    order: z.number().default(100),
+  }),
+});
+
 // Project anatomy cards: one open-source repo dissected for design lessons.
 // Human-facing like articles, but the source is a repository, not a post, and
 // the body must argue from permalinks pinned to `pinned_commit`.
@@ -119,4 +153,4 @@ const projects = defineCollection({
   }),
 });
 
-export const collections = { entries, categories, articles, projects };
+export const collections = { entries, categories, articles, projects, sites };

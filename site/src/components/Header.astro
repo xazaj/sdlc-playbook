@@ -1,5 +1,5 @@
 ---
-import { allArticles, allCategories, allEntries, allProjects, formatDate } from '../lib/catalog';
+import { allArticles, allCategories, allEntries, allProjects, allSites, formatDate } from '../lib/catalog';
 interface Props { current?: string }
 const { current } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -8,6 +8,7 @@ const entries = await allEntries();
 const updated = entries.length ? formatDate(entries[0]!.data.evaluated_at) : '—';
 const articles = await allArticles();
 const projects = await allProjects();
+const sites = await allSites();
 ---
 <header class="masthead">
   <div class="shell inner">
@@ -25,6 +26,7 @@ const projects = await allProjects();
       ))}
       {articles.length > 0 && <a href={`${base}/articles/`}>文章</a>}
       {projects.length > 0 && <a href={`${base}/projects/`}>项目</a>}
+      {sites.length > 0 && <a href={`${base}/sites/`}>网站</a>}
       <button class="search-trigger" type="button" id="search-open" aria-haspopup="dialog">
         搜索<kbd>⌘K</kbd>
       </button>
@@ -32,9 +34,9 @@ const projects = await allProjects();
   </div>
 </header>
 
-<dialog class="search" id="search-dialog" aria-label="搜索条目">
-  <input type="search" id="search-input" placeholder="搜索条目、来源或正文" autocomplete="off" aria-controls="search-results" />
-  <div class="results" id="search-results" data-empty="输入关键词以搜索。↑ ↓ 移动，⏎ 打开；右侧「复制」直接拿走 prompt，Esc 关闭。"></div>
+<dialog class="search" id="search-dialog" aria-label="搜索">
+  <input type="search" id="search-input" placeholder="搜索条目、文章、项目、网站" autocomplete="off" aria-controls="search-results" />
+  <div class="results" id="search-results" data-empty="输入关键词以搜索。↑ ↓ 移动，⏎ 打开；条目结果右侧「复制」直接拿走 prompt，Esc 关闭。"></div>
   <div class="copy-note" id="search-copy-note" role="status" hidden></div>
 </dialog>
 
@@ -81,21 +83,24 @@ const projects = await allProjects();
       why.className = 'why';
       why.textContent = `${hit.category} · ${hit.kind} · ${hit.invoke} · ${hit.summary}`;
       a.append(name, why);
-      const copy = document.createElement('button');
-      copy.type = 'button';
-      copy.className = 'hit-copy';
-      copy.title = `复制${hit.invoke} prompt`;
-      copy.textContent = '复制';
-      copy.addEventListener('click', async (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        if (!hit.prompt) return;
-        await navigator.clipboard.writeText(hit.prompt);
-        copy.textContent = '已复制';
-        note(`已复制「${hit.title}」的${hit.invoke} prompt`);
-        setTimeout(() => { copy.textContent = '复制'; }, 1600);
-      });
-      row.append(a, copy);
+      if (hit.prompt) {
+        const copy = document.createElement('button');
+        copy.type = 'button';
+        copy.className = 'hit-copy';
+        copy.title = `复制${hit.invoke} prompt`;
+        copy.textContent = '复制';
+        copy.addEventListener('click', async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          await navigator.clipboard.writeText(hit.prompt);
+          copy.textContent = '已复制';
+          note(`已复制「${hit.title}」的${hit.invoke} prompt`);
+          setTimeout(() => { copy.textContent = '复制'; }, 1600);
+        });
+        row.append(a, copy);
+      } else {
+        row.append(a);
+      }
       list.append(row);
     });
     list.querySelector('a[aria-current="true"]')?.scrollIntoView({ block: 'nearest' });
