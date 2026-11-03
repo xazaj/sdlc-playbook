@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" role="img" aria-labelledby="ctxTitle ctxDesc">
+  <title id="ctxTitle">上下文是工作台，不是仓库</title>
+  <desc id="ctxDesc">上下文窗口只放当前任务、近期消息、打开的文件和引用；旧日志、PR 历史、文档留在 Spill 存储里，按需读取。Chain of Recall 用 ID 把对象串起来。</desc>
+  <defs>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0070f3"/>
+    </marker>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#666666"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #ffffff; }
+    .panel { fill: #ffffff; stroke: #eaeaea; stroke-width: 1; }
+    .soft { fill: #fafafa; stroke: #eaeaea; stroke-width: 1; }
+    .ink { fill: #111111; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .mid { fill: #444444; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .dim { fill: #666666; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .mono { fill: #666666; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; }
+    .blue { fill: #0070f3; }
+    .line { stroke: #0070f3; stroke-width: 1.5; stroke-dasharray: 4 5; fill: none; }
+  </style>
+
+  <rect class="bg" x="0" y="0" width="1200" height="640"/>
+  <text class="mono" x="40" y="42" font-size="18">INLINE / SPILL</text>
+  <text class="ink" x="40" y="92" font-size="44" font-weight="600">Context is a workbench</text>
+  <text class="mid" x="40" y="128" font-size="21">Keep what is likely in the window; leave the rest behind a reference.</text>
+
+  <rect class="panel" x="60" y="160" width="500" height="340" rx="12"/>
+  <text class="mono" x="84" y="196" font-size="18">CONTEXT WINDOW</text>
+  <rect class="soft" x="84" y="220" width="452" height="44" rx="6"/>
+  <text class="ink" x="104" y="248" font-size="18">current task</text>
+  <rect class="soft" x="84" y="276" width="452" height="44" rx="6"/>
+  <text class="ink" x="104" y="304" font-size="18">recent messages</text>
+  <rect class="soft" x="84" y="332" width="452" height="44" rx="6"/>
+  <text class="ink" x="104" y="360" font-size="18">open files</text>
+  <rect class="soft" x="84" y="388" width="452" height="44" rx="6"/>
+  <text class="ink" x="104" y="416" font-size="18">references → Spill</text>
+
+  <rect class="panel" x="680" y="160" width="460" height="340" rx="12"/>
+  <text class="mono" x="704" y="196" font-size="18">SPILL STORE</text>
+  <rect class="soft" x="704" y="220" width="412" height="44" rx="6"/>
+  <text class="ink" x="724" y="248" font-size="18">old logs</text>
+  <rect class="soft" x="704" y="276" width="412" height="44" rx="6"/>
+  <text class="ink" x="724" y="304" font-size="18">PR history</text>
+  <rect class="soft" x="704" y="332" width="412" height="44" rx="6"/>
+  <text class="ink" x="724" y="360" font-size="18">docs</text>
+  <rect class="soft" x="704" y="388" width="412" height="44" rx="6"/>
+  <text class="ink" x="724" y="416" font-size="18">artifacts</text>
+
+  <path class="line" d="M 680 410 L 536 410" marker-end="url(#arrowBlue)"/>
+  <text class="blue" x="548" y="452" font-size="15">read on demand</text>
+
+  <text class="dim" x="60" y="548" font-size="18">Chain of Recall</text>
+  <rect class="soft" x="60" y="564" width="150" height="44" rx="6"/>
+  <text class="ink" x="135" y="592" font-size="17" text-anchor="middle">Trigger ID</text>
+  <path class="line" d="M 210 586 L 250 586" marker-end="url(#arrowBlue)"/>
+  <rect class="soft" x="250" y="564" width="150" height="44" rx="6"/>
+  <text class="ink" x="325" y="592" font-size="17" text-anchor="middle">Thread ID</text>
+  <path class="line" d="M 400 586 L 440 586" marker-end="url(#arrowBlue)"/>
+  <rect class="soft" x="440" y="564" width="150" height="44" rx="6"/>
+  <text class="ink" x="515" y="592" font-size="17" text-anchor="middle">Worker ID</text>
+  <path class="line" d="M 590 586 L 630 586" marker-end="url(#arrowBlue)"/>
+  <rect class="soft" x="630" y="564" width="150" height="44" rx="6"/>
+  <text class="ink" x="705" y="592" font-size="17" text-anchor="middle">PR ID</text>
+  <text class="dim" x="810" y="592" font-size="16">IDs link the objects.</text>
+</svg>

@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" role="img" aria-labelledby="coverTitle coverDesc">
+  <title id="coverTitle">一个人的注意力，两种组织方式</title>
+  <desc id="coverDesc">左边是一个人轮流盯多个会话；右边是 Router 把任务分给 Worker，用户只看到一个 Super-Agent。</desc>
+  <defs>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#666666"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0070f3"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #ffffff; }
+    .panel { fill: #ffffff; stroke: #eaeaea; stroke-width: 1; }
+    .soft { fill: #fafafa; stroke: #eaeaea; stroke-width: 1; }
+    .ink { fill: #111111; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .mid { fill: #444444; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .dim { fill: #666666; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .mono { fill: #666666; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; }
+    .blue { fill: #0070f3; }
+    .lineGray { stroke: #cccccc; stroke-width: 1.5; stroke-dasharray: 4 5; fill: none; }
+    .lineBlue { stroke: #0070f3; stroke-width: 1.5; fill: none; }
+  </style>
+
+  <rect class="bg" x="0" y="0" width="1200" height="640"/>
+  <text class="mono" x="40" y="42" font-size="18">SUPER-AGENT</text>
+  <text class="ink" x="40" y="92" font-size="44" font-weight="600">One attention, many tasks</text>
+  <text class="mid" x="40" y="128" font-size="21">Sessions are the implementation. Attention is the budget.</text>
+
+  <!-- left -->
+  <rect class="panel" x="40" y="160" width="540" height="430" rx="12"/>
+  <text class="mono" x="64" y="196" font-size="18">WITHOUT A ROUTER</text>
+  <rect class="soft" x="210" y="220" width="200" height="64" rx="8"/>
+  <text class="ink" x="310" y="244" font-size="24" font-weight="600" text-anchor="middle">You</text>
+  <text class="dim" x="310" y="272" font-size="16" text-anchor="middle">3–5 sessions</text>
+
+  <path class="lineGray" d="M 310 284 L 127 340" marker-end="url(#arrowGray)"/>
+  <path class="lineGray" d="M 310 284 L 251 340" marker-end="url(#arrowGray)"/>
+  <path class="lineGray" d="M 310 284 L 375 340" marker-end="url(#arrowGray)"/>
+  <path class="lineGray" d="M 310 284 L 499 340" marker-end="url(#arrowGray)"/>
+
+  <rect class="soft" x="72" y="340" width="110" height="64" rx="8"/>
+  <text class="ink" x="127" y="366" font-size="20" font-weight="500" text-anchor="middle">Claude</text>
+  <text class="dim" x="127" y="386" font-size="15" text-anchor="middle">session</text>
+  <rect class="soft" x="196" y="340" width="110" height="64" rx="8"/>
+  <text class="ink" x="251" y="366" font-size="20" font-weight="500" text-anchor="middle">Codex</text>
+  <text class="dim" x="251" y="386" font-size="15" text-anchor="middle">session</text>
+  <rect class="soft" x="320" y="340" width="110" height="64" rx="8"/>
+  <text class="ink" x="375" y="366" font-size="20" font-weight="500" text-anchor="middle">pi</text>
+  <text class="dim" x="375" y="386" font-size="15" text-anchor="middle">session</text>
+  <rect class="soft" x="444" y="340" width="110" height="64" rx="8"/>
+  <text class="ink" x="499" y="366" font-size="20" font-weight="500" text-anchor="middle">omp</text>
+  <text class="dim" x="499" y="386" font-size="15" text-anchor="middle">session</text>
+
+  <text class="dim" x="64" y="490" font-size="18">Every switch costs attention.</text>
+  <text class="dim" x="64" y="520" font-size="18">The user becomes the router.</text>
+
+  <!-- right -->
+  <rect class="panel" x="620" y="160" width="540" height="430" rx="12"/>
+  <text class="mono blue" x="644" y="196" font-size="18">WITH A ROUTER</text>
+  <rect class="soft" x="780" y="220" width="220" height="64" rx="8"/>
+  <text class="ink" x="890" y="244" font-size="24" font-weight="600" text-anchor="middle">You</text>
+  <text class="dim" x="890" y="272" font-size="16" text-anchor="middle">one interface</text>
+
+  <path class="lineBlue" d="M 890 284 L 890 320" marker-end="url(#arrowBlue)"/>
+  <rect class="soft" x="760" y="320" width="260" height="64" rx="8"/>
+  <text class="ink" x="890" y="344" font-size="24" font-weight="600" text-anchor="middle">Super-Agent / Router</text>
+  <text class="dim" x="890" y="372" font-size="16" text-anchor="middle">routes, never executes</text>
+
+  <path class="lineBlue" d="M 890 384 L 730 430" marker-end="url(#arrowBlue)"/>
+  <path class="lineBlue" d="M 890 384 L 890 430" marker-end="url(#arrowBlue)"/>
+  <path class="lineBlue" d="M 890 384 L 1050 430" marker-end="url(#arrowBlue)"/>
+
+  <rect class="soft" x="660" y="430" width="140" height="64" rx="8"/>
+  <text class="ink" x="730" y="456" font-size="20" font-weight="500" text-anchor="middle">Worker</text>
+  <text class="dim" x="730" y="476" font-size="15" text-anchor="middle">Thread A</text>
+  <rect class="soft" x="820" y="430" width="140" height="64" rx="8"/>
+  <text class="ink" x="890" y="456" font-size="20" font-weight="500" text-anchor="middle">Worker</text>
+  <text class="dim" x="890" y="476" font-size="15" text-anchor="middle">Thread B</text>
+  <rect class="soft" x="980" y="430" width="140" height="64" rx="8"/>
+  <text class="ink" x="1050" y="456" font-size="20" font-weight="500" text-anchor="middle">Worker</text>
+  <text class="dim" x="1050" y="476" font-size="15" text-anchor="middle">Thread C</text>
+
+  <text class="dim" x="644" y="530" font-size="18">The user sees one agent.</text>
+  <text class="dim" x="644" y="560" font-size="18">Sessions stay underneath.</text>
+</svg>

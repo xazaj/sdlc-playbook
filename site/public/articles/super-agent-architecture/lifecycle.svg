@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" role="img" aria-labelledby="lifeTitle lifeDesc">
+  <title id="lifeTitle">从事件到工作</title>
+  <desc id="lifeDesc">Trigger 从 Source 进入 Gate，慢路径经过 Assessment 和 Decision，最后变成 Ticket 和 Worker；Thread 负责上下文，Ticket 负责授权。</desc>
+  <defs>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#666666"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0070f3"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #ffffff; }
+    .box { fill: #fafafa; stroke: #eaeaea; stroke-width: 1; }
+    .ink { fill: #111111; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .mid { fill: #444444; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .dim { fill: #666666; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .mono { fill: #666666; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; }
+    .blue { fill: #0070f3; }
+    .line { stroke: #666666; stroke-width: 1.5; fill: none; }
+    .lineBlue { stroke: #0070f3; stroke-width: 1.5; fill: none; }
+    .dash { stroke: #cccccc; stroke-width: 1.5; stroke-dasharray: 4 5; fill: none; }
+  </style>
+
+  <rect class="bg" x="0" y="0" width="1200" height="640"/>
+  <text class="mono" x="40" y="42" font-size="18">EVENT → WORK</text>
+  <text class="ink" x="40" y="92" font-size="44" font-weight="600">From event to work</text>
+  <text class="mid" x="40" y="128" font-size="21">A Trigger becomes a Thread; a Thread becomes a Ticket; a Ticket gets an Executor.</text>
+
+  <!-- top row -->
+  <rect class="box" x="40" y="160" width="170" height="110" rx="8"/>
+  <text class="ink" x="125" y="190" font-size="22" font-weight="600" text-anchor="middle">Sources</text>
+  <text class="dim" x="125" y="218" font-size="16" text-anchor="middle">GitHub</text>
+  <text class="dim" x="125" y="240" font-size="16" text-anchor="middle">Feishu</text>
+  <text class="dim" x="125" y="262" font-size="16" text-anchor="middle">CI</text>
+
+  <rect class="box" x="250" y="183" width="140" height="64" rx="8"/>
+  <text class="ink" x="320" y="209" font-size="22" font-weight="600" text-anchor="middle">Trigger</text>
+  <text class="dim" x="320" y="229" font-size="15" text-anchor="middle">immutable event</text>
+
+  <rect class="box" x="430" y="183" width="140" height="64" rx="8"/>
+  <text class="ink" x="500" y="209" font-size="22" font-weight="600" text-anchor="middle">Gate</text>
+  <text class="dim" x="500" y="229" font-size="15" text-anchor="middle">deterministic</text>
+
+  <rect class="box" x="610" y="183" width="160" height="64" rx="8"/>
+  <text class="ink" x="690" y="209" font-size="22" font-weight="600" text-anchor="middle">Assessment</text>
+  <text class="dim" x="690" y="229" font-size="15" text-anchor="middle">model judgement</text>
+
+  <rect class="box" x="810" y="183" width="160" height="64" rx="8"/>
+  <text class="ink" x="890" y="209" font-size="22" font-weight="600" text-anchor="middle">Decision</text>
+  <text class="dim" x="890" y="229" font-size="15" text-anchor="middle">accept / stop / ignore</text>
+
+  <path class="line" d="M 210 215 L 250 215" marker-end="url(#arrowGray)"/>
+  <path class="line" d="M 390 215 L 430 215" marker-end="url(#arrowGray)"/>
+  <path class="line" d="M 570 215 L 610 215" marker-end="url(#arrowGray)"/>
+  <path class="line" d="M 770 215 L 810 215" marker-end="url(#arrowGray)"/>
+
+  <!-- bottom row -->
+  <rect class="box" x="250" y="350" width="140" height="64" rx="8"/>
+  <text class="ink" x="320" y="376" font-size="22" font-weight="600" text-anchor="middle">Thread</text>
+  <text class="dim" x="320" y="396" font-size="15" text-anchor="middle">context unit</text>
+
+  <rect class="box" x="430" y="350" width="140" height="64" rx="8"/>
+  <text class="ink" x="500" y="376" font-size="22" font-weight="600" text-anchor="middle">Ticket</text>
+  <text class="dim" x="500" y="396" font-size="15" text-anchor="middle">authorization unit</text>
+
+  <rect class="box" x="610" y="350" width="160" height="64" rx="8"/>
+  <text class="ink" x="690" y="376" font-size="22" font-weight="600" text-anchor="middle">Assignment</text>
+  <text class="dim" x="690" y="396" font-size="15" text-anchor="middle">binds one Executor</text>
+
+  <rect class="box" x="810" y="350" width="150" height="64" rx="8"/>
+  <text class="ink" x="885" y="376" font-size="22" font-weight="600" text-anchor="middle">Worker</text>
+  <text class="dim" x="885" y="396" font-size="15" text-anchor="middle">own context</text>
+
+  <rect class="box" x="1000" y="350" width="160" height="64" rx="8"/>
+  <text class="ink" x="1080" y="376" font-size="22" font-weight="600" text-anchor="middle">Channel</text>
+  <text class="dim" x="1080" y="396" font-size="15" text-anchor="middle">reply in thread</text>
+
+  <path class="dash" d="M 320 247 L 320 350" marker-end="url(#arrowGray)"/>
+  <path class="line" d="M 390 382 L 430 382" marker-end="url(#arrowGray)"/>
+  <path class="line" d="M 570 382 L 610 382" marker-end="url(#arrowGray)"/>
+  <path class="line" d="M 770 382 L 810 382" marker-end="url(#arrowGray)"/>
+  <path class="line" d="M 960 382 L 1000 382" marker-end="url(#arrowGray)"/>
+
+  <path class="dash" d="M 890 247 C 890 300, 500 300, 500 350" marker-end="url(#arrowGray)"/>
+  <text class="dim" x="700" y="320" font-size="15">accept creates a Ticket</text>
+
+  <path class="dash" d="M 320 414 C 320 480, 885 480, 885 414" marker-end="url(#arrowGray)"/>
+  <text class="dim" x="470" y="500" font-size="15">subscribed thread: fast path</text>
+
+  <text class="dim" x="40" y="580" font-size="18">Thread is context. Ticket is authorization. Do not confuse the two.</text>
+</svg>

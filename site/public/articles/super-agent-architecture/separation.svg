@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" role="img" aria-labelledby="sepTitle sepDesc">
+  <title id="sepTitle">计算、状态、环境分开</title>
+  <desc id="sepDesc">计算可以替换，状态必须持久，环境留在工作发生的地方；BYOM daemon 连接本地环境，Watchdog 在主循环之外。</desc>
+  <defs>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#666666"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0070f3"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #ffffff; }
+    .panel { fill: #ffffff; stroke: #eaeaea; stroke-width: 1; }
+    .soft { fill: #fafafa; stroke: #eaeaea; stroke-width: 1; }
+    .ink { fill: #111111; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .mid { fill: #444444; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .dim { fill: #666666; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .mono { fill: #666666; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; }
+    .blue { fill: #0070f3; }
+    .line { stroke: #666666; stroke-width: 1.5; fill: none; }
+    .dash { stroke: #cccccc; stroke-width: 1.5; stroke-dasharray: 4 5; fill: none; }
+  </style>
+
+  <rect class="bg" x="0" y="0" width="1200" height="640"/>
+  <text class="mono" x="40" y="42" font-size="18">COMPUTE / STATE / ENVIRONMENT</text>
+  <text class="ink" x="40" y="92" font-size="44" font-weight="600">Three things that should not move together</text>
+  <text class="mid" x="40" y="128" font-size="21">Compute can move. State must persist. Environment stays where the work is.</text>
+
+  <rect class="panel" x="40" y="170" width="340" height="250" rx="12"/>
+  <text class="mono" x="64" y="206" font-size="18">COMPUTE</text>
+  <text class="ink" x="64" y="244" font-size="22" font-weight="600">Agent loop</text>
+  <text class="dim" x="64" y="274" font-size="16">replaceable container</text>
+  <text class="dim" x="64" y="300" font-size="16">can restart anywhere</text>
+
+  <rect class="panel" x="430" y="170" width="340" height="250" rx="12"/>
+  <text class="mono" x="454" y="206" font-size="18">STATE</text>
+  <text class="ink" x="454" y="244" font-size="22" font-weight="600">SQLite</text>
+  <text class="dim" x="454" y="274" font-size="16">tickets · sessions · decisions</text>
+  <text class="dim" x="454" y="300" font-size="16">survives a restart</text>
+
+  <rect class="panel" x="820" y="170" width="340" height="250" rx="12"/>
+  <text class="mono" x="844" y="206" font-size="18">ENVIRONMENT</text>
+  <text class="ink" x="844" y="244" font-size="22" font-weight="600">Repo · files · tools</text>
+  <text class="dim" x="844" y="274" font-size="16">credentials stay here</text>
+  <text class="dim" x="844" y="300" font-size="16">cannot be assumed</text>
+
+  <path class="line" d="M 380 295 L 430 295" marker-end="url(#arrowGray)"/>
+  <text class="dim" x="386" y="284" font-size="14">persist</text>
+  <path class="line" d="M 770 295 L 820 295" marker-end="url(#arrowGray)"/>
+  <text class="dim" x="778" y="284" font-size="14">execute</text>
+
+  <rect class="soft" x="430" y="470" width="340" height="70" rx="8"/>
+  <text class="ink" x="600" y="500" font-size="20" font-weight="600" text-anchor="middle">Watchdog</text>
+  <text class="dim" x="600" y="522" font-size="15" text-anchor="middle">outside the main loop</text>
+  <path class="dash" d="M 430 505 C 390 505, 390 420, 380 420" marker-end="url(#arrowGray)"/>
+  <path class="dash" d="M 770 505 C 810 505, 810 420, 820 420" marker-end="url(#arrowGray)"/>
+
+  <rect class="soft" x="820" y="470" width="340" height="70" rx="8"/>
+  <text class="ink" x="990" y="500" font-size="20" font-weight="600" text-anchor="middle">BYOM daemon</text>
+  <text class="dim" x="990" y="522" font-size="15" text-anchor="middle">runs commands on your machine</text>
+  <path class="line" d="M 990 470 L 990 420" marker-end="url(#arrowGray)"/>
+
+  <text class="dim" x="40" y="600" font-size="18">The cloud can be replaced. The laptop cannot be assumed.</text>
+</svg>
