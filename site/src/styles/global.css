@@ -654,6 +654,15 @@ dialog.search .copy-note {
   border: 0; border-radius: 0;
 }
 
+/* Source-post demo clips (GIF-like loops) are banner media too: full-width
+   cards in the prose column, framed like images. Muted inline loops with a
+   poster frame; browsers that block autoplay just show the poster. */
+.article-body video {
+  display: block; width: 100%; max-width: 100%;
+  border: 1px solid var(--gray-200); border-radius: var(--radius);
+  background: #000;
+}
+
 /* The archive: one row per article, title left, mono date right — a timeline,
    not another table. */
 .archive { display: flex; flex-direction: column; }
