@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif">
+  <rect width="1200" height="620" fill="#ffffff"/>
+
+  <!-- rising axis -->
+  <text x="600" y="92" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" fill="#666">token 投入 · 验证强度  →</text>
+  <line x1="120" y1="430" x2="1080" y2="128" stroke="#eaeaea" stroke-width="1" stroke-dasharray="5 5"/>
+
+  <defs>
+    <marker id="lad-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#0070f3"/>
+    </marker>
+  </defs>
+
+  <!-- step 1 -->
+  <rect x="80" y="400" width="330" height="150" rx="8" fill="#ffffff" stroke="#eaeaea"/>
+  <text x="104" y="434" font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" fill="#999">01</text>
+  <text x="104" y="464" font-size="17" font-weight="600" fill="#111">普通测试</text>
+  <text x="104" y="496" font-size="13" fill="#666">测试先于实现写好</text>
+  <text x="104" y="518" font-size="13" fill="#666">mutation testing 防偷懒测试</text>
+
+  <line x1="424" y1="396" x2="448" y2="380" stroke="#0070f3" stroke-width="2" marker-end="url(#lad-arrow)"/>
+
+  <!-- step 2 -->
+  <rect x="450" y="300" width="330" height="250" rx="8" fill="#ffffff" stroke="#eaeaea"/>
+  <text x="474" y="334" font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" fill="#999">02</text>
+  <text x="474" y="364" font-size="17" font-weight="600" fill="#111">基于属性的测试</text>
+  <text x="474" y="396" font-size="13" fill="#666">描述必须恒成立的性质</text>
+  <text x="474" y="418" font-size="13" fill="#666">自动生成海量输入验证</text>
+
+  <line x1="794" y1="296" x2="818" y2="280" stroke="#0070f3" stroke-width="2" marker-end="url(#lad-arrow)"/>
+
+  <!-- step 3 -->
+  <rect x="820" y="200" width="330" height="350" rx="8" fill="#fafafa" stroke="#cbcbcb" stroke-width="1.5"/>
+  <text x="844" y="234" font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" fill="#999">03</text>
+  <text x="844" y="264" font-size="17" font-weight="600" fill="#111">形式化验证</text>
+  <text x="844" y="296" font-size="13" fill="#666">Lean 4 / Dafny</text>
+  <text x="844" y="318" font-size="13" fill="#666">生成实现并完成证明</text>
+
+  <!-- footer -->
+  <text x="600" y="596" text-anchor="middle" font-size="15" fill="#444">你负责定义"什么算对"，agent 负责证明它做到了。</text>
+</svg>

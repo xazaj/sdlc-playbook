@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif">
+  <rect width="1200" height="700" fill="#ffffff"/>
+
+  <!-- column headers -->
+  <text x="430" y="46" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="15" fill="#444">计算型 COMPUTATIONAL</text>
+  <text x="430" y="68" text-anchor="middle" font-size="12" fill="#666">CPU 执行 · 结果确定</text>
+  <text x="910" y="46" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="15" fill="#444">推理型 INFERENTIAL</text>
+  <text x="910" y="68" text-anchor="middle" font-size="12" fill="#666">LLM 判断</text>
+
+  <!-- row labels -->
+  <text x="100" y="200" text-anchor="middle" font-size="16" font-weight="600" fill="#111">引导 GUIDES</text>
+  <text x="100" y="224" text-anchor="middle" font-size="12" fill="#666">动手前给方向</text>
+  <text x="100" y="510" text-anchor="middle" font-size="16" font-weight="600" fill="#111">传感 SENSORS</text>
+  <text x="100" y="534" text-anchor="middle" font-size="12" fill="#666">动手后查结果</text>
+
+  <!-- r1c1: guide × computational -->
+  <rect x="200" y="100" width="460" height="240" rx="8" fill="#ffffff" stroke="#eaeaea"/>
+  <rect x="236" y="146" width="5" height="5" fill="#cbcbcb"/>
+  <text x="256" y="154" font-size="15" fill="#111">代码模板</text>
+  <text x="236" y="330" font-size="12" fill="#999">由工具原样落地</text>
+
+  <!-- r1c2: guide × inferential (dashed = advisory) -->
+  <rect x="680" y="100" width="460" height="240" rx="8" fill="#ffffff" stroke="#cbcbcb" stroke-dasharray="6 5"/>
+  <rect x="716" y="146" width="5" height="5" fill="#cbcbcb"/>
+  <text x="736" y="154" font-size="15" fill="#111">AGENTS.md / 规范文档</text>
+  <rect x="716" y="182" width="5" height="5" fill="#cbcbcb"/>
+  <text x="736" y="190" font-size="15" fill="#111">skills</text>
+  <rect x="800" y="284" width="280" height="34" rx="17" fill="#fafafa" stroke="#eaeaea"/>
+  <text x="940" y="306" text-anchor="middle" font-size="12" fill="#666">只是建议，可能被忽略</text>
+
+  <!-- r2c1: sensor × computational (target) -->
+  <rect x="200" y="410" width="460" height="240" rx="8" fill="#fafafa" stroke="#cbcbcb" stroke-width="1.5"/>
+  <rect x="236" y="456" width="5" height="5" fill="#cbcbcb"/>
+  <text x="256" y="464" font-size="15" fill="#111">类型检查</text>
+  <rect x="236" y="492" width="5" height="5" fill="#cbcbcb"/>
+  <text x="256" y="500" font-size="15" fill="#111">linter</text>
+  <rect x="236" y="528" width="5" height="5" fill="#cbcbcb"/>
+  <text x="256" y="536" font-size="15" fill="#111">结构测试</text>
+  <rect x="320" y="594" width="280" height="34" rx="17" fill="#ffffff" stroke="#eaeaea"/>
+  <text x="460" y="616" text-anchor="middle" font-size="12" fill="#444">每次执行，结果非黑即白</text>
+
+  <!-- r2c2: sensor × inferential -->
+  <rect x="680" y="410" width="460" height="240" rx="8" fill="#ffffff" stroke="#eaeaea"/>
+  <rect x="716" y="456" width="5" height="5" fill="#cbcbcb"/>
+  <text x="736" y="464" font-size="15" fill="#111">AI 代码评审</text>
+  <rect x="716" y="492" width="5" height="5" fill="#cbcbcb"/>
+  <text x="736" y="500" font-size="15" fill="#111">评估 agent</text>
+
+  <!-- direction arrow: inferential guide -> computational sensor -->
+  <defs>
+    <marker id="hs-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#0070f3"/>
+    </marker>
+  </defs>
+  <path d="M 700 335 C 640 360, 580 365, 545 400" fill="none" stroke="#0070f3" stroke-width="2" marker-end="url(#hs-arrow)"/>
+  <text x="400" y="380" text-anchor="middle" font-size="14" fill="#0070f3">五条规则的方向：往计算型传感挪</text>
+</svg>
