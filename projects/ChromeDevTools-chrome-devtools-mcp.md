@@ -24,7 +24,7 @@ chrome-devtools-mcp 是 Chrome DevTools 官方团队出的 MCP 服务器加 CLI�
 
 ## 它解决什么问题
 
-agent 干前端的活需要浏览器证据：请求发了没有、控制台报了什么、LCP 是多少。已有的路各缺一半。Playwright、puppeteer 一类的自动化库动作可靠，但拿不到 DevTools 深层的观测；截图只给像素，不给机制。DevTools 本体有全部能力——trace、性能洞察、堆快照——只是那些手柄从来只对人手开放。
+agent 干前端的活需要浏览器证据：请求发了没有、控制台报了什么、LCP 是多少。已有的路各缺一半。Playwright、puppeteer 一类的自动化库动作可靠，但拿不到 DevTools 深层的观测；截图只给像素，不给机制。DevTools 本体有全部能力（trace、性能洞察、堆快照），只是那些手柄从来只对人手开放。
 
 这个项目把手柄递给 agent，同时不撤人的：同一台 Chrome，agent 经 MCP 调工具，人随时可以在 DevTools 界面里接着看。
 
@@ -32,7 +32,7 @@ agent 干前端的活需要浏览器证据：请求发了没有、控制台报�
 
 同一套工具两种皮：MCP 服务器给 agent 客户端，`chrome-devtools` CLI 给终端和脚本（[README](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/8ba2ac945ebaf1adb92208c29f3a30e73a920956/README.md)）。63 个工具按域排开（[工具参考](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/8ba2ac945ebaf1adb92208c29f3a30e73a920956/docs/tool-reference.md)）：交互（click、fill、drag）、页面管理、网络（含 mock_network 网络改写）、性能三件套（start/stop_trace 加 analyze_insight）、控制台与 CSS、13 件套的堆快照分析、扩展安装与管理、PWA 与 WebAuthn。`--slim` 可裁到只剩基础浏览器任务的小工具面。
 
-底座分两半。自动化交给 puppeteer，动作自动等待结果；分析能力直接复用 DevTools 本体——devtools-frontend 以 git submodule 挂在 third_party 下，trace 与 insight 的解析代码就是 DevTools 自己的那份（[AGENTS.md](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/8ba2ac945ebaf1adb92208c29f3a30e73a920956/AGENTS.md) 规定 submodule 只许实验性改动）。构建走 GN 加 Ninja，Chromium 的构建系统。
+底座分两半。自动化交给 puppeteer，动作自动等待结果；分析能力直接复用 DevTools 本体：devtools-frontend 以 git submodule 挂在 third_party 下，trace 与 insight 的解析代码就是 DevTools 自己的那份（[AGENTS.md](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/8ba2ac945ebaf1adb92208c29f3a30e73a920956/AGENTS.md) 规定 submodule 只许实验性改动）。构建走 GN 加 Ninja，Chromium 的构建系统。
 
 包里还带八个技能：chrome-devtools 与 cli 两个通用的，a11y、cookie、LCP、内存泄漏四个排查向的，加 troubleshooting 与 inspect-in-devtools，随 npm 包分发，也打包成 Claude Code、Copilot、Gemini CLI 插件。
 
@@ -52,7 +52,7 @@ agent 干前端的活需要浏览器证据：请求发了没有、控制台报�
 
 **能搬的：**
 
-- 设计原则那七条，尤其「语义摘要优先于原始 JSON、重资产返回文件路径与引用」——任何给 agent 造工具的人可以直接抄成自己的设计准则
+- 设计原则那七条，尤其「语义摘要优先于原始 JSON、重资产返回文件路径与引用」，任何给 agent 造工具的人可以直接抄成自己的设计准则
 - 页面自暴露工具的发现协议：`devtoolstooldiscovery` 事件加 `respondWith(ToolGroup)`，应用把自己的私有调试面交给 agent，比从 DOM 反推干净一个量级
 - 技能与工具同包分发，并把「技能描述的是特定版本的工具，升级时要一起更新」写成明文告诫
 - `--slim` 裁剪工具面：按任务收窄 agent 可见的工具集，控制上下文占用与误用面
@@ -72,4 +72,4 @@ agent 干前端的活需要浏览器证据：请求发了没有、控制台报�
 
 ## 相关
 
-站内文章《[别再给 Agent 写嘱咐了](/sdlc-playbook/articles/harness-five-rules/)》引的 OpenAI Codex 团队做法——把 Chrome DevTools 接进 agent 运行时、让 agent 自己复现和验证——就是这个项目服务的那类场景；《[验证工程](/sdlc-playbook/articles/verification-engineering/)》主张的「证据由 harness 生成、命令能判的交给命令」，在这里落成 trace 文件与堆快照工具。项目卡 [mcp-server-cloudflare](/sdlc-playbook/projects/mcp-server-cloudflare/) 是同为 MCP 服务器形态的对照。
+站内文章《[别再给 Agent 写嘱咐了](/sdlc-playbook/articles/harness-five-rules/)》引的 OpenAI Codex 团队做法（把 Chrome DevTools 接进 agent 运行时、让 agent 自己复现和验证），就是这个项目服务的那类场景；《[验证工程](/sdlc-playbook/articles/verification-engineering/)》主张的「证据由 harness 生成、命令能判的交给命令」，在这里落成 trace 文件与堆快照工具。项目卡 [mcp-server-cloudflare](/sdlc-playbook/projects/mcp-server-cloudflare/) 是同为 MCP 服务器形态的对照。
