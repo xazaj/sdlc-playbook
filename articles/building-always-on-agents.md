@@ -22,7 +22,7 @@ related: []
 
 常驻 agent 并不真的「一直开着」，这只是用户体验上的说法。实际上它大部分时间在睡觉，周期性醒来干活。每一段工作叫一次**运行（run）**：agent 收到一个事件，完成任务，把经过保存下来。运行发生在**会话（session）**里，会话是消息与工具调用的完整记录。运行结束，agent 继续睡，循环无限重复。
 
-![动图：常驻 agent 的时间轴，大段「Asleep，不花 token」的睡眠被短暂的 Run 打断；每次运行四步——事件到达、会话开始、agent 循环运转、运行写回存储状态；存储状态跨运行携带，会话读、运行写](/sdlc-playbook/articles/building-always-on-agents/cycle.gif)
+![动图：常驻 agent 的时间轴，大段「Asleep，不花 token」的睡眠被短暂的 Run 打断；每次运行四步，事件到达、会话开始、agent 循环运转、运行写回存储状态；存储状态跨运行携带，会话读、运行写](/sdlc-playbook/articles/building-always-on-agents/cycle.gif)
 
 ## 核心原语
 
@@ -106,7 +106,7 @@ related: []
 
 多数 AI agent 边生成边把响应流给用户，用户能看着 Claude 推理、调工具、写答案。常驻 agent 的大部分工作在后台完成：用户拿到的是结果和少许细节，全程逐步拆解不给。
 
-![示意图：一次运行有三种收场——无话可说、send 工具调用、请求用户的延迟工具调用；消息进发件箱（一张数据库表），dispatcher 投给用户；延迟请求可走发件箱，也可以直接显示在你自己的界面](/sdlc-playbook/articles/building-always-on-agents/outbox.png)
+![示意图：一次运行有三种收场，无话可说、send 工具调用、请求用户的延迟工具调用；消息进发件箱（一张数据库表），dispatcher 投给用户；延迟请求可走发件箱，也可以直接显示在你自己的界面](/sdlc-playbook/articles/building-always-on-agents/outbox.png)
 
 一次运行有三种收场：agent 往发件箱发一条消息；agent 判定没什么可发；agent 用一次延迟工具调用请求许可或补充输入。
 
@@ -118,7 +118,7 @@ related: []
 
 ![动图：五个原语的拼装。定时器与事件收件箱启动运行（开始或恢复会话），运行在会话里与记忆（读写所学）和权限（每次工具调用都过检）协作，产出发往发件箱（发送或沉默），dispatcher 交给用户，用户的答复作为事件回到收件箱；运行也可以设一条跟进定时器](/sdlc-playbook/articles/building-always-on-agents/together.gif)
 
-每次运行都从收件箱的一个事件开始——用户消息、webhook 或定时器。worker 取到事件，发起运行，在新会话或已有会话里唤醒 agent。agent 读记忆拿到基线，在权限范围内行动，再把学到的东西更新进记忆。运行结束，agent 往发件箱推一行，dispatcher 把消息投给用户。
+每次运行都从收件箱的一个事件开始，用户消息、webhook 或定时器都算。worker 取到事件，发起运行，在新会话或已有会话里唤醒 agent。agent 读记忆拿到基线，在权限范围内行动，再把学到的东西更新进记忆。运行结束，agent 往发件箱推一行，dispatcher 把消息投给用户。
 
 这些拼成一个循环：运行可以设定时器，稍后再唤醒 agent；用户回复消息，答复作为事件回到收件箱。每次运行都短暂，循环无限进行下去，agent 看起来就一直在线。
 
